@@ -1,0 +1,8 @@
+node_modules
+dist
+build
+coverage
+.out
+.next
+.cache
+**/*.min.*
