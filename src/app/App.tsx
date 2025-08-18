@@ -1,7 +1,15 @@
+import MLLayout from './MLLayout';
+import { Toaster } from './components/ui/sonner';
+
 import './App.css';
 
 function App() {
-    return <div>ML Playground</div>;
+    return (
+        <>
+            <MLLayout />
+            <Toaster position="top-center" expand richColors />
+        </>
+    );
 }
 
 export default App;
