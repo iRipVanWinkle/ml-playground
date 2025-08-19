@@ -26,7 +26,17 @@ type OptimizerBatchConfig = OptimizerBasicConfig & {
     type: 'batch';
 };
 
-export type OptimizerConfig = OptimizerBatchConfig;
+type OptimizerSGDConfig = OptimizerBasicConfig & {
+    type: 'sgd';
+    batchSize: number;
+};
+
+type OptimizerMomentumConfig = OptimizerBasicConfig & {
+    type: 'momentum';
+    beta: number;
+};
+
+export type OptimizerConfig = OptimizerBatchConfig | OptimizerSGDConfig | OptimizerMomentumConfig;
 
 type LossFunctionGeneralConfig = {
     type: LossFunction;

@@ -1,6 +1,6 @@
 import type { DataSettings, ModelSettings } from '@/app/store';
 import type { Model, TrainingEventListener } from '@/ml/types';
-import { BatchGD } from '@/ml/optimizers';
+import { BatchGD, MomentumGD, StochasticGD } from '@/ml/optimizers';
 import { LinearRegressor } from '@/ml/models';
 import { ModelPipeline } from '@/ml/ModelPipeline';
 import { getLossFunc } from './getLossFunc';
@@ -30,6 +30,16 @@ export function createModel(
     // Select optimizer
     let optimizer;
     switch (optimizerConfig.type) {
+        case 'momentum': {
+            const { beta } = optimizerConfig;
+            optimizer = new MomentumGD({ ...defaultConfig, beta });
+            break;
+        }
+        case 'sgd': {
+            const { batchSize } = optimizerConfig;
+            optimizer = new StochasticGD({ ...defaultConfig, batchSize });
+            break;
+        }
         case 'batch':
         default:
             optimizer = new BatchGD({ ...defaultConfig });

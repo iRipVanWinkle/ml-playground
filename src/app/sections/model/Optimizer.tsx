@@ -18,10 +18,16 @@ type OptimizerProps = {
     onChange: (config: OptimizerConfig) => void;
 };
 
-const DEFAULT_OPTIMIZER_TYPES: OptionList = [{ value: 'batch', label: 'Batch Gradient Descent' }];
+const DEFAULT_OPTIMIZER_TYPES: OptionList = [
+    { value: 'batch', label: 'Batch Gradient Descent' },
+    { value: 'sgd', label: 'Stochastic Gradient Descent' },
+    { value: 'momentum', label: 'Momentum' },
+];
 
 const DEFAULT_OPTIMIZER_CONFIGS = {
     batch: { type: 'batch' },
+    sgd: { type: 'sgd', batchSize: 32 },
+    momentum: { type: 'momentum', beta: 0.9 },
 } as Record<OptimizerConfig['type'], OptimizerConfig>;
 
 export default function Optimizer({ optimizer, disabled, onChange }: OptimizerProps) {
@@ -43,7 +49,10 @@ export default function Optimizer({ optimizer, disabled, onChange }: OptimizerPr
     };
 
     // Handle input changes for optimizer parameters
-    const handleInputChange = (key: keyof OptimizerConfig | 'batchSize', value: string) => {
+    const handleInputChange = (
+        key: keyof OptimizerConfig | 'batchSize' | 'beta',
+        value: string,
+    ) => {
         let preperedValue: number;
         if (key === 'batchSize' || key === 'maxIterations') {
             preperedValue = parseInt(value);
@@ -92,6 +101,37 @@ export default function Optimizer({ optimizer, disabled, onChange }: OptimizerPr
                     </SelectContent>
                 </Select>
             </Field>
+
+            {optimizer.type === 'sgd' && (
+                <Field label="Batch Size">
+                    <Input
+                        className="w-1/2"
+                        disabled={disabled}
+                        step={1}
+                        min={1}
+                        type="number"
+                        placeholder="Batch size"
+                        value={optimizer.batchSize}
+                        onChange={(e) => handleInputChange('batchSize', e.target.value)}
+                    />
+                </Field>
+            )}
+
+            {optimizer.type === 'momentum' && (
+                <Field label="Beta (Momentum Factor)">
+                    <Input
+                        className="w-1/2"
+                        disabled={disabled}
+                        type="number"
+                        step={0.1}
+                        min={0}
+                        max={0.9999}
+                        placeholder="Beta (momentum factor)"
+                        value={optimizer.beta}
+                        onChange={(e) => handleInputChange('beta', e.target.value)}
+                    />
+                </Field>
+            )}
 
             <div className="grid grid-cols-2 gap-2">
                 <Field label="Max iterations">
