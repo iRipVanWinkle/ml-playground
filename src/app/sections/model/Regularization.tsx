@@ -58,14 +58,14 @@ export default function Regularization({
     return (
         <>
             <div className={containerClass}>
-                <Field label="Loss Function">
+                <Field label="Regularization">
                     <Select
                         disabled={disabled}
                         value={regularization.type as string}
                         onValueChange={(value) => handleFunctionChange(value as RegularizationName)}
                     >
                         <SelectTrigger className="w-full truncate">
-                            <SelectValue placeholder="Select loss function" />
+                            <SelectValue placeholder="Select regularization method" />
                         </SelectTrigger>
                         <SelectContent>
                             {DEFAULT_REGULARIZATIONS.map((func) => (
