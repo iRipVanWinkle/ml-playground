@@ -1,5 +1,5 @@
 import { type Scalar, type Tensor2D, concat, tidy } from '@tensorflow/tfjs';
-import type { LossFunction } from '../types';
+import type { LossFunction } from '../../types';
 
 export class MeanSquaredError implements LossFunction {
     /**
@@ -44,7 +44,7 @@ export class MeanSquaredError implements LossFunction {
      * @param yPred - The predicted values.
      * @returns Tensor2D containing the gradients.
      */
-    gradient(xTrue: Tensor2D, yTrue: Tensor2D, yPred: Tensor2D): Tensor2D {
+    parameterGradient(xTrue: Tensor2D, yTrue: Tensor2D, yPred: Tensor2D): Tensor2D {
         const sampleCount = xTrue.shape[0];
 
         return tidy(() => {
@@ -60,5 +60,19 @@ export class MeanSquaredError implements LossFunction {
 
             return gradients as Tensor2D;
         });
+    }
+
+    /**
+     * Computes the gradient of the Mean Squared Error (MSE) loss function with respect to the predictions.
+     *
+     * The gradient is calculated as:
+     *   - grad = 2 * (y_pred - y_true)
+     *
+     * @param yTrue - The true values (labels).
+     * @param yPred - The predicted values.
+     * @returns Tensor2D containing the gradients of the MSE loss with respect to the predictions.
+     */
+    predictionGradient(yTrue: Tensor2D, yPred: Tensor2D): Tensor2D {
+        return yPred.sub(yTrue).mul(2);
     }
 }

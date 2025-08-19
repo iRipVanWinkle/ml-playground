@@ -104,7 +104,17 @@ export interface LossFunction {
      * @param yPred - The predicted values.
      * @returns Tensor2D containing the gradients.
      */
-    gradient(xTrue: Tensor2D, yTrue: Tensor2D, yPred: Tensor2D): Tensor2D;
+    parameterGradient(xTrue: Tensor2D, yTrue: Tensor2D, yPred: Tensor2D): Tensor2D;
+
+    /**
+     * Computes the gradient of the loss function with respect to the predictions.
+     * Used in backpropagation to update the model parameters.
+     *
+     * @param yTrue - The true values (labels).
+     * @param yPred - The predicted values.
+     * @returns Tensor2D containing the gradients with respect to predictions.
+     */
+    predictionGradient(yTrue: Tensor2D, yPred: Tensor2D): Tensor2D;
 
     /**
      * Disposes of any resources used by the loss function.

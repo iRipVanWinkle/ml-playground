@@ -21,7 +21,7 @@ export class LinearRegressor extends BaseEstimator {
             // Compute the predictions using the hypothesis function
             const yPred = this.hypothesis(X, theta);
             // Compute the gradients using the loss function
-            const gradient = this.lossFunc.gradient(X, y, yPred);
+            const gradient = this.lossFunc.parameterGradient(X, y, yPred);
 
             // Compute the regularization gradient ([0, penalty, penalty, ..., penalty])
             const penalty = this.regularization.gradient(theta);

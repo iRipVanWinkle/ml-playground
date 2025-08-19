@@ -1,5 +1,14 @@
-import { concat, tidy, type Scalar, type Tensor2D } from '@tensorflow/tfjs';
-import type { LossFunction } from '../types';
+import {
+    concat,
+    onesLike,
+    scalar,
+    tidy,
+    where,
+    zerosLike,
+    type Scalar,
+    type Tensor2D,
+} from '@tensorflow/tfjs';
+import type { LossFunction } from '../../types';
 
 export class MeanAbsoluteError implements LossFunction {
     /**
@@ -43,7 +52,7 @@ export class MeanAbsoluteError implements LossFunction {
      * @param yPred - The predicted values.
      * @returns Tensor2D containing the gradients.
      */
-    gradient(xTrue: Tensor2D, yTrue: Tensor2D, yPred: Tensor2D): Tensor2D {
+    parameterGradient(xTrue: Tensor2D, yTrue: Tensor2D, yPred: Tensor2D): Tensor2D {
         const sampleCount = xTrue.shape[0];
 
         return tidy(() => {
@@ -58,6 +67,28 @@ export class MeanAbsoluteError implements LossFunction {
             const gradients = concat([biasGrad.reshape([1, 1]), weightGrad]);
 
             return gradients as Tensor2D;
+        });
+    }
+
+    /**
+     * Computes the gradient of the Mean Absolute Error (MAE) loss function with respect to the predictions.
+     *
+     * The gradient is computed as follows:
+     *   - If y_pred > y_true, gradient = 1
+     *   - If y_pred < y_true, gradient = -1
+     *   - If y_pred == y_true, gradient = 0
+     *
+     * @param yTrue - The true values (labels).
+     * @param yPred - The predicted values.
+     * @returns Tensor2D containing the gradients.
+     */
+    predictionGradient(yTrue: Tensor2D, yPred: Tensor2D): Tensor2D {
+        return tidy(() => {
+            return where(
+                yPred.greater(yTrue),
+                onesLike(yTrue),
+                where(yPred.less(yTrue), scalar(-1).mul(onesLike(yTrue)), zerosLike(yTrue)),
+            ) as Tensor2D;
         });
     }
 }

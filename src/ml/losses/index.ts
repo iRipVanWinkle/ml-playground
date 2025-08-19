@@ -1,2 +1,2 @@
-export * from './MeanSquaredError';
-export * from './MeanAbsoluteError';
+export * from './regression'
+export * from './classification'
