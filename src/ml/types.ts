@@ -117,6 +117,13 @@ export interface LossFunction {
     predictionGradient(yTrue: Tensor2D, yPred: Tensor2D): Tensor2D;
 
     /**
+     * Checks if the loss function uses logits.
+     *
+     * @returns boolean indicating whether the loss function uses logits.
+     */
+    usesLogits?(): boolean;
+
+    /**
      * Disposes of any resources used by the loss function.
      */
     dispose?(): void;
