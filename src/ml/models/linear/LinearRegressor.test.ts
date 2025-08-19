@@ -5,6 +5,7 @@ import { MeanAbsoluteError, MeanSquaredError } from '../../losses';
 import { BatchGD } from '../../optimizers/batch';
 import { L2Regularization, NoRegularization } from '../../regularization';
 import type { LossFunction, Optimizer } from '../../types';
+import { MomentumGD } from '../../optimizers/momentum';
 
 describe('LinearRegressor', () => {
     let model: LinearRegressor;
@@ -79,6 +80,31 @@ describe('LinearRegressor', () => {
             X.dispose();
             y.dispose();
             theta.dispose();
+        });
+
+        it('should handle perfect linear relationship', async () => {
+            // Perfect linear relationship: y = 0.5x - 2
+            const X = tf.tensor2d([[0], [2], [4], [6], [8]]);
+            const y = tf.tensor2d([[-2], [-1], [0], [1], [2]]);
+
+            const optimizer = new MomentumGD({
+                learningRate: 0.01,
+                maxIterations: 100,
+                tolerance: 1e-7,
+            });
+            const highLRModel = new LinearRegressor({ lossFunc, optimizer });
+
+            const theta = await highLRModel.train(X, y);
+            const weights = await theta.data();
+
+            // Should learn approximately: bias ≈ -2, weight ≈ 0.5
+            expect(weights[0]).toBeCloseTo(-2, 1); // bias
+            expect(weights[1]).toBeCloseTo(0.5, 1); // weight
+
+            X.dispose();
+            y.dispose();
+            theta.dispose();
+            highLRModel.dispose?.();
         });
 
         it('should handle single data point', async () => {
