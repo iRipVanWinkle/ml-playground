@@ -24,6 +24,9 @@ export default function MLLayout() {
                         <TabsTrigger value="regression" disabled={isTraining}>
                             Regression
                         </TabsTrigger>
+                        <TabsTrigger value="classification" disabled={isTraining}>
+                            Classification
+                        </TabsTrigger>
                     </TabsList>
                 </Tabs>
 

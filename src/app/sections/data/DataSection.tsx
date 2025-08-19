@@ -70,6 +70,17 @@ const PREPERED_REGRESSION_DATASETS = [
     },
 ];
 
+const PREPERED_CLASSIFICATION_DATASETS = [
+    {
+        value: './data/mnist-number-0-1.csv',
+        label: 'MNIST numbers (0, 1)',
+    },
+    {
+        value: './data/microchips-tests.csv',
+        label: 'Microchips Tests (non linear)',
+    },
+];
+
 export default function DataSection() {
     const taskType = useTaskType();
     const dataSettings = useDataSettings();
@@ -125,7 +136,8 @@ export default function DataSection() {
         setTransformation(transformations);
     };
 
-    const datasets = PREPERED_REGRESSION_DATASETS;
+    const datasets =
+        taskType === 'regression' ? PREPERED_REGRESSION_DATASETS : PREPERED_CLASSIFICATION_DATASETS;
 
     return (
         <Card className="gap-5">

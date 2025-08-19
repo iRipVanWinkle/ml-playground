@@ -44,3 +44,19 @@ export function generateCartesianProduct(
 
     return cartesianProduct(axes);
 }
+
+export function labelEncoding(data: (string | number)[][]): string[] {
+    const firstColumn = data.map((row) => row[0]);
+    const originalLabels = Array.from(new Set(firstColumn)).map((label) => label.toString());
+
+    const labelMap: Record<string, number> = {};
+    originalLabels.forEach((label, index) => {
+        labelMap[label] = index;
+    });
+
+    data.forEach((row) => {
+        row[0] = labelMap[row[0]]; // Convert labels to numeric
+    });
+
+    return originalLabels;
+}

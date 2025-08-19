@@ -1,8 +1,9 @@
-import { Tensor, memory, tensor2d, type Tensor2D, concat, type Scalar } from '@tensorflow/tfjs';
 import { createModel } from '@/app/helpers/createModel';
 import { encode } from '@/app/helpers/float32Array';
+import { accuracy } from '@/ml/metrics';
 import type { Model } from '@/ml/types';
 import type { State } from '@/app/store';
+import { Tensor, memory, tensor2d, type Tensor2D, concat, type Scalar } from '@tensorflow/tfjs';
 
 type TrainingCallbacks = {
     onReport: (report: Float32Array) => void;
@@ -60,7 +61,7 @@ export class Trainer {
     async train(state: State, byStep: boolean, callbacks: TrainingCallbacks) {
         console.info('Start', memory());
 
-        const { modelSettings, dataSettings, data } = state;
+        const { modelSettings, dataSettings, taskType, data } = state;
 
         const X = tensor2d(data.trainInputFeatures);
         const y = tensor2d(data.trainTargetLabels);
@@ -69,7 +70,6 @@ export class Trainer {
         const XPredictions = tensor2dIfPopulated(data.predictionInputFeatures);
 
         const [model, optimizer] = createModel(modelSettings, dataSettings);
-
         this.model = model;
 
         const thetasArray: Tensor2D[] = [];
@@ -106,6 +106,8 @@ export class Trainer {
             let yTrainingProbability: Tensor2D | undefined;
             let yTesting: Tensor2D | undefined;
             let yTestingProbability: Tensor2D | undefined;
+            let trainAccuracy: Scalar | undefined;
+            let testAccuracy: Scalar | undefined;
             let trainLoss: Scalar | undefined;
             let testLoss: Scalar | undefined;
 
@@ -113,11 +115,15 @@ export class Trainer {
                 yPredictions = model.predict(XPredictions, thetas);
             }
 
+            const metrics = taskType === 'classification' ? [accuracy] : [];
             // eslint-disable-next-line prefer-const
             [yTraining, yTrainingProbability, trainLoss] = model.evaluate(X, y, thetas);
+            // eslint-disable-next-line prefer-const
+            [trainAccuracy] = metrics.map((metric) => metric(y, yTraining!));
 
             if (XTest && yTest) {
                 [yTesting, yTestingProbability, testLoss] = model.evaluate(XTest, yTest, thetas);
+                [testAccuracy] = metrics.map((metric) => metric(yTest, yTesting!));
             }
 
             const [
@@ -125,6 +131,8 @@ export class Trainer {
                 predictionLabels,
                 yTrainingArray,
                 yTestingArray,
+                trainAccuracyValue,
+                testAccuracyValue,
                 testLossValue,
                 trainLossValue,
             ] = await Promise.all([
@@ -132,6 +140,8 @@ export class Trainer {
                 getTensorArray(yPredictions),
                 getTensorArray(yTraining),
                 getTensorArray(yTesting),
+                getTensorData(trainAccuracy),
+                getTensorData(testAccuracy),
                 getTensorData(testLoss),
                 getTensorData(trainLoss),
             ]);
@@ -142,6 +152,8 @@ export class Trainer {
             yTestingProbability?.dispose();
             yTesting?.dispose();
             yTrainingProbability?.dispose();
+            trainAccuracy?.dispose();
+            testAccuracy?.dispose();
             trainLoss?.dispose();
             testLoss?.dispose();
             if (thetas instanceof Tensor) {
@@ -155,6 +167,8 @@ export class Trainer {
 
             const report = encode({
                 trainLossHistory: fixLength(lossHistoryArray), // Ensure all loss history arrays are of the same length
+                trainAccuracy: trainAccuracyValue,
+                testAccuracy: testAccuracyValue,
                 testLoss: testLossValue,
                 iterations: iterations,
                 trainPredictedLabels: yTrainingArray,
@@ -181,6 +195,13 @@ export class Trainer {
          *  [... bias ...],
          *  [... waight1 ...],
          *  [... waight2 ...]
+         * ]
+         *
+         * Logistic Regression
+         * [     cat1, cat2
+         *  [... bias, bias ...],
+         *  [... waight1, waight1 ...],
+         *  [... waight2, waight2 ...]
          * ]
          *
          */

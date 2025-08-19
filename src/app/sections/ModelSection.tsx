@@ -11,6 +11,7 @@ import {
     updateModelSettings,
     useIsTraining,
     useModelSettings,
+    useTaskType,
     type ModelType,
 } from '@/app/store';
 import { Field } from '@/app/components/ui/field';
@@ -31,12 +32,23 @@ const DEFAULT_REGRESSION_MODEL_TYPES = [
     },
 ] as OptionList;
 
+const DEFAULT_CLASSIFICATION_MODEL_TYPES = [
+    {
+        value: 'logistic',
+        label: 'Logistic Regression',
+    },
+] as OptionList;
+
 export default function ModelSection() {
     const data = useModelSettings();
+    const taskType = useTaskType();
     const isTraining = useIsTraining();
     const handleChange = updateModelSettings;
 
-    const modelTypes = DEFAULT_REGRESSION_MODEL_TYPES;
+    const modelTypes =
+        taskType === 'regression'
+            ? DEFAULT_REGRESSION_MODEL_TYPES
+            : DEFAULT_CLASSIFICATION_MODEL_TYPES;
 
     return (
         <Card className="gap-5">
@@ -68,6 +80,7 @@ export default function ModelSection() {
                 </Field>
 
                 <LossFunction
+                    taskType={taskType}
                     lossFunction={data.lossFunction}
                     disabled={isTraining}
                     onChange={(lossFunction) => handleChange({ lossFunction })}

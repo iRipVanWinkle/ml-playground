@@ -1,9 +1,9 @@
-export type TaskType = 'regression';
-export type ModelType = 'linear';
+export type TaskType = 'regression' | 'classification';
+export type ModelType = 'linear' | 'logistic';
 export type NormalizationFunction = 'none' | 'zscore';
 export type TransformationFunction = 'sinusoid' | 'polynomial';
 
-export type LossFunction = 'mse' | 'mae';
+export type LossFunction = 'mse' | 'mae' | 'binaryCrossentropy' | 'logitsBasedBinaryCrossentropy';
 
 export type Regularization = 'none' | 'l2';
 
@@ -65,6 +65,8 @@ export type ModelSettings = {
 export type TrainingReport = {
     trainLossHistory: number[][];
     testLoss: number;
+    trainAccuracy: number;
+    testAccuracy: number;
     iterations: number[];
     predictionPredictedLabels?: number[][];
     trainPredictedLabels: number[][];

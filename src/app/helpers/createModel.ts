@@ -8,6 +8,7 @@ import { getLearningRate } from './getLearningRate';
 import { getNormalizeFunc } from './getNormalizeFunc';
 import { getRegularization } from './getRegularization';
 import { getTransformations } from './getTransformations';
+import { LogisticRegression } from '@/ml/models/logistic/LogisticRegression';
 
 export function createModel(
     modelSettings: ModelSettings,
@@ -50,6 +51,10 @@ export function createModel(
 
     let model;
     switch (modelType) {
+        case 'logistic': {
+            model = new LogisticRegression({ lossFunc, optimizer, regularization });
+            break;
+        }
         case 'linear':
         default:
             model = new LinearRegressor({ lossFunc, optimizer, regularization });

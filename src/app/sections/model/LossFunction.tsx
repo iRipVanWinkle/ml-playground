@@ -6,10 +6,11 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/app/components/ui/select';
-import type { LossFunction as LossFunctionName, LossFunctionConfig } from '@/app/store';
+import type { LossFunction as LossFunctionName, LossFunctionConfig, TaskType } from '@/app/store';
 import type { OptionList } from '../types';
 
 type LossFunctionProps = {
+    taskType: TaskType;
     lossFunction: LossFunctionConfig;
     disabled?: boolean;
     onChange: (config: LossFunctionConfig) => void;
@@ -26,12 +27,31 @@ const DEFAULT_LINEAR_LOSS_FUNCTIONS: OptionList = [
     },
 ];
 
-export default function LossFunction({ lossFunction, disabled, onChange }: LossFunctionProps) {
+const DEFAULT_LOGISTIC_LOSS_FUNCTIONS: OptionList = [
+    {
+        value: 'binaryCrossentropy',
+        label: 'Binary cross-entropy',
+    },
+    {
+        value: 'logitsBasedBinaryCrossentropy',
+        label: 'Binary cross-entropy (with logits)',
+    },
+];
+
+export default function LossFunction({
+    taskType,
+    lossFunction,
+    disabled,
+    onChange,
+}: LossFunctionProps) {
     const handleFunctionChange = (type: LossFunctionName) => {
         onChange({ type });
     };
 
-    const lossFunctions = DEFAULT_LINEAR_LOSS_FUNCTIONS;
+    const lossFunctions =
+        taskType === 'classification'
+            ? DEFAULT_LOGISTIC_LOSS_FUNCTIONS
+            : DEFAULT_LINEAR_LOSS_FUNCTIONS;
 
     return (
         <div className="grid gap-2">

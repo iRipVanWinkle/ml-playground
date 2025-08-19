@@ -7,7 +7,12 @@ import type {
     TrainingReport,
     TrainingState,
 } from './types';
-import { calculateMinMax, extractFeaturesAndLabels, generateCartesianProduct } from './data/utils';
+import {
+    calculateMinMax,
+    extractFeaturesAndLabels,
+    generateCartesianProduct,
+    labelEncoding,
+} from './data/utils';
 import { initState, useAppState } from './state';
 
 export function setTaskType(taskType: TaskType) {
@@ -18,7 +23,7 @@ export function setTaskType(taskType: TaskType) {
 
     resetTrainingReport();
     resetData();
-    setModelType('linear');
+    setModelType(taskType === 'regression' ? 'linear' : 'logistic');
 }
 
 export function setModelType(modelType: ModelType) {
@@ -28,7 +33,7 @@ export function setModelType(modelType: ModelType) {
             ...state.modelSettings,
             type: modelType,
             lossFunction: {
-                type: 'mse',
+                type: state.taskType === 'regression' ? 'mse' : 'binaryCrossentropy',
             },
         },
     }));
@@ -75,6 +80,7 @@ export async function extractFeatures({
     file,
     shuffleData,
     trainTestSplit,
+    taskType,
 }: ExtractFeaturesOptions) {
     const rawData = await readCsv(file);
 
@@ -85,6 +91,9 @@ export async function extractFeatures({
     const headers = rawData.shift()!.map(String);
 
     let categories: string[] | undefined;
+    if (taskType === 'classification') {
+        categories = labelEncoding(rawData); // Convert string labels to numeric
+    }
 
     if (shuffleData) {
         // Shuffle the data randomly

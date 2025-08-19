@@ -37,6 +37,8 @@ export const initState: State = {
     report: {
         trainLossHistory: [],
         testLoss: 0,
+        trainAccuracy: 0,
+        testAccuracy: 0,
         iterations: [],
         trainPredictedLabels: [],
         testPredictedLabels: [],
