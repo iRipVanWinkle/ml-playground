@@ -66,16 +66,17 @@ export default function ModelSection() {
                         </SelectContent>
                     </Select>
                 </Field>
-                <Optimizer
-                    optimizer={data.optimizer}
-                    disabled={isTraining}
-                    onChange={(optimizer) => handleChange({ optimizer })}
-                />
 
                 <LossFunction
                     lossFunction={data.lossFunction}
                     disabled={isTraining}
                     onChange={(lossFunction) => handleChange({ lossFunction })}
+                />
+
+                <Optimizer
+                    optimizer={data.optimizer}
+                    disabled={isTraining}
+                    onChange={(optimizer) => handleChange({ optimizer })}
                 />
 
                 <Regularization
