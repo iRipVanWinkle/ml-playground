@@ -9,6 +9,7 @@ export const initState: State = {
     },
     modelSettings: {
         type: 'linear',
+        classificationType: 'binary',
         lossFunction: { type: 'mse' },
         optimizer: {
             type: 'batch',

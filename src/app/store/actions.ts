@@ -6,6 +6,7 @@ import type {
     TaskType,
     TrainingReport,
     TrainingState,
+    ClassificationType,
 } from './types';
 import {
     calculateMinMax,
@@ -24,6 +25,9 @@ export function setTaskType(taskType: TaskType) {
     resetTrainingReport();
     resetData();
     setModelType(taskType === 'regression' ? 'linear' : 'logistic');
+    if (taskType === 'classification') {
+        setClassificationType('binary');
+    }
 }
 
 export function setModelType(modelType: ModelType) {
@@ -34,6 +38,26 @@ export function setModelType(modelType: ModelType) {
             type: modelType,
             lossFunction: {
                 type: state.taskType === 'regression' ? 'mse' : 'binaryCrossentropy',
+            },
+        },
+    }));
+
+    if (modelType === 'logistic') {
+        setClassificationType('binary');
+    }
+}
+
+export function setClassificationType(classificationType: ClassificationType) {
+    useAppState.setState((state) => ({
+        ...state,
+        modelSettings: {
+            ...state.modelSettings,
+            classificationType,
+            lossFunction: {
+                type:
+                    classificationType === 'softmax'
+                        ? 'categoricalCrossentropy'
+                        : 'binaryCrossentropy',
             },
         },
     }));

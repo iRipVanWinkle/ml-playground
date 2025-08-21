@@ -9,9 +9,9 @@ import {
     type Scalar,
     type Tensor2D,
 } from '@tensorflow/tfjs';
-import { LogisticRegression } from './LogisticRegression';
+import { LogisticRegressor } from './LogisticRegressor';
 
-export class SoftmaxLogisticRegressor extends LogisticRegression {
+export class SoftmaxLogisticRegressor extends LogisticRegressor {
     private _initTheta: Tensor2D | null = null; // for testing purposes
 
     async train(X: Tensor2D, y: Tensor2D): Promise<Tensor2D> {

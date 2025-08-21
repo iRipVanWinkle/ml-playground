@@ -36,6 +36,14 @@ const DEFAULT_LOGISTIC_LOSS_FUNCTIONS: OptionList = [
         value: 'logitsBasedBinaryCrossentropy',
         label: 'Binary cross-entropy (with logits)',
     },
+    {
+        value: 'categoricalCrossentropy',
+        label: 'Categorical cross-entropy',
+    },
+    {
+        value: 'logitsBasedCategoricalCrossentropy',
+        label: 'Categorical cross-entropy (with logits)',
+    },
 ];
 
 export default function LossFunction({

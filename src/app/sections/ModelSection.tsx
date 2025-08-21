@@ -7,10 +7,13 @@ import {
     SelectValue,
 } from '@/app/components/ui/select';
 import {
+    setClassificationType,
     setModelType,
     updateModelSettings,
+    useClassificationType,
     useIsTraining,
     useModelSettings,
+    useNumCategories,
     useTaskType,
     type ModelType,
 } from '@/app/store';
@@ -18,6 +21,7 @@ import { Field } from '@/app/components/ui/field';
 import Optimizer from './model/Optimizer';
 import LossFunction from './model/LossFunction';
 import Regularization from './model/Regularization';
+import ClassificationType from './model/ClassificationType';
 
 type OptionList = Array<{
     value: string;
@@ -42,8 +46,9 @@ const DEFAULT_CLASSIFICATION_MODEL_TYPES = [
 export default function ModelSection() {
     const data = useModelSettings();
     const taskType = useTaskType();
+    const classificationType = useClassificationType();
     const isTraining = useIsTraining();
-    const handleChange = updateModelSettings;
+    const numCategories = useNumCategories() ?? 0;
 
     const modelTypes =
         taskType === 'regression'
@@ -79,23 +84,32 @@ export default function ModelSection() {
                     </Select>
                 </Field>
 
+                {data.type === 'logistic' && (
+                    <ClassificationType
+                        classificationType={classificationType}
+                        disabled={isTraining}
+                        isMulticlass={numCategories > 2}
+                        onChange={(classificationType) => setClassificationType(classificationType)}
+                    />
+                )}
+
                 <LossFunction
                     taskType={taskType}
                     lossFunction={data.lossFunction}
                     disabled={isTraining}
-                    onChange={(lossFunction) => handleChange({ lossFunction })}
+                    onChange={(lossFunction) => updateModelSettings({ lossFunction })}
                 />
 
                 <Optimizer
                     optimizer={data.optimizer}
                     disabled={isTraining}
-                    onChange={(optimizer) => handleChange({ optimizer })}
+                    onChange={(optimizer) => updateModelSettings({ optimizer })}
                 />
 
                 <Regularization
                     regularization={data.regularization}
                     disabled={isTraining}
-                    onChange={(regularization) => handleChange({ regularization })}
+                    onChange={(regularization) => updateModelSettings({ regularization })}
                 />
             </CardContent>
         </Card>

@@ -5,6 +5,8 @@ export const useTaskType = () => useAppState((state) => state.taskType);
 
 export const useModelSettings = () => useAppState((state) => state.modelSettings);
 export const useDataSettings = () => useAppState((state) => state.dataSettings);
+export const useClassificationType = () =>
+    useAppState((state) => state.modelSettings.classificationType);
 
 export const useData = () => useAppState((state) => state.data);
 export const useHasData = () => useAppState((state) => state.data.trainInputFeatures.length > 0);

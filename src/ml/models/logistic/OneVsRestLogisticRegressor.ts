@@ -1,7 +1,7 @@
 import { concat, tidy, type Scalar, type Tensor2D } from '@tensorflow/tfjs';
-import { LogisticRegression } from './LogisticRegression';
+import { LogisticRegressor } from './LogisticRegressor';
 
-export class OneVsRestLogisticRegressor extends LogisticRegression {
+export class OneVsRestLogisticRegressor extends LogisticRegressor {
     async train(X: Tensor2D, y: Tensor2D): Promise<Tensor2D> {
         const asLogits = this.lossFunc.usesLogits?.();
 

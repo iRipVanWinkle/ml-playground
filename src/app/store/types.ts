@@ -1,9 +1,16 @@
 export type TaskType = 'regression' | 'classification';
 export type ModelType = 'linear' | 'logistic';
+export type ClassificationType = 'binary' | 'softmax' | 'ovr';
 export type NormalizationFunction = 'none' | 'zscore';
 export type TransformationFunction = 'sinusoid' | 'polynomial';
 
-export type LossFunction = 'mse' | 'mae' | 'binaryCrossentropy' | 'logitsBasedBinaryCrossentropy';
+export type LossFunction =
+    | 'mse'
+    | 'mae'
+    | 'binaryCrossentropy'
+    | 'categoricalCrossentropy'
+    | 'logitsBasedBinaryCrossentropy'
+    | 'logitsBasedCategoricalCrossentropy';
 
 export type Regularization = 'none' | 'l2';
 
@@ -57,6 +64,7 @@ export type RegularizationConfig = RegularizationNoneConfig | RegularizationLCon
 
 export type ModelSettings = {
     type: ModelType;
+    classificationType: ClassificationType;
     lossFunction: LossFunctionConfig;
     optimizer: OptimizerConfig;
     regularization: RegularizationConfig;

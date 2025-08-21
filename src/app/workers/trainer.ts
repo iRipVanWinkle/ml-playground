@@ -72,11 +72,15 @@ export class Trainer {
         const [model, optimizer] = createModel(modelSettings, dataSettings);
         this.model = model;
 
+        const isOneVsRest =
+            modelSettings.type === 'logistic' && modelSettings.classificationType === 'ovr';
         const thetasArray: Tensor2D[] = [];
 
-        const numThreads = 1;
+        let numThreads = 1;
+        if (isOneVsRest) {
+            numThreads = data.categories?.length ?? 1;
+        }
 
-        const lossArray: number[] = Array.from({ length: numThreads }, () => 0);
         const lossHistoryArray: number[][] = Array.from({ length: numThreads }, () => []);
         const iterations: number[] = Array.from({ length: numThreads }, () => 0);
 
@@ -92,7 +96,7 @@ export class Trainer {
             callbacks.onInfo(message);
         });
 
-        optimizer.on('callback', async ({ threadId, iteration, theta }) => {
+        optimizer.on('callback', async ({ threadId, iteration, theta, loss }) => {
             const index = threadId;
 
             if (thetasArray[index] === undefined) {
@@ -135,6 +139,7 @@ export class Trainer {
                 testAccuracyValue,
                 testLossValue,
                 trainLossValue,
+                lossValue,
             ] = await Promise.all([
                 getTensorArray(thetas instanceof Tensor ? thetas : undefined, []),
                 getTensorArray(yPredictions),
@@ -144,6 +149,7 @@ export class Trainer {
                 getTensorData(testAccuracy),
                 getTensorData(testLoss),
                 getTensorData(trainLoss),
+                getTensorData(loss),
             ]);
 
             // Dispose of all tensors to free up memory
@@ -160,9 +166,9 @@ export class Trainer {
                 thetas.dispose();
             }
 
-            lossArray[index] = trainLossValue!;
+            const currentLoss = isOneVsRest ? lossValue : trainLossValue;
 
-            lossHistoryArray[index].push(trainLossValue!);
+            lossHistoryArray[index].push(currentLoss!);
             iterations[index] = iteration + 1;
 
             const report = encode({

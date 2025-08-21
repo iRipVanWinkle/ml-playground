@@ -1,7 +1,7 @@
 import { tidy, type Scalar, type Tensor2D } from '@tensorflow/tfjs';
 import { BaseEstimator } from '../base/BaseEstimator';
 
-export class LogisticRegression extends BaseEstimator {
+export class LogisticRegressor extends BaseEstimator {
     async train(X: Tensor2D, y: Tensor2D): Promise<Tensor2D> {
         const asLogits = this.lossFunc.usesLogits?.();
 

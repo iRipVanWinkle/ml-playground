@@ -1,13 +1,13 @@
 import * as tf from '@tensorflow/tfjs';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { LogisticRegression } from './LogisticRegression';
+import { LogisticRegressor } from './LogisticRegressor';
 import { BinaryCrossentropyLogits, BinaryCrossentropy } from '../../losses';
 import { L2Regularization, NoRegularization } from '../../regularization';
 import { BatchGD } from '../../optimizers/batch';
 import type { LossFunction, Optimizer, Regularization } from '../../types';
 
-describe('LogisticRegression', () => {
-    let model: LogisticRegression;
+describe('LogisticRegressor', () => {
+    let model: LogisticRegressor;
 
     let lossFunc: LossFunction;
     let optimizer: Optimizer;
@@ -18,7 +18,7 @@ describe('LogisticRegression', () => {
         optimizer = new BatchGD({ learningRate: 0.01, maxIterations: 100 });
         regularization = new NoRegularization();
 
-        model = new LogisticRegression({ lossFunc, optimizer, regularization });
+        model = new LogisticRegressor({ lossFunc, optimizer, regularization });
     });
 
     afterEach(() => {
@@ -27,12 +27,12 @@ describe('LogisticRegression', () => {
 
     describe('constructor', () => {
         it('should create instance with default parameters', () => {
-            expect(model).toBeInstanceOf(LogisticRegression);
+            expect(model).toBeInstanceOf(LogisticRegressor);
             expect(model['lossFunc']).toBeInstanceOf(BinaryCrossentropy);
         });
 
         it('should create instance with custom parameters', () => {
-            const customModel = new LogisticRegression({
+            const customModel = new LogisticRegressor({
                 lossFunc: new BinaryCrossentropyLogits(),
                 optimizer,
                 regularization: new L2Regularization(0.01),
@@ -67,7 +67,7 @@ describe('LogisticRegression', () => {
         });
 
         it('should train with logits-based loss function', async () => {
-            const logitsModel = new LogisticRegression({ lossFunc, optimizer, regularization });
+            const logitsModel = new LogisticRegressor({ lossFunc, optimizer, regularization });
 
             const X = tf.tensor2d([
                 [1, 2],
@@ -221,7 +221,7 @@ describe('LogisticRegression', () => {
         });
 
         it('should throw error when model is not trained', () => {
-            const untrainedModel = new LogisticRegression({
+            const untrainedModel = new LogisticRegressor({
                 lossFunc: new BinaryCrossentropy(),
                 optimizer: new BatchGD({ learningRate: 0.01, maxIterations: 100 }),
                 regularization: new NoRegularization(),
@@ -326,7 +326,7 @@ describe('LogisticRegression', () => {
         });
 
         it('should throw error when model is not trained', () => {
-            const untrainedModel = new LogisticRegression({ lossFunc, optimizer, regularization });
+            const untrainedModel = new LogisticRegressor({ lossFunc, optimizer, regularization });
 
             const X = tf.tensor2d([[1, 2]]);
             const y = tf.tensor2d([[1]]);
@@ -402,7 +402,7 @@ describe('LogisticRegression', () => {
             ]);
             const y = tf.tensor2d([[0], [1], [1], [0]]); // XOR truth table
 
-            const highLearningRateModel = new LogisticRegression({
+            const highLearningRateModel = new LogisticRegressor({
                 lossFunc,
                 optimizer,
                 regularization,
@@ -436,13 +436,13 @@ describe('LogisticRegression', () => {
             ]);
             const y = tf.tensor2d([[1], [1], [0], [0]]);
 
-            const regularizedModel = new LogisticRegression({
+            const regularizedModel = new LogisticRegressor({
                 lossFunc,
                 optimizer,
                 regularization: new L2Regularization(0.1), // Add L2 regularization
             });
 
-            const noRegModel = new LogisticRegression({
+            const noRegModel = new LogisticRegressor({
                 lossFunc,
                 optimizer,
                 regularization: new NoRegularization(),

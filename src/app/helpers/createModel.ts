@@ -1,14 +1,18 @@
 import type { DataSettings, ModelSettings } from '@/app/store';
 import type { Model, TrainingEventListener } from '@/ml/types';
 import { BatchGD, MomentumGD, StochasticGD } from '@/ml/optimizers';
-import { LinearRegressor } from '@/ml/models';
+import {
+    LinearRegressor,
+    LogisticRegressor,
+    OneVsRestLogisticRegressor,
+    SoftmaxLogisticRegressor,
+} from '@/ml/models';
 import { ModelPipeline } from '@/ml/ModelPipeline';
 import { getLossFunc } from './getLossFunc';
 import { getLearningRate } from './getLearningRate';
 import { getNormalizeFunc } from './getNormalizeFunc';
 import { getRegularization } from './getRegularization';
 import { getTransformations } from './getTransformations';
-import { LogisticRegression } from '@/ml/models/logistic/LogisticRegression';
 
 export function createModel(
     modelSettings: ModelSettings,
@@ -52,7 +56,14 @@ export function createModel(
     let model;
     switch (modelType) {
         case 'logistic': {
-            model = new LogisticRegression({ lossFunc, optimizer, regularization });
+            const { classificationType } = modelSettings;
+            if (classificationType === 'softmax') {
+                model = new SoftmaxLogisticRegressor({ lossFunc, optimizer, regularization });
+            } else if (classificationType === 'ovr') {
+                model = new OneVsRestLogisticRegressor({ lossFunc, optimizer, regularization });
+            } else {
+                model = new LogisticRegressor({ lossFunc, optimizer, regularization });
+            }
             break;
         }
         case 'linear':
