@@ -12,21 +12,19 @@ import type { LossFunction } from '../../types';
 
 export class MeanAbsoluteError implements LossFunction {
     /**
-     * Mean Absolute Error (MAE) is a loss function used in regression tasks.
+     * Computes the Mean Absolute Error (MAE) loss function.
      *
-     * It measures the average of the absolute differences between predicted and actual values.
-     *
-     * Formula:
-     *     MAE = (1/n) * Σ |y_true - y_pred|
+     * The loss is computed as:
+     *   MAE = (1/n) * Σ |y_true - y_pred|
      *
      * where:
-     *     - n: number of samples
-     *     - y_true: true values (labels)
-     *     - y_pred: predicted values
+     *   - n: number of samples
+     *   - y_true: true values (labels) (shape: [n_samples, 1])
+     *   - y_pred: predicted values (shape: [n_samples, 1])
      *
-     * @param yTrue - The true values (labels).
-     * @param yPred - The predicted values.
-     * @returns Scalar
+     * @param yTrue - The true values (labels) (shape: [n_samples, 1]).
+     * @param yPred - The predicted values (shape: [n_samples, 1]).
+     * @returns Scalar representing the mean absolute error.
      */
     compute(yTrue: Tensor2D, yPred: Tensor2D): Scalar {
         return tidy(() => yPred.sub(yTrue).abs().mean());
@@ -43,13 +41,13 @@ export class MeanAbsoluteError implements LossFunction {
      *
      * where:
      *   - n: number of samples
-     *   - x: feature matrix
-     *   - y_true: true values (labels)
-     *   - y_pred: predicted values
+     *   - x: feature matrix (shape: [n_samples, n_features])
+     *   - y_true: true values (labels) (shape: [n_samples, 1])
+     *   - y_pred: predicted values (shape: [n_samples, 1])
      *
      * @param xTrue - The feature matrix (shape: [n_samples, n_features]).
      * @param yTrue - The true values (labels) (shape: [n_samples, 1]).
-     * @param yPred - The predicted values.
+     * @param yPred - The predicted values (shape: [n_samples, 1]).
      * @returns Tensor2D containing the gradients.
      */
     parameterGradient(xTrue: Tensor2D, yTrue: Tensor2D, yPred: Tensor2D): Tensor2D {
@@ -78,8 +76,12 @@ export class MeanAbsoluteError implements LossFunction {
      *   - If y_pred < y_true, gradient = -1
      *   - If y_pred == y_true, gradient = 0
      *
-     * @param yTrue - The true values (labels).
-     * @param yPred - The predicted values.
+     * where:
+     *   - y_true: true values (labels) (shape: [n_samples, 1])
+     *   - y_pred: predicted values (shape: [n_samples, 1])
+     *
+     * @param yTrue - The true values (labels) (shape: [n_samples, 1]).
+     * @param yPred - The predicted values (shape: [n_samples, 1]).
      * @returns Tensor2D containing the gradients.
      */
     predictionGradient(yTrue: Tensor2D, yPred: Tensor2D): Tensor2D {

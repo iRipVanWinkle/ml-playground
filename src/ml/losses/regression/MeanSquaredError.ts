@@ -25,23 +25,23 @@ export class MeanSquaredError implements LossFunction {
     }
 
     /**
-     * Computes the gradient of the Mean Squared Error (MSE) loss function with respect to the parameters.
+     * Computes the gradient of the Mean Squared Error (MSE) loss function.
      *
      * The gradients are computed as follows:
      *   - For the bias term:
      *       ∇MSE_bias = (1/n) * Σ (y_pred - y_true)
      *   - For the weights:
-     *       ∇MSE_weights = (1/n) * Σ [x * (y_pred - y_true)]
+     *       ∇MSE_weights = (1/n) * Σ (x * (y_pred - y_true))
      *
      * where:
      *   - n: number of samples
-     *   - x: feature matrix
-     *   - y_true: true values (labels)
-     *   - y_pred: predicted values
+     *   - x: feature matrix (shape: [n_samples, n_features])
+     *   - y_true: true values (labels) (shape: [n_samples, 1])
+     *   - y_pred: predicted values (shape: [n_samples, 1])
      *
      * @param xTrue - The feature matrix (shape: [n_samples, n_features]).
      * @param yTrue - The true values (labels) (shape: [n_samples, 1]).
-     * @param yPred - The predicted values.
+     * @param yPred - The predicted values (shape: [n_samples, 1]).
      * @returns Tensor2D containing the gradients.
      */
     parameterGradient(xTrue: Tensor2D, yTrue: Tensor2D, yPred: Tensor2D): Tensor2D {
@@ -65,12 +65,16 @@ export class MeanSquaredError implements LossFunction {
     /**
      * Computes the gradient of the Mean Squared Error (MSE) loss function with respect to the predictions.
      *
-     * The gradient is calculated as:
+     * The gradient is computed as follows:
      *   - grad = 2 * (y_pred - y_true)
      *
-     * @param yTrue - The true values (labels).
-     * @param yPred - The predicted values.
-     * @returns Tensor2D containing the gradients of the MSE loss with respect to the predictions.
+     * where:
+     *   - y_true: true values (labels) (shape: [n_samples, 1])
+     *   - y_pred: predicted values (shape: [n_samples, 1])
+     *
+     * @param yTrue - The true values (labels) (shape: [n_samples, 1]).
+     * @param yPred - The predicted values (shape: [n_samples, 1]).
+     * @returns Tensor2D containing the gradients.
      */
     predictionGradient(yTrue: Tensor2D, yPred: Tensor2D): Tensor2D {
         return yPred.sub(yTrue).mul(2);
