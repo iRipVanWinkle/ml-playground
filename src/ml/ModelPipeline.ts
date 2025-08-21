@@ -23,8 +23,10 @@ export class ModelPipeline implements Model {
     }
 
     async train(X: Tensor2D, y: Tensor2D): Promise<unknown> {
+        const usesOneHotLabels = this.model.usesOneHotLabels?.() ? 'one-hot' : undefined;
+
         X = this.prepareFeatures(X);
-        y = this.prepareLabels(y);
+        y = this.prepareLabels(y, usesOneHotLabels);
 
         const result = await this.model.train(X, y);
 

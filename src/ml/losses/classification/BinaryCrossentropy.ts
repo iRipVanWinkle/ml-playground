@@ -4,22 +4,20 @@ import { EPSILON } from '../../constants';
 
 export class BinaryCrossentropy implements LossFunction {
     /**
-     * Logistic loss (also known as log loss or binary cross-entropy loss) is a loss function used in binary classification tasks.
+     * Computes the binary cross-entropy (logistic) loss for binary classification.
      *
-     * It measures the performance of a classification model whose output is a probability value between 0 and 1.
-     *
-     * Formula:
-     *     L(y_true, y_pred) = - (y_true * log(y_pred) + (1 - y_true) * log(1 - y_pred))
+     * The loss is computed as:
+     *   L(y_true, y_pred) = - (y_true * log(y_pred) + (1 - y_true) * log(1 - y_pred))
      *
      * where:
-     *     - y_true: true binary labels (0 or 1)
-     *     - y_pred: predicted probabilities (between 0 and 1)
+     *   - y_true: true binary labels (0 or 1) (shape: [n_samples, 1])
+     *   - y_pred: predicted probabilities (between 0 and 1) (shape: [n_samples, 1])
      *
      * The loss is averaged over all samples.
      *
-     * @param yTrue - The true binary labels (0 or 1).
+     * @param yTrue - The true binary labels (shape: [n_samples, 1]).
      * @param yPred - The predicted probabilities (between 0 and 1).
-     * @returns Scalar representing the logistic loss.
+     * @returns Scalar representing the binary cross-entropy loss.
      */
     compute(yTrue: Tensor2D, yPred: Tensor2D): Scalar {
         return tidy(() => {
@@ -28,31 +26,27 @@ export class BinaryCrossentropy implements LossFunction {
 
             return neg(
                 yTrue.mul(log(yPredClipped)).add(one.sub(yTrue).mul(log(one.sub(yPredClipped)))),
-            )
-                .mean()
-                .asScalar();
+            ).mean();
         });
     }
 
     /**
      * Computes the gradient of the logistic loss (binary cross-entropy loss) function with respect to the model parameters.
      *
-     * The gradient is calculated as follows:
-     *   - grad = (y_pred - y_true) / (y_pred * (1 - y_pred))
-     *
-     * The gradients are computed as:
+     * The gradients are computed as follows:
      *   - For the bias term:
-     *       ∇L_bias = (1/n) * Σ [grad]
+     *       ∇BCE_bias = (1/n) * Σ (y_pred - y_true)
      *   - For the weights:
-     *       ∇L_weights = (1/n) * Σ [x * grad]
+     *       ∇BCE_weights = (1/n) * Σ (x * (y_pred - y_true))
      *
      * where:
      *   - n: number of samples
-     *   - x: feature matrix
-     *   - y_true: true binary labels (0 or 1)
-     *   - y_pred: predicted probabilities (between 0 and 1)
+     *   - x: feature matrix (shape: [n_samples, n_features])
+     *   - y_true: true binary labels (0 or 1) (shape: [n_samples, 1])
+     *   - y_pred: predicted probabilities (between 0 and 1) (shape: [n_samples, 1])
      *
-     * @param data - The DataModel containing features and labels.
+     * @param xTrue - The feature matrix (shape: [n_samples, n_features]).
+     * @param yTrue - The true binary labels (shape: [n_samples, 1]).
      * @param yPred - The predicted probabilities (between 0 and 1).
      * @returns Tensor2D containing the gradients.
      */
@@ -77,14 +71,18 @@ export class BinaryCrossentropy implements LossFunction {
     }
 
     /**
-     * Computes the gradient of the logistic loss (binary cross-entropy loss) function with respect to the predictions.
+     * Computes the gradient of the binary cross-entropy (logistic) loss function with respect to the predictions.
      *
-     * The gradient is calculated as:
-     *   - grad = (y_pred - y_true) / (y_pred * (1 - y_pred))
+     * The gradient is computed as:
+     *   grad = (y_pred - y_true) / (y_pred * (1 - y_pred))
      *
-     * @param yTrue - The true binary labels (0 or 1).
+     * where:
+     *   - y_true: true binary labels (0 or 1) (shape: [n_samples, 1])
+     *   - y_pred: predicted probabilities (between 0 and 1) (shape: [n_samples, 1])
+     *
+     * @param yTrue - The true binary labels (shape: [n_samples, 1]).
      * @param yPred - The predicted probabilities (between 0 and 1).
-     * @returns Tensor2D containing the gradients of the logistic loss with respect to the predictions.
+     * @returns Tensor2D containing the gradients of the binary cross-entropy loss with respect to the predictions.
      */
     predictionGradient(yTrue: Tensor2D, yPred: Tensor2D): Tensor2D {
         return tidy(() => {

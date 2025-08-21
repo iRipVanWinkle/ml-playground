@@ -1,44 +1,26 @@
 import { type Scalar, type Tensor2D, exp, log1p, maximum, scalar, tidy } from '@tensorflow/tfjs';
 import { BinaryCrossentropy } from './BinaryCrossentropy';
 
-/**
- * Binary Crossentropy with Logits is a numerically stable version of binary crossentropy loss.
- *
- * Unlike standard binary crossentropy, this formulation directly operates on logits (raw scores before applying sigmoid).
- *
- * Formula:
- *     L(y_true, logits) = max(logits, 0) - logits * y_true + log(1 + exp(-|logits|))
- *
- * Advantages:
- * - Avoids numerical instability caused by very small or very large probabilities.
- * - Eliminates the need for clipping probabilities.
- *
- * Usage:
- * - Suitable for binary classification tasks where logits are used instead of probabilities.
- * - Commonly used in neural networks with sigmoid activation.
- */
 export class BinaryCrossentropyLogits extends BinaryCrossentropy {
     usesLogits(): boolean {
         return true; // Indicates that this loss function uses logits directly
     }
 
     /**
-     * Computes the Binary Crossentropy with Logits loss.
+     * Computes the binary cross-entropy loss for binary classification (using logits).
      *
-     * This method calculates the loss directly from logits (raw scores before applying sigmoid),
-     * ensuring numerical stability and eliminating the need for clipping probabilities.
+     * The loss is computed as:
+     *   L(y_true, logits) = max(logits, 0) - logits * y_true + log(1 + exp(-|logits|))
      *
-     * Formula:
-     *     L(y_true, logits) = max(logits, 0) - logits * y_true + log(1 + exp(-|logits|))
+     * where:
+     *   - y_true: true binary labels (0 or 1) (shape: [n_samples, 1])
+     *   - logits: raw scores before sigmoid (shape: [n_samples, 1])
+     *   - log(1 + exp(-|logits|)) ensures numerical stability
+     * The loss is averaged over all samples.
      *
-     * Explanation:
-     * - `max(logits, 0)` handles positive logits.
-     * - `log(1 + exp(-|logits|))` ensures numerical stability for large or small values.
-     * - The loss is averaged over all samples to provide a single scalar value.
-     *
-     * @param yTrue - Tensor containing the true binary labels (0 or 1).
-     * @param yPred - Tensor containing the predicted logits (raw scores before sigmoid).
-     * @returns Scalar representing the Binary Crossentropy with Logits loss.
+     * @param yTrue - The true binary labels (shape: [n_samples, 1]).
+     * @param logits - The predicted logits (raw scores before sigmoid).
+     * @returns Scalar representing the binary cross-entropy loss with logits.
      */
     compute(yTrue: Tensor2D, logits: Tensor2D): Scalar {
         return tidy(() => {

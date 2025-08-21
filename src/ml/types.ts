@@ -202,4 +202,11 @@ export interface Model<T = unknown> extends TrainingControl {
      * @param withDependencies - Whether to dispose of dependent resources.
      */
     dispose(withDependencies?: boolean): void;
+
+    /**
+     * Checks if the model uses one-hot encoding for labels.
+     *
+     * @returns boolean indicating whether the model uses one-hot encoding.
+     */
+    usesOneHotLabels?(): boolean;
 }
