@@ -45,9 +45,7 @@ export class StochasticGD extends BaseOptimizer {
                 const gradient = gradientFunction(batchX, batchY, theta);
 
                 // Update theta using the gradient
-                const nextTheta = theta.sub(
-                    gradient.mul(this.learningRate.next(iteration)),
-                ) as Tensor2D;
+                const nextTheta = theta.sub(gradient.mul(alfa)) as Tensor2D;
 
                 // Update theta
                 theta.assign(nextTheta);
