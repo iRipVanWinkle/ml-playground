@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type EventCallback = (...args: any[]) => void;
 
-export class EventListener {
+export class EventEmitter {
     private events: Map<string, EventCallback[]> = new Map();
 
     /**

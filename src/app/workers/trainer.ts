@@ -1,12 +1,13 @@
 import { createModel } from '@/app/helpers/createModel';
 import { encode } from '@/app/helpers/float32Array';
 import { accuracy } from '@/ml/metrics';
-import type { Model } from '@/ml/types';
+import type { Model, TrainingState } from '@/ml/types';
 import type { State } from '@/app/store';
 import { Tensor, memory, tensor2d, type Tensor2D, concat, type Scalar } from '@tensorflow/tfjs';
 
 type TrainingCallbacks = {
     onReport: (report: Float32Array) => void;
+    onState: (state: TrainingState) => void;
     onInfo: (msg: string) => void;
     onError: (msg: string) => void;
     onFinished: () => void;
@@ -69,7 +70,7 @@ export class Trainer {
         const yTest = tensor2dIfPopulated(data.testTargetLabels);
         const XPredictions = tensor2dIfPopulated(data.predictionInputFeatures);
 
-        const [model, optimizer] = createModel(modelSettings, dataSettings);
+        const [model, eventEmitter] = createModel(modelSettings, dataSettings);
         this.model = model;
 
         const isOneVsRest =
@@ -84,19 +85,17 @@ export class Trainer {
         const lossHistoryArray: number[][] = Array.from({ length: numThreads }, () => []);
         const iterations: number[] = Array.from({ length: numThreads }, () => 0);
 
-        optimizer.on('error', (message) => {
-            console.error(message);
+        eventEmitter.on('error', (message) => {
             callbacks.onError(message);
 
             model.stop();
         });
 
-        optimizer.on('info', (message) => {
-            console.info(message);
-            callbacks.onInfo(message);
-        });
+        eventEmitter.on('info', callbacks.onInfo);
 
-        optimizer.on('callback', async ({ threadId, iteration, theta, loss }) => {
+        eventEmitter.on('state', callbacks.onState);
+
+        eventEmitter.on('callback', async ({ threadId, iteration, theta, loss }) => {
             const index = threadId;
 
             if (thetasArray[index] === undefined) {

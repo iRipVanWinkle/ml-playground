@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { toast } from 'sonner';
 import {
     resetTrainingReport,
+    setPendingAction,
     setTrainingReport,
     setTrainingStatus,
     useAppState,
@@ -28,7 +29,6 @@ export const useModel = () => {
     }, []);
 
     const train = async () => {
-        setTrainingStatus('training');
         resetTrainingReport();
 
         if (workerRef.current) return;
@@ -47,6 +47,28 @@ export const useModel = () => {
                         setTrainingReport(decode<TrainingReport>(new Float32Array(latest!)));
                         animationFrame = null;
                     });
+                }
+            }),
+        );
+
+        worker.addEventListener(
+            'message',
+            forType('state', (state) => {
+                setPendingAction(null);
+                switch (state) {
+                    case 'transforming':
+                        setTrainingStatus('preparing');
+                        break;
+                    case 'training':
+                        setTrainingStatus('training');
+                        break;
+                    case 'stopped':
+                        setTrainingStatus('init');
+                        break;
+                    case 'stepped-forward':
+                    case 'paused':
+                        setTrainingStatus('paused');
+                        break;
                 }
             }),
         );
@@ -92,27 +114,28 @@ export const useModel = () => {
     };
 
     const stop = () => {
-        setTrainingStatus('init');
+        setPendingAction('stop');
         workerRef.current?.postMessage({
             type: 'stop',
         });
     };
 
     const pause = () => {
-        setTrainingStatus('paused');
+        setPendingAction('pause');
         workerRef.current?.postMessage({
             type: 'pause',
         });
     };
 
     const step = () => {
+        setPendingAction('step');
         workerRef.current?.postMessage({
             type: 'step',
         });
     };
 
     const resume = () => {
-        setTrainingStatus('training');
+        setPendingAction('resume');
         workerRef.current?.postMessage({
             type: 'resume',
         });

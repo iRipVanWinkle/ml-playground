@@ -1,7 +1,6 @@
 import { Variable, variable, zeros, type Tensor2D, type Rank, tidy } from '@tensorflow/tfjs';
 import { LearningRate } from '../LearningRate';
-import type { OptimizeParameters, Optimizer } from '../types';
-import { EventListener } from '../helpers/EventListener';
+import type { OptimizeParameters, Optimizer, TrainingEventEmitter } from '../types';
 import { DEFAULT_TOLERANCE } from '../constants';
 
 /**
@@ -12,21 +11,21 @@ export type OptimizerOptions = Readonly<{
     maxIterations: number;
     tolerance?: number;
     withBias?: boolean;
+    eventEmitter?: TrainingEventEmitter;
 }>;
 
-export abstract class BaseOptimizer extends EventListener implements Optimizer {
+export abstract class BaseOptimizer implements Optimizer {
     protected learningRate: LearningRate;
     protected maxIterations: number;
     protected tolerance: number;
     protected withBias: boolean;
+    protected eventEmitter?: TrainingEventEmitter;
 
     private isPaused = false;
     private isStopped = false;
     private stepRequested = false;
 
     constructor(options: OptimizerOptions) {
-        super();
-
         this.learningRate =
             options.learningRate instanceof LearningRate
                 ? options.learningRate
@@ -34,9 +33,11 @@ export abstract class BaseOptimizer extends EventListener implements Optimizer {
         this.maxIterations = options.maxIterations;
         this.tolerance = options.tolerance ?? DEFAULT_TOLERANCE;
         this.withBias = options.withBias ?? true; // Default to true if not specified
+        this.eventEmitter = options.eventEmitter;
     }
 
     stop(): void {
+        this.isPaused = false;
         this.isStopped = true;
     }
 
@@ -74,5 +75,9 @@ export abstract class BaseOptimizer extends EventListener implements Optimizer {
         const featureCount = X.shape[1] + (this.withBias ? 1 : 0); // +1 for the bias term
 
         return tidy(() => variable(zeros([featureCount, 1])));
+    }
+
+    protected emit(event: string, ...args: unknown[]): Promise<void> | undefined {
+        return this.eventEmitter?.emit(event, ...args);
     }
 }

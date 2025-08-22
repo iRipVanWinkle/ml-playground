@@ -1,5 +1,6 @@
 import type { State } from '@/app/store';
 import { Trainer } from './trainer';
+import type { TrainingState } from '@/ml/types';
 
 interface WorkerMessage {
     type: string;
@@ -24,6 +25,7 @@ self.onmessage = (event: MessageEvent<WorkerMessage>) => {
         case 'train-step':
             trainer.train(payload as State, type === 'train-step', {
                 onReport: (report: Float32Array) => send('report', report.buffer, [report.buffer]),
+                onState: (state: TrainingState) => send('state', state),
                 onInfo: (msg: string) => send('info', msg),
                 onError: (msg: string) => send('error', msg),
                 onFinished: () => send('finished'),

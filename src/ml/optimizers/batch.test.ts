@@ -3,6 +3,7 @@ import { BatchGD } from './batch';
 import type { OptimizeParameters } from '../types';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { LearningRate } from '../LearningRate';
+import { EventEmitter } from '../helpers/EventEmitter';
 
 describe('BatchGD', () => {
     let optimizer: BatchGD;
@@ -198,9 +199,15 @@ describe('BatchGD', () => {
         it('should emit callback events during optimization', async () => {
             const X = tf.tensor2d([[1]]);
             const y = tf.tensor2d([[1]]);
+            const eventEmitter = new EventEmitter();
+            optimizer = new BatchGD({
+                learningRate: 0.05,
+                maxIterations: 200,
+                eventEmitter,
+            });
 
             const callbacks: unknown[] = [];
-            optimizer.on('callback', (data) => callbacks.push(data));
+            eventEmitter.on('callback', (data) => callbacks.push(data));
 
             await optimizer.optimize({
                 X,

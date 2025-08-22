@@ -19,4 +19,5 @@ export const useIsTraining = () =>
 export const useIsPaused = () => useAppState((state) => state.trainingState === 'paused');
 export const useIsInit = () => useAppState((state) => state.trainingState === 'init');
 export const useTrainingState = () => useAppState((state) => state.trainingState);
+export const usePendingAction = () => useAppState((state) => state.pendingAction);
 export const useTrainingReport = () => useAppState((state) => state.report);

@@ -14,7 +14,8 @@ export type LossFunction =
 
 export type Regularization = 'none' | 'l2';
 
-export type TrainingState = 'init' | 'training' | 'paused';
+export type TrainingState = 'init' | 'preparing' | 'training' | 'paused';
+export type PendingAction = 'pause' | 'stop' | 'step' | 'resume' | null;
 
 export type DataSettings = {
     normalization: NormalizationFunction;
@@ -100,5 +101,6 @@ export type State = {
     modelSettings: ModelSettings;
     data: DataState;
     trainingState: TrainingState;
+    pendingAction: PendingAction;
     report: TrainingReport;
 };

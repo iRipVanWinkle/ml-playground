@@ -1,5 +1,5 @@
 import type { Rank, Scalar, Tensor2D, Variable } from '@tensorflow/tfjs';
-import type { EventListener } from './helpers/EventListener';
+import type { EventEmitter } from './helpers/EventEmitter';
 
 export type Variable2D = Variable<Rank.R2>;
 
@@ -22,10 +22,12 @@ export type OptimizerCallbackParameters = Readonly<{
 }>;
 export type OptimizerCallback = (params: OptimizerCallbackParameters) => Promise<void> | void;
 
+export type TrainingState = 'transforming' | 'training' | 'paused' | 'stopped' | 'stepped-forward';
 /**
  * Interface for training event listeners.
  */
-export interface TrainingEventListener extends EventListener {
+export interface TrainingEventEmitter extends EventEmitter {
+    on(event: 'state', listener: (state: TrainingState) => void): void;
     on(event: 'callback', listener: (params: OptimizerCallbackParameters) => void): void;
     on(event: 'error', listener: (message: string) => void): void;
     on(event: 'info', listener: (message: string) => void): void;
@@ -149,7 +151,7 @@ export type OptimizeParameters = Readonly<{
 /**
  * Interface for optimizers.
  */
-export interface Optimizer extends TrainingEventListener, TrainingControl {
+export interface Optimizer extends TrainingControl {
     /**
      * Optimizes the model parameters.
      *

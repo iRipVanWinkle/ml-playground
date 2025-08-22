@@ -7,6 +7,7 @@ import type {
     TrainingReport,
     TrainingState,
     ClassificationType,
+    PendingAction,
 } from './types';
 import {
     calculateMinMax,
@@ -176,6 +177,10 @@ export const resetTrainingReport = () => {
 
 export const setTrainingStatus = (trainingState: TrainingState) => {
     useAppState.setState((prev: State) => ({ ...prev, trainingState }));
+};
+
+export const setPendingAction = (pendingAction: PendingAction) => {
+    useAppState.setState((prev: State) => ({ ...prev, pendingAction }));
 };
 
 export const setTrainingReport = (report: TrainingReport) => {

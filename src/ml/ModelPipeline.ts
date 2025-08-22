@@ -1,5 +1,5 @@
 import { concat, tidy, type Scalar, type Tensor2D } from '@tensorflow/tfjs-core/dist/base';
-import type { Model } from './types';
+import type { Model, TrainingEventEmitter } from './types';
 import type { NormalizatorFn } from './data-processing/normalization';
 import type { TransformationFn } from './data-processing/transformation';
 
@@ -12,21 +12,29 @@ export type FeatureTransformConfig = {
 
 export class ModelPipeline implements Model {
     private model: Model;
-
-    protected featureTransform?: FeatureTransformConfig;
+    private featureTransform?: FeatureTransformConfig;
+    private eventEmitter?: TrainingEventEmitter;
 
     private _cachedProcessedData: Map<number, Tensor2D> = new Map();
 
-    constructor(model: Model, featureTransform?: FeatureTransformConfig) {
+    constructor(
+        model: Model,
+        featureTransform?: FeatureTransformConfig,
+        eventEmitter?: TrainingEventEmitter,
+    ) {
         this.model = model;
         this.featureTransform = featureTransform;
+        this.eventEmitter = eventEmitter;
     }
 
     async train(X: Tensor2D, y: Tensor2D): Promise<unknown> {
-        const usesOneHotLabels = this.model.usesOneHotLabels?.() ? 'one-hot' : undefined;
+        this.eventEmitter?.emit('state', 'transforming');
 
+        const usesOneHotLabels = this.model.usesOneHotLabels?.() ? 'one-hot' : undefined;
         X = this.prepareFeatures(X);
         y = this.prepareLabels(y, usesOneHotLabels);
+
+        this.eventEmitter?.emit('state', 'training');
 
         const result = await this.model.train(X, y);
 
@@ -66,18 +74,22 @@ export class ModelPipeline implements Model {
 
     stop(): void {
         this.model.stop();
+        this.eventEmitter?.emit('state', 'stopped');
     }
 
     pause(): void {
         this.model.pause();
+        this.eventEmitter?.emit('state', 'paused');
     }
 
     resume(): void {
         this.model.resume();
+        this.eventEmitter?.emit('state', 'training');
     }
 
     step(): void {
         this.model.step();
+        this.eventEmitter?.emit('state', 'stepped-forward');
     }
 
     private prepareFeatures(features: Tensor2D): Tensor2D {

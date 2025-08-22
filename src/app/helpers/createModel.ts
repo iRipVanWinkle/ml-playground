@@ -1,5 +1,5 @@
 import type { DataSettings, ModelSettings } from '@/app/store';
-import type { Model, TrainingEventListener } from '@/ml/types';
+import type { Model, TrainingEventEmitter } from '@/ml/types';
 import { BatchGD, MomentumGD, StochasticGD } from '@/ml/optimizers';
 import {
     LinearRegressor,
@@ -8,6 +8,7 @@ import {
     SoftmaxLogisticRegressor,
 } from '@/ml/models';
 import { ModelPipeline } from '@/ml/ModelPipeline';
+import { EventEmitter } from '@/ml/helpers/EventEmitter';
 import { getLossFunc } from './getLossFunc';
 import { getLearningRate } from './getLearningRate';
 import { getNormalizeFunc } from './getNormalizeFunc';
@@ -17,7 +18,9 @@ import { getTransformations } from './getTransformations';
 export function createModel(
     modelSettings: ModelSettings,
     dataSettings: DataSettings,
-): [Model, TrainingEventListener] {
+): [Model, TrainingEventEmitter] {
+    const eventEmitter = new EventEmitter();
+
     const lossFunc = getLossFunc(modelSettings.lossFunction);
 
     const { type: modelType, optimizer: optimizerConfig } = modelSettings;
@@ -30,7 +33,7 @@ export function createModel(
         scheduler ? schedulerConfig : undefined,
     );
 
-    const defaultConfig = { learningRate, maxIterations, tolerance };
+    const defaultConfig = { learningRate, maxIterations, tolerance, eventEmitter };
 
     // Select optimizer
     let optimizer;
@@ -83,7 +86,7 @@ export function createModel(
         transformations,
     };
 
-    const pipeline = new ModelPipeline(model, featureTransform);
+    const pipeline = new ModelPipeline(model, featureTransform, eventEmitter);
 
-    return [pipeline, optimizer];
+    return [pipeline, eventEmitter];
 }
