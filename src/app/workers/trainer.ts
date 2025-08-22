@@ -85,15 +85,28 @@ export class Trainer {
         const lossHistoryArray: number[][] = Array.from({ length: numThreads }, () => []);
         const iterations: number[] = Array.from({ length: numThreads }, () => 0);
 
+        eventEmitter.on('info', callbacks.onInfo);
+
         eventEmitter.on('error', (message) => {
             callbacks.onError(message);
 
             model.stop();
         });
 
-        eventEmitter.on('info', callbacks.onInfo);
+        eventEmitter.on('state', (state) => {
+            callbacks.onState(state);
 
-        eventEmitter.on('state', callbacks.onState);
+            // Prepare test data (for caching)
+            if (state === 'transforming' && XTest && yTest) {
+                model.prepareFeatures(XTest);
+                model.prepareLabels(yTest);
+            }
+
+            // Prepare prediction data (for caching)
+            if (state === 'transforming' && XPredictions) {
+                model.prepareFeatures(XPredictions);
+            }
+        });
 
         eventEmitter.on('callback', async ({ threadId, iteration, theta, loss }) => {
             const index = threadId;

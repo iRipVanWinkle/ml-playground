@@ -55,8 +55,9 @@ export class ModelPipeline implements Model {
     }
 
     evaluate(X: Tensor2D, y: Tensor2D, theta?: unknown): [Tensor2D, Tensor2D, Scalar] {
+        const usesOneHotLabels = this.model.usesOneHotLabels?.() ? 'one-hot' : undefined;
         X = this.prepareFeatures(X);
-        y = this.prepareLabels(y);
+        y = this.prepareLabels(y, usesOneHotLabels);
 
         const result = this.model.evaluate?.(X, y, theta);
 
@@ -92,7 +93,7 @@ export class ModelPipeline implements Model {
         this.eventEmitter?.emit('state', 'stepped-forward');
     }
 
-    private prepareFeatures(features: Tensor2D): Tensor2D {
+    prepareFeatures(features: Tensor2D): Tensor2D {
         const options = this.featureTransform;
         const transformations = options?.transformations ?? [];
         const normalizeFunction = options?.normalizeFunction ?? ((x) => x);
@@ -120,7 +121,7 @@ export class ModelPipeline implements Model {
         return this._cachedProcessedData.get(features.id)!.clone() as Tensor2D;
     }
 
-    private prepareLabels(labels: Tensor2D, convert?: 'one-hot'): Tensor2D {
+    prepareLabels(labels: Tensor2D, convert?: 'one-hot'): Tensor2D {
         if (!this._cachedProcessedData.has(labels.id)) {
             const processedLabel = tidy(() => {
                 let processedLabel;

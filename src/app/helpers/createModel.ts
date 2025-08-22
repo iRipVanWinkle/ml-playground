@@ -1,5 +1,5 @@
 import type { DataSettings, ModelSettings } from '@/app/store';
-import type { Model, TrainingEventEmitter } from '@/ml/types';
+import type { TrainingEventEmitter } from '@/ml/types';
 import { BatchGD, MomentumGD, StochasticGD } from '@/ml/optimizers';
 import {
     LinearRegressor,
@@ -18,7 +18,7 @@ import { getTransformations } from './getTransformations';
 export function createModel(
     modelSettings: ModelSettings,
     dataSettings: DataSettings,
-): [Model, TrainingEventEmitter] {
+): [ModelPipeline, TrainingEventEmitter] {
     const eventEmitter = new EventEmitter();
 
     const lossFunc = getLossFunc(modelSettings.lossFunction);
