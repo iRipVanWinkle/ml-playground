@@ -51,7 +51,7 @@ export class StochasticGD extends BaseOptimizer {
                 theta.assign(nextTheta);
 
                 // Compute the loss
-                const loss = lossFunction(X, y, theta);
+                const loss = lossFunction(batchX, batchY, theta);
 
                 return loss;
             });
