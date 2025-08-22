@@ -1,15 +1,14 @@
 import {
     concat,
     randomUniform,
-    Rank,
     tidy,
-    Variable,
     variable,
     zeros,
     type Scalar,
     type Tensor2D,
 } from '@tensorflow/tfjs';
 import { LogisticRegressor } from './LogisticRegressor';
+import type { Variable2D } from '@/ml/types';
 
 export class SoftmaxLogisticRegressor extends LogisticRegressor {
     private _initTheta: Tensor2D | null = null; // for testing purposes
@@ -66,7 +65,7 @@ export class SoftmaxLogisticRegressor extends LogisticRegressor {
                 return concat([bias, weights], 0);
             });
 
-            return variable(theta) as Variable<Rank.R2>;
+            return variable(theta) as Variable2D;
         };
 
         const theta = await this.optimizer.optimize({
