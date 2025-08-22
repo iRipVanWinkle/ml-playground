@@ -1,5 +1,6 @@
 import { concat, scalar, tidy, zeros, type Scalar, type Tensor2D } from '@tensorflow/tfjs';
 import type { Regularization } from '../types';
+import { assert } from '../utils';
 
 export class L2Regularization implements Regularization {
     private lambda: Scalar;
@@ -7,6 +8,8 @@ export class L2Regularization implements Regularization {
     private zeros2D = zeros([1, 1]); // Used for bias term gradient
 
     constructor(lambda = 0) {
+        assert(lambda >= 0, 'Regularization strength (lambda) must be non-negative.');
+
         this.lambda = scalar(lambda);
         this.lambda2D = this.lambda.reshape([1, 1]); // Reshape for broadcasting
     }

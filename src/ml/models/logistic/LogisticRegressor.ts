@@ -1,5 +1,6 @@
 import { tidy, type Scalar, type Tensor2D } from '@tensorflow/tfjs';
 import { BaseEstimator } from '../base/BaseEstimator';
+import { assertThetaTrained } from '../../utils';
 
 export class LogisticRegressor extends BaseEstimator {
     async train(X: Tensor2D, y: Tensor2D): Promise<Tensor2D> {
@@ -49,26 +50,19 @@ export class LogisticRegressor extends BaseEstimator {
 
         const result = tidy(() => {
             const probability = this.hypothesis(X, theta ?? this.theta!);
-            const predictions = this.probabilityToClassIndex(probability);
-
-            return predictions as Tensor2D;
+            // Convert probabilities to class indices (0 or 1)
+            return this.probabilityToClassIndex(probability) as Tensor2D;
         });
-
-        // Dispose of the data to free memory
-        X.dispose();
 
         return result;
     }
 
     evaluate(X: Tensor2D, y: Tensor2D, theta?: Tensor2D): [Tensor2D, Tensor2D, Scalar] {
-        if (!(theta ?? this.theta)) {
-            throw new Error('Model has not been trained yet. Please call train() first.');
-        }
+        assertThetaTrained(theta ?? this.theta);
 
         const result = tidy(() => {
             const probability = this.hypothesis(X, theta ?? this.theta!);
 
-            // Compute default loss using the loss function
             const loss = this.lossFunc.compute(y, probability);
 
             const yPred = this.probabilityToClassIndex(probability);
@@ -81,7 +75,7 @@ export class LogisticRegressor extends BaseEstimator {
 
     protected hypothesis(features: Tensor2D, theta: Tensor2D, asLogits = false): Tensor2D {
         const sigmoid = (z: Tensor2D): Tensor2D => {
-            return z.sigmoid(); //  1 / (1 + np.exp(-z))
+            return z.sigmoid(); // 1 / (1 + exp(-z)), standard logistic function
         };
 
         return tidy(() => {
@@ -91,7 +85,7 @@ export class LogisticRegressor extends BaseEstimator {
     }
 
     protected probabilityToClassIndex(probability: Tensor2D): Tensor2D {
-        // Compare probabilities to 0.5 and set to 1 if >= 0.5, otherwise 0
+        // Threshold at 0.5: returns 1 if probability >= 0.5, else 0
         return tidy(() => probability.greaterEqual(0.5).cast('float32'));
     }
 }

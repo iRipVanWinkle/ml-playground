@@ -1,5 +1,5 @@
 import type { Rank, Scalar, Tensor2D, Variable } from '@tensorflow/tfjs';
-import type { EventEmitter } from './helpers/EventEmitter';
+import type { EventEmitter } from './events/EventEmitter';
 
 export type Variable2D = Variable<Rank.R2>;
 
@@ -31,6 +31,11 @@ export interface TrainingEventEmitter extends EventEmitter {
     on(event: 'callback', listener: (params: OptimizerCallbackParameters) => void): void;
     on(event: 'error', listener: (message: string) => void): void;
     on(event: 'info', listener: (message: string) => void): void;
+
+    emit(event: 'state', state: TrainingState): Promise<void>;
+    emit(event: 'callback', params: OptimizerCallbackParameters): Promise<void>;
+    emit(event: 'error', message: string): Promise<void>;
+    emit(event: 'info', message: string): Promise<void>;
 }
 
 /**

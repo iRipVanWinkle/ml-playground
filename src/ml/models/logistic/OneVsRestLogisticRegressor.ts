@@ -1,5 +1,6 @@
 import { concat, tidy, type Scalar, type Tensor2D } from '@tensorflow/tfjs';
 import { LogisticRegressor } from './LogisticRegressor';
+import { assertThetaTrained } from '../../utils';
 
 export class OneVsRestLogisticRegressor extends LogisticRegressor {
     async train(X: Tensor2D, y: Tensor2D): Promise<Tensor2D> {
@@ -62,9 +63,7 @@ export class OneVsRestLogisticRegressor extends LogisticRegressor {
     }
 
     predict(X: Tensor2D, theta?: Tensor2D): Tensor2D {
-        if (!(theta ?? this.theta)) {
-            throw new Error('Model has not been trained yet. Please call train() first.');
-        }
+        assertThetaTrained(theta ?? this.theta);
 
         const result = tidy(() => {
             // Compute probabilities for each class
@@ -77,9 +76,7 @@ export class OneVsRestLogisticRegressor extends LogisticRegressor {
     }
 
     evaluate(X: Tensor2D, y: Tensor2D, theta?: Tensor2D): [Tensor2D, Tensor2D, Scalar] {
-        if (!(theta ?? this.theta)) {
-            throw new Error('Model has not been trained yet. Please call train() first.');
-        }
+        assertThetaTrained(theta ?? this.theta);
 
         const result = tidy(() => {
             const probability = this.hypothesis(X, theta ?? this.theta!);

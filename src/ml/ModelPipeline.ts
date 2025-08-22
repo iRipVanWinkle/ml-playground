@@ -30,9 +30,8 @@ export class ModelPipeline implements Model {
     async train(X: Tensor2D, y: Tensor2D): Promise<unknown> {
         this.eventEmitter?.emit('state', 'transforming');
 
-        const usesOneHotLabels = this.model.usesOneHotLabels?.() ? 'one-hot' : undefined;
         X = this.prepareFeatures(X);
-        y = this.prepareLabels(y, usesOneHotLabels);
+        y = this.prepareLabels(y);
 
         this.eventEmitter?.emit('state', 'training');
 
@@ -55,11 +54,10 @@ export class ModelPipeline implements Model {
     }
 
     evaluate(X: Tensor2D, y: Tensor2D, theta?: unknown): [Tensor2D, Tensor2D, Scalar] {
-        const usesOneHotLabels = this.model.usesOneHotLabels?.() ? 'one-hot' : undefined;
         X = this.prepareFeatures(X);
-        y = this.prepareLabels(y, usesOneHotLabels);
+        y = this.prepareLabels(y);
 
-        const result = this.model.evaluate?.(X, y, theta);
+        const result = this.model.evaluate(X, y, theta);
 
         X.dispose();
         y.dispose();
@@ -118,17 +116,21 @@ export class ModelPipeline implements Model {
             this._cachedProcessedData.set(features.id, processedFeatures);
         }
 
-        return this._cachedProcessedData.get(features.id)!.clone() as Tensor2D;
+        // Clone to ensure downstream code does not mutate or dispose the original labels tensor
+        return this._cachedProcessedData.get(features.id)!.clone();
     }
 
-    prepareLabels(labels: Tensor2D, convert?: 'one-hot'): Tensor2D {
+    prepareLabels(labels: Tensor2D): Tensor2D {
+        const usesOneHotLabels = this.model.usesOneHotLabels?.();
+
         if (!this._cachedProcessedData.has(labels.id)) {
             const processedLabel = tidy(() => {
                 let processedLabel;
-                if (convert === 'one-hot') {
+                if (usesOneHotLabels) {
                     const numClasses = labels.unique().values.shape[0];
                     processedLabel = labels.flatten().toInt().oneHot(numClasses, 1, 0) as Tensor2D;
                 } else {
+                    // Clone to ensure the model manages tensor disposal
                     processedLabel = labels.clone();
                 }
 
@@ -138,6 +140,7 @@ export class ModelPipeline implements Model {
             this._cachedProcessedData.set(labels.id, processedLabel);
         }
 
-        return this._cachedProcessedData.get(labels.id)!.clone() as Tensor2D;
+        // Clone to ensure downstream code does not mutate or dispose the original labels tensor
+        return this._cachedProcessedData.get(labels.id)!.clone();
     }
 }

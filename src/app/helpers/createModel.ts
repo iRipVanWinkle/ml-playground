@@ -8,7 +8,7 @@ import {
     SoftmaxLogisticRegressor,
 } from '@/ml/models';
 import { ModelPipeline } from '@/ml/ModelPipeline';
-import { EventEmitter } from '@/ml/helpers/EventEmitter';
+import { EventEmitter } from '@/ml/events/EventEmitter';
 import { getLossFunc } from './getLossFunc';
 import { getLearningRate } from './getLearningRate';
 import { getNormalizeFunc } from './getNormalizeFunc';

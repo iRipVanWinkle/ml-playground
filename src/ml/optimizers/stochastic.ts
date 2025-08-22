@@ -1,6 +1,7 @@
-import { tensor1d, tidy, util, type Tensor2D } from '@tensorflow/tfjs';
+import { tensor1d, tidy, type Tensor2D } from '@tensorflow/tfjs';
 import { BaseOptimizer, type OptimizerOptions } from './base';
 import type { OptimizeParameters } from '../types';
+import { assert, range } from '../utils';
 
 type StochasticOptimizerOptions = OptimizerOptions & {
     batchSize?: number;
@@ -10,11 +11,17 @@ const DEFAULT_BATCH_SIZE = 1;
 
 export class StochasticGD extends BaseOptimizer {
     private batchSize: number;
+    private batchIndexPool: number[] = [];
+    private batchPoolPointer: number = 0;
 
     constructor(options: StochasticOptimizerOptions) {
         super(options);
 
-        this.batchSize = options.batchSize ?? DEFAULT_BATCH_SIZE;
+        const { batchSize = DEFAULT_BATCH_SIZE } = options;
+
+        assert(batchSize > 0, 'Batch size must be positive');
+
+        this.batchSize = batchSize;
     }
     /**
      * Optimizes the model parameters using Stochastic Gradient Descent.
@@ -63,22 +70,12 @@ export class StochasticGD extends BaseOptimizer {
             batchX.dispose();
             batchY.dispose();
 
-            await this.emit('callback', { threadId, iteration, theta, loss: lossValue, alfa });
+            await this.callback({ threadId, iteration, theta, loss: lossValue, alfa });
 
             // Check if the loss is NaN
             if (isNaN(lossValue)) {
-                this.emit(
-                    'error',
+                this.error(
                     `[${threadId}] Loss is NaN at iteration ${iteration}. Stopping optimization.`,
-                );
-                break;
-            }
-
-            // If the loss is already below the tolerance, we can break early
-            if (lossValue < this.tolerance) {
-                this.emit(
-                    'info',
-                    `[${threadId}] Early stopping at iteration ${iteration} with loss: ${lossValue}`,
                 );
                 break;
             }
@@ -91,19 +88,38 @@ export class StochasticGD extends BaseOptimizer {
         const batchSize = this.batchSize;
         const sampleCount = X.shape[0];
 
-        if (batchSize > sampleCount) {
-            throw new Error('Batch size cannot be larger than the number of samples.');
+        assert(batchSize <= sampleCount, 'Batch size cannot be larger than the number of samples.');
+
+        // Refill and reshuffle when pointer exceeds pool
+        if (this.batchPoolPointer + batchSize > sampleCount || this.batchIndexPool.length === 0) {
+            this.refillBatchPool(sampleCount);
         }
 
-        const indices = tensor1d(
-            Array.from(util.createShuffledIndices(sampleCount).slice(0, batchSize)),
-            'int32',
+        const indicesSlice = this.batchIndexPool.slice(
+            this.batchPoolPointer,
+            this.batchPoolPointer + batchSize,
         );
+        this.batchPoolPointer += batchSize;
+
+        const indices = tensor1d(indicesSlice, 'int32');
+
         const batchX = X.gather(indices);
         const batchY = y.gather(indices);
 
-        indices.dispose(); // Dispose of indices to free memory
+        indices.dispose();
 
         return [batchX, batchY];
+    }
+
+    private refillBatchPool(sampleCount: number): void {
+        this.batchIndexPool = range(sampleCount);
+        for (let i = sampleCount - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [this.batchIndexPool[i], this.batchIndexPool[j]] = [
+                this.batchIndexPool[j],
+                this.batchIndexPool[i],
+            ];
+        }
+        this.batchPoolPointer = 0;
     }
 }

@@ -1,6 +1,7 @@
 import { tidy, variable, type Tensor2D } from '@tensorflow/tfjs';
 import { BaseOptimizer, type OptimizerOptions } from './base';
 import type { OptimizeParameters } from '../types';
+import { assert } from '../utils';
 
 type MomentumOptimizerOptions = OptimizerOptions & {
     beta?: number;
@@ -19,11 +20,14 @@ export class MomentumGD extends BaseOptimizer {
     constructor(options: MomentumOptimizerOptions) {
         super(options);
 
-        this.beta = options.beta ?? DEFAULT_BETA;
+        const { beta = DEFAULT_BETA } = options;
 
-        if (this.beta <= 0 || this.beta >= 1) {
-            throw new Error(`Invalid beta value: ${this.beta}. It should be in the range (0, 1).`);
-        }
+        assert(
+            beta > 0 && beta < 1,
+            `Invalid beta value: ${beta}. It should be in the range (0, 1).`,
+        );
+
+        this.beta = beta;
     }
     /**
      * Optimizes the parameters using Momentum Gradient Descent.
@@ -71,12 +75,11 @@ export class MomentumGD extends BaseOptimizer {
 
             loss.dispose(); // Dispose loss to free memory
 
-            await this.emit('callback', { threadId, iteration, theta, loss: lossValue, alfa });
+            await this.callback({ threadId, iteration, theta, loss: lossValue, alfa });
 
             // Check if the loss is NaN
             if (isNaN(lossValue)) {
-                this.emit(
-                    'error',
+                this.error(
                     `[${threadId}] Loss is NaN at iteration ${iteration}. Stopping optimization.`,
                 );
                 break;
@@ -84,8 +87,7 @@ export class MomentumGD extends BaseOptimizer {
 
             // If the loss is already below the tolerance, we can break early
             if (lossValue < this.tolerance) {
-                this.emit(
-                    'info',
+                this.info(
                     `[${threadId}] Early stopping at iteration ${iteration} with loss: ${lossValue.toFixed(4)}`,
                 );
                 break;

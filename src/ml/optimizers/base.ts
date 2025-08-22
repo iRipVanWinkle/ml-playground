@@ -1,7 +1,14 @@
 import { variable, zeros, type Tensor2D, tidy } from '@tensorflow/tfjs';
 import { LearningRate } from '../LearningRate';
-import type { OptimizeParameters, Optimizer, TrainingEventEmitter, Variable2D } from '../types';
+import type {
+    OptimizeParameters,
+    Optimizer,
+    OptimizerCallbackParameters,
+    TrainingEventEmitter,
+    Variable2D,
+} from '../types';
 import { DEFAULT_TOLERANCE } from '../constants';
+import { assert } from '../utils';
 
 /**
  * Options for the optimizer.
@@ -26,14 +33,26 @@ export abstract class BaseOptimizer implements Optimizer {
     private stepRequested = false;
 
     constructor(options: OptimizerOptions) {
+        const {
+            learningRate,
+            maxIterations,
+            eventEmitter,
+            tolerance = DEFAULT_TOLERANCE,
+            withBias = true,
+        } = options;
+
+        assert(maxIterations > 0, 'Max iterations must be positive');
+        assert(tolerance > 0, 'Tolerance must be positive');
+
         this.learningRate =
-            options.learningRate instanceof LearningRate
-                ? options.learningRate
-                : new LearningRate(options.learningRate, 0, 0);
-        this.maxIterations = options.maxIterations;
-        this.tolerance = options.tolerance ?? DEFAULT_TOLERANCE;
-        this.withBias = options.withBias ?? true; // Default to true if not specified
-        this.eventEmitter = options.eventEmitter;
+            learningRate instanceof LearningRate
+                ? learningRate
+                : new LearningRate(learningRate, 0, 0);
+
+        this.maxIterations = maxIterations;
+        this.tolerance = tolerance;
+        this.withBias = withBias;
+        this.eventEmitter = eventEmitter;
     }
 
     stop(): void {
@@ -77,7 +96,15 @@ export abstract class BaseOptimizer implements Optimizer {
         return tidy(() => variable(zeros([featureCount, 1])));
     }
 
-    protected emit(event: string, ...args: unknown[]): Promise<void> | undefined {
-        return this.eventEmitter?.emit(event, ...args);
+    protected info(message: string): void {
+        this.eventEmitter?.emit('info', message);
+    }
+
+    protected error(message: string): void {
+        this.eventEmitter?.emit('error', message);
+    }
+
+    protected callback(params: OptimizerCallbackParameters): Promise<void> | undefined {
+        return this.eventEmitter?.emit('callback', params);
     }
 }

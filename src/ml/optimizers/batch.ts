@@ -35,12 +35,11 @@ export class BatchGD extends BaseOptimizer {
 
             loss.dispose(); // Dispose loss to free memory
 
-            await this.emit('callback', { threadId, iteration, theta, loss: lossValue, alfa });
+            await this.callback({ threadId, iteration, theta, loss: lossValue, alfa });
 
             // Check if the loss is NaN
             if (isNaN(lossValue)) {
-                this.emit(
-                    'error',
+                this.error(
                     `[${threadId}] Loss is NaN at iteration ${iteration}. Stopping optimization.`,
                 );
                 break;
@@ -48,8 +47,7 @@ export class BatchGD extends BaseOptimizer {
 
             // If the loss is already below the tolerance, we can break early
             if (lossValue < this.tolerance) {
-                this.emit(
-                    'info',
+                this.info(
                     `[${threadId}] Early stopping at iteration ${iteration} with loss: ${lossValue}`,
                 );
                 break;

@@ -3,7 +3,7 @@ import { BatchGD } from './batch';
 import type { OptimizeParameters } from '../types';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { LearningRate } from '../LearningRate';
-import { EventEmitter } from '../helpers/EventEmitter';
+import { EventEmitter } from '../events/EventEmitter';
 
 describe('BatchGD', () => {
     let optimizer: BatchGD;
