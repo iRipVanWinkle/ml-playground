@@ -16,8 +16,8 @@ export type OptimizerCallbackParameters = Readonly<{
     threadId: number;
     iteration: number;
     alfa: number;
+    loss: number;
     theta: Tensor2D;
-    loss: Scalar;
     threadName?: string;
 }>;
 export type OptimizerCallback = (params: OptimizerCallbackParameters) => Promise<void> | void;

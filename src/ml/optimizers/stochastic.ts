@@ -56,14 +56,14 @@ export class StochasticGD extends BaseOptimizer {
                 return loss;
             });
 
-            await this.emit('callback', { threadId, iteration, theta, loss, alfa });
-
             const lossValue = (await loss.data())[0];
 
             // Dispose loss to free memory
             loss.dispose();
             batchX.dispose();
             batchY.dispose();
+
+            await this.emit('callback', { threadId, iteration, theta, loss: lossValue, alfa });
 
             // Check if the loss is NaN
             if (isNaN(lossValue)) {

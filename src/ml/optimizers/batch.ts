@@ -31,11 +31,11 @@ export class BatchGD extends BaseOptimizer {
                 return loss;
             });
 
-            await this.emit('callback', { threadId, iteration, theta, loss, alfa });
-
             const lossValue = (await loss.data())[0];
 
             loss.dispose(); // Dispose loss to free memory
+
+            await this.emit('callback', { threadId, iteration, theta, loss: lossValue, alfa });
 
             // Check if the loss is NaN
             if (isNaN(lossValue)) {

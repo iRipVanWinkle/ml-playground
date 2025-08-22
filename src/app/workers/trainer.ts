@@ -138,7 +138,6 @@ export class Trainer {
                 testAccuracyValue,
                 testLossValue,
                 trainLossValue,
-                lossValue,
             ] = await Promise.all([
                 getTensorArray(thetas instanceof Tensor ? thetas : undefined, []),
                 getTensorArray(yPredictions),
@@ -148,7 +147,6 @@ export class Trainer {
                 getTensorData(testAccuracy),
                 getTensorData(testLoss),
                 getTensorData(trainLoss),
-                getTensorData(loss),
             ]);
 
             // Dispose of all tensors to free up memory
@@ -165,7 +163,7 @@ export class Trainer {
                 thetas.dispose();
             }
 
-            const currentLoss = isOneVsRest ? lossValue : trainLossValue;
+            const currentLoss = isOneVsRest ? loss : trainLossValue;
 
             lossHistoryArray[index].push(currentLoss!);
             iterations[index] = iteration + 1;
