@@ -53,7 +53,7 @@ const PREPERED_REGRESSION_DATASETS = [
         label: 'World happiness report 2017 (Happiness.Score, Economy..GDP.per.Capita., Freedom)',
     },
     {
-        value: './data/non-linear-regression-x-y.csv',
+        value: './data/non-linear-regression.csv',
         label: 'Non linear regression',
     },
     {
@@ -78,6 +78,22 @@ const PREPERED_CLASSIFICATION_DATASETS = [
     {
         value: './data/microchips-tests.csv',
         label: 'Microchips Tests (non linear)',
+    },
+    {
+        value: './data/circle-classification.csv',
+        label: 'Circle classification',
+    },
+    {
+        value: './data/cluster-2d.csv',
+        label: 'Cluster 2D',
+    },
+    {
+        value: './data/spiral.csv',
+        label: 'Spiral',
+    },
+    {
+        value: './data/XOR.csv',
+        label: 'XOR',
     },
 ];
 
