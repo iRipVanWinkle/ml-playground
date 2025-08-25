@@ -14,6 +14,7 @@ import { getLearningRate } from './getLearningRate';
 import { getNormalizeFunc } from './getNormalizeFunc';
 import { getRegularization } from './getRegularization';
 import { getTransformations } from './getTransformations';
+import { getThetaInitializer } from './getThetaInitializer';
 
 export function createModel(
     modelSettings: ModelSettings,
@@ -56,22 +57,39 @@ export function createModel(
     // Select regularization
     const regularization = getRegularization(modelSettings.regularization);
 
+    const thetaInitializer = getThetaInitializer(modelSettings.thetaInitialization);
+
     let model;
     switch (modelType) {
         case 'logistic': {
             const { classificationType } = modelSettings;
             if (classificationType === 'softmax') {
-                model = new SoftmaxLogisticRegressor({ lossFunc, optimizer, regularization });
+                model = new SoftmaxLogisticRegressor({
+                    lossFunc,
+                    optimizer,
+                    regularization,
+                    thetaInitializer,
+                });
             } else if (classificationType === 'ovr') {
-                model = new OneVsRestLogisticRegressor({ lossFunc, optimizer, regularization });
+                model = new OneVsRestLogisticRegressor({
+                    lossFunc,
+                    optimizer,
+                    regularization,
+                    thetaInitializer,
+                });
             } else {
-                model = new LogisticRegressor({ lossFunc, optimizer, regularization });
+                model = new LogisticRegressor({
+                    lossFunc,
+                    optimizer,
+                    regularization,
+                    thetaInitializer,
+                });
             }
             break;
         }
         case 'linear':
         default:
-            model = new LinearRegressor({ lossFunc, optimizer, regularization });
+            model = new LinearRegressor({ lossFunc, optimizer, regularization, thetaInitializer });
             break;
     }
 

@@ -22,6 +22,9 @@ export const initState: State = {
         regularization: {
             type: 'none',
         },
+        thetaInitialization: {
+            type: 'zeros',
+        },
     },
     data: {
         trainInputFeatures: [],

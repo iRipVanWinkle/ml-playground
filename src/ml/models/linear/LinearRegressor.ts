@@ -4,6 +4,10 @@ import { assertThetaTrained } from '../../utils';
 
 export class LinearRegressor extends BaseEstimator {
     async train(X: Tensor2D, y: Tensor2D): Promise<Tensor2D> {
+        const numFeatures = X.shape[1];
+
+        const initTheta = this.thetaInitializer([numFeatures, 1]);
+
         // Define the loss function
         const lossFunction = (X: Tensor2D, y: Tensor2D, theta: Tensor2D): Scalar => {
             // Compute the predictions using the hypothesis function
@@ -31,8 +35,15 @@ export class LinearRegressor extends BaseEstimator {
             return gradient.add(penalty);
         };
 
-        // Optimize theta using the provided optimizer
-        this.theta = await this.optimizer.optimize({ X, y, lossFunction, gradientFunction });
+        this.theta = await this.optimizer.optimize({
+            X,
+            y,
+            lossFunction,
+            gradientFunction,
+            initTheta,
+        });
+
+        initTheta.dispose();
 
         return this.theta;
     }

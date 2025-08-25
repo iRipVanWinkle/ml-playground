@@ -22,6 +22,8 @@ export type DataSettings = {
     transformations: Array<{ type: TransformationFunction; degree: number }>;
 };
 
+// OPTIMIZATION
+
 type OptimizerBasicConfig = {
     maxIterations: number;
     tolerance: number;
@@ -46,11 +48,15 @@ type OptimizerMomentumConfig = OptimizerBasicConfig & {
 
 export type OptimizerConfig = OptimizerBatchConfig | OptimizerSGDConfig | OptimizerMomentumConfig;
 
+// LOSS FUNCTION
+
 type LossFunctionGeneralConfig = {
     type: LossFunction;
 };
 
 export type LossFunctionConfig = LossFunctionGeneralConfig;
+
+// REGULARIZATION
 
 type RegularizationNoneConfig = {
     type: 'none';
@@ -63,12 +69,44 @@ type RegularizationLConfig = {
 
 export type RegularizationConfig = RegularizationNoneConfig | RegularizationLConfig;
 
+// THETA INITIALIZATION
+
+type ThetaInitializationBaseConfig = {
+    type: 'zeros' | 'ones' | 'xavierUniform' | 'xavierNormal' | 'heUniform' | 'heNormal';
+};
+
+type ThetaInitializationConstantConfig = {
+    type: 'constant';
+    value: number;
+};
+
+type ThetaInitializationUniformConfig = {
+    type: 'uniform';
+    min: number;
+    max: number;
+};
+
+type ThetaInitializationNormalConfig = {
+    type: 'normal';
+    mean: number;
+    stddev: number;
+};
+
+export type ThetaInitializationConfig =
+    | ThetaInitializationBaseConfig
+    | ThetaInitializationConstantConfig
+    | ThetaInitializationUniformConfig
+    | ThetaInitializationNormalConfig;
+
+// MODEL SETTINGS
+
 export type ModelSettings = {
     type: ModelType;
     classificationType: ClassificationType;
     lossFunction: LossFunctionConfig;
     optimizer: OptimizerConfig;
     regularization: RegularizationConfig;
+    thetaInitialization: ThetaInitializationConfig;
 };
 
 export type TrainingReport = {

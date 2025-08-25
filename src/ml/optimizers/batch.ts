@@ -1,4 +1,4 @@
-import { tidy, type Tensor2D } from '@tensorflow/tfjs';
+import { tidy, variable, type Tensor2D } from '@tensorflow/tfjs';
 import { BaseOptimizer } from './base';
 import type { OptimizeParameters } from '../types';
 
@@ -9,9 +9,9 @@ export class BatchGD extends BaseOptimizer {
         lossFunction,
         gradientFunction,
         threadId = 0,
-        inithThetaFunction = this.inithTheta.bind(this),
+        initTheta,
     }: OptimizeParameters): Promise<Tensor2D> {
-        const theta = inithThetaFunction(X);
+        const theta = variable(initTheta);
 
         for await (const iteration of this.iterator()) {
             const alfa = this.learningRate.next(iteration);

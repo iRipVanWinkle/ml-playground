@@ -4,7 +4,10 @@ import { assertThetaTrained } from '../../utils';
 
 export class LogisticRegressor extends BaseEstimator {
     async train(X: Tensor2D, y: Tensor2D): Promise<Tensor2D> {
+        const numFeatures = X.shape[1];
         const asLogits = this.lossFunc.usesLogits?.();
+
+        const initTheta = this.thetaInitializer([numFeatures, 1]);
 
         // Define the loss function
         const lossFunction = (X: Tensor2D, y: Tensor2D, theta: Tensor2D): Scalar => {
@@ -32,13 +35,15 @@ export class LogisticRegressor extends BaseEstimator {
             return gradient.add(penalty);
         };
 
-        const theta = await this.optimizer.optimize({
+        this.theta = await this.optimizer.optimize({
             X,
             y,
             lossFunction,
             gradientFunction,
+            initTheta,
         });
-        this.theta = theta; // Stack all thetas into a single tensor
+
+        initTheta.dispose();
 
         return this.theta;
     }

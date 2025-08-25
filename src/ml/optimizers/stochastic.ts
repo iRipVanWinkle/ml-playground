@@ -1,4 +1,4 @@
-import { tensor1d, tidy, type Tensor2D } from '@tensorflow/tfjs';
+import { tensor1d, tidy, variable, type Tensor2D } from '@tensorflow/tfjs';
 import { BaseOptimizer, type OptimizerOptions } from './base';
 import type { OptimizeParameters } from '../types';
 import { assert, range } from '../utils';
@@ -37,9 +37,9 @@ export class StochasticGD extends BaseOptimizer {
         lossFunction,
         gradientFunction,
         threadId = 0,
-        inithThetaFunction = this.inithTheta.bind(this),
+        initTheta,
     }: OptimizeParameters): Promise<Tensor2D> {
-        const theta = inithThetaFunction(X);
+        const theta = variable(initTheta);
 
         for await (const iteration of this.iterator()) {
             const alfa = this.learningRate.next(iteration);

@@ -1,11 +1,10 @@
-import { variable, zeros, type Tensor2D, tidy } from '@tensorflow/tfjs';
+import type { Tensor2D } from '@tensorflow/tfjs';
 import { LearningRate } from '../LearningRate';
 import type {
     OptimizeParameters,
     Optimizer,
     OptimizerCallbackParameters,
     TrainingEventEmitter,
-    Variable2D,
 } from '../types';
 import { DEFAULT_TOLERANCE } from '../constants';
 import { assert } from '../utils';
@@ -89,12 +88,6 @@ export abstract class BaseOptimizer implements Optimizer {
     }
 
     abstract optimize(params: OptimizeParameters): Promise<Tensor2D>;
-
-    protected inithTheta(X: Tensor2D): Variable2D {
-        const featureCount = X.shape[1] + (this.withBias ? 1 : 0); // +1 for the bias term
-
-        return tidy(() => variable(zeros([featureCount, 1])));
-    }
 
     protected info(message: string): void {
         this.eventEmitter?.emit('info', message);

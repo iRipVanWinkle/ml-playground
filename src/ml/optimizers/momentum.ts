@@ -42,9 +42,9 @@ export class MomentumGD extends BaseOptimizer {
         lossFunction,
         gradientFunction,
         threadId = 0,
-        inithThetaFunction = this.inithTheta.bind(this),
+        initTheta,
     }: OptimizeParameters): Promise<Tensor2D> {
-        const theta = inithThetaFunction(X);
+        const theta = variable(initTheta);
 
         // Initialize velocity to zeros
         const velocity = tidy(() => variable(theta.zerosLike()));

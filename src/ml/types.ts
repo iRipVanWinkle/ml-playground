@@ -138,7 +138,6 @@ export interface LossFunction {
 
 export type OptimizerLossFunction = (X: Tensor2D, y: Tensor2D, theta: Tensor2D) => Scalar;
 export type OptimizerGradientFunction = (X: Tensor2D, y: Tensor2D, theta: Tensor2D) => Tensor2D;
-export type OptimizerInithThetaFunction = (X: Tensor2D) => Variable2D;
 
 /**
  * Parameters for the optimization process.
@@ -148,7 +147,7 @@ export type OptimizeParameters = Readonly<{
     y: Tensor2D;
     lossFunction: OptimizerLossFunction;
     gradientFunction: OptimizerGradientFunction;
-    inithThetaFunction?: OptimizerInithThetaFunction;
+    initTheta: Tensor2D;
     threadId?: number;
     threadName?: string;
 }>;

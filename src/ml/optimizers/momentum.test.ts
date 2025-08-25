@@ -94,6 +94,7 @@ describe('MomentumGD', () => {
                 y,
                 lossFunction,
                 gradientFunction,
+                initTheta: tf.zeros([X.shape[1], 1]),
             } as OptimizeParameters);
 
             expect(result).toBeDefined();
@@ -147,6 +148,7 @@ describe('MomentumGD', () => {
                 y,
                 lossFunction,
                 gradientFunction,
+                initTheta: tf.zeros([X.shape[1], 1]),
             } as OptimizeParameters);
 
             const momentumResult = await momentumOptimizer.optimize({
@@ -154,6 +156,7 @@ describe('MomentumGD', () => {
                 y,
                 lossFunction,
                 gradientFunction,
+                initTheta: tf.zeros([X.shape[1], 1]),
             } as OptimizeParameters);
 
             const basicLoss = lossFunction(X, y, basicResult);
@@ -192,6 +195,7 @@ describe('MomentumGD', () => {
                     y,
                     lossFunction: () => tf.scalar(0.1),
                     gradientFunction: () => tf.tensor2d([[0.01], [0.01]]),
+                    initTheta: tf.zeros([X.shape[1], 1]),
                 } as OptimizeParameters);
 
                 expect(result).toBeDefined();
@@ -221,6 +225,7 @@ describe('MomentumGD', () => {
                 y,
                 lossFunction,
                 gradientFunction,
+                initTheta: tf.zeros([X.shape[1], 1]),
             } as OptimizeParameters);
 
             expect(iterationCount).toBeGreaterThan(1);
@@ -265,6 +270,7 @@ describe('MomentumGD', () => {
                 y,
                 lossFunction,
                 gradientFunction,
+                initTheta: tf.zeros([X.shape[1], 1]),
             } as OptimizeParameters);
 
             const finalLoss = lossFunction(X, y, result);

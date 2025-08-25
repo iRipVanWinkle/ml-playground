@@ -4,7 +4,10 @@ import { assertThetaTrained } from '../../utils';
 
 export class OneVsRestLogisticRegressor extends LogisticRegressor {
     async train(X: Tensor2D, y: Tensor2D): Promise<Tensor2D> {
+        const numFeatures = X.shape[1];
         const asLogits = this.lossFunc.usesLogits?.();
+
+        const initTheta = this.thetaInitializer([numFeatures, 1]);
 
         // Define the loss function
         const lossFunction = (X: Tensor2D, y: Tensor2D, theta: Tensor2D): Scalar => {
@@ -42,8 +45,8 @@ export class OneVsRestLogisticRegressor extends LogisticRegressor {
                     lossFunction,
                     gradientFunction,
                     threadId: label,
+                    initTheta,
                 });
-
                 // Dispose to free memory
                 features.dispose();
                 currentLabels.dispose();
@@ -57,6 +60,7 @@ export class OneVsRestLogisticRegressor extends LogisticRegressor {
 
         this.theta = concat(thetas, 1) as Tensor2D; // Stack all thetas into a single tensor
 
+        initTheta.dispose();
         thetas.forEach((theta) => theta.dispose());
 
         return this.theta;

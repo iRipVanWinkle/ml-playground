@@ -1,14 +1,5 @@
-import {
-    concat,
-    randomUniform,
-    tidy,
-    variable,
-    zeros,
-    type Scalar,
-    type Tensor2D,
-} from '@tensorflow/tfjs';
+import { tidy, type Scalar, type Tensor2D } from '@tensorflow/tfjs';
 import { LogisticRegressor } from './LogisticRegressor';
-import type { Variable2D } from '../../types';
 import { assertThetaTrained } from '../../utils';
 
 export class SoftmaxLogisticRegressor extends LogisticRegressor {
@@ -17,8 +8,9 @@ export class SoftmaxLogisticRegressor extends LogisticRegressor {
     async train(X: Tensor2D, y: Tensor2D): Promise<Tensor2D> {
         const numFeatures = X.shape[1];
         const numClasses = y.shape[1];
-
         const asLogits = this.lossFunc.usesLogits?.();
+
+        const initTheta = this._initTheta ?? this.thetaInitializer([numFeatures, numClasses]);
 
         // Define the loss function
         const lossFunction = (X: Tensor2D, y: Tensor2D, theta: Tensor2D): Scalar => {
@@ -46,38 +38,15 @@ export class SoftmaxLogisticRegressor extends LogisticRegressor {
             return gradient.add(penalty);
         };
 
-        const inithThetaFunction = () => {
-            const theta = tidy(() => {
-                // for testing purposes
-                if (this._initTheta) {
-                    return this._initTheta;
-                }
-
-                const limit = Math.sqrt(6 / (numFeatures + numClasses));
-                const weights = randomUniform(
-                    [numFeatures, numClasses],
-                    -limit,
-                    limit,
-                    'float32',
-                    42,
-                );
-                const bias = zeros([1, numClasses]);
-
-                return concat([bias, weights], 0);
-            });
-
-            return variable(theta) as Variable2D;
-        };
-
-        const theta = await this.optimizer.optimize({
+        this.theta = await this.optimizer.optimize({
             X,
             y,
             lossFunction,
             gradientFunction,
-            inithThetaFunction,
+            initTheta,
         });
 
-        this.theta = theta;
+        initTheta.dispose();
 
         return this.theta;
     }

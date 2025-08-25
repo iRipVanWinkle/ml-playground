@@ -40,6 +40,9 @@ export function setModelType(modelType: ModelType) {
             lossFunction: {
                 type: state.taskType === 'regression' ? 'mse' : 'binaryCrossentropy',
             },
+            thetaInitialization: {
+                type: 'zeros',
+            },
         },
     }));
 
@@ -59,6 +62,9 @@ export function setClassificationType(classificationType: ClassificationType) {
                     classificationType === 'softmax'
                         ? 'categoricalCrossentropy'
                         : 'binaryCrossentropy',
+            },
+            thetaInitialization: {
+                type: classificationType === 'softmax' ? 'xavierUniform' : 'zeros',
             },
         },
     }));

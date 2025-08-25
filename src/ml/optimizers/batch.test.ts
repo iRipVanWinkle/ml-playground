@@ -58,6 +58,7 @@ describe('BatchGD', () => {
                 y,
                 lossFunction,
                 gradientFunction,
+                initTheta: tf.zeros([X.shape[1], 1]),
             } as OptimizeParameters);
 
             expect(result).toBeDefined();
@@ -91,6 +92,7 @@ describe('BatchGD', () => {
                 y,
                 lossFunction,
                 gradientFunction,
+                initTheta: tf.zeros([X.shape[1], 1]),
             } as OptimizeParameters);
 
             expect(result).toBeDefined();
@@ -116,6 +118,7 @@ describe('BatchGD', () => {
                 y,
                 lossFunction,
                 gradientFunction,
+                initTheta: tf.zeros([X.shape[1], 1]),
             } as OptimizeParameters);
 
             expect(result).toBeDefined();
@@ -150,6 +153,7 @@ describe('BatchGD', () => {
                 y,
                 lossFunction,
                 gradientFunction,
+                initTheta: tf.zeros([X.shape[1], 1]),
             } as OptimizeParameters);
 
             expect(gradientCallCount).toBeGreaterThan(0);
@@ -186,6 +190,7 @@ describe('BatchGD', () => {
                 y,
                 lossFunction,
                 gradientFunction,
+                initTheta: tf.zeros([X.shape[1], 1]),
             } as OptimizeParameters);
 
             // Loss should generally decrease
@@ -214,6 +219,7 @@ describe('BatchGD', () => {
                 y,
                 lossFunction: () => tf.scalar(0.1),
                 gradientFunction: () => tf.tensor2d([[0.01]]),
+                initTheta: tf.zeros([X.shape[1], 1]),
             } as OptimizeParameters);
 
             expect(callbacks.length).toBeGreaterThan(0);
@@ -244,6 +250,7 @@ describe('BatchGD', () => {
                     y,
                     lossFunction: () => tf.scalar(0.1),
                     gradientFunction: () => tf.tensor2d([[0.01], [0.01]]),
+                    initTheta: tf.zeros([X.shape[1], 1]),
                 } as OptimizeParameters);
 
                 expect(result).toBeDefined();
@@ -259,14 +266,12 @@ describe('BatchGD', () => {
             const X = tf.tensor2d([[1, 2]]);
             const y = tf.tensor2d([[1]]);
 
-            const inithThetaFunction = () => tf.variable(tf.tensor2d([[10], [20]]));
-
             const result = await optimizer.optimize({
                 X,
                 y,
                 lossFunction: () => tf.scalar(1),
                 gradientFunction: () => tf.tensor2d([[0], [0]]), // No update
-                inithThetaFunction,
+                initTheta: tf.tensor2d([[10], [20]]),
             } as OptimizeParameters);
 
             const values = await result.data();
@@ -302,6 +307,7 @@ describe('BatchGD', () => {
                     y,
                     lossFunction,
                     gradientFunction: () => tf.tensor2d([[0]]),
+                    initTheta: tf.zeros([X.shape[1], 1]),
                 } as OptimizeParameters);
 
                 // Should stop early due to tolerance
@@ -350,6 +356,7 @@ describe('BatchGD', () => {
                 y,
                 lossFunction,
                 gradientFunction,
+                initTheta: tf.zeros([X.shape[1], 1]),
             } as OptimizeParameters);
 
             const result2 = await opt2.optimize({
@@ -357,6 +364,7 @@ describe('BatchGD', () => {
                 y,
                 lossFunction,
                 gradientFunction,
+                initTheta: tf.zeros([X.shape[1], 1]),
             } as OptimizeParameters);
 
             const values1 = await result1.data();
@@ -406,6 +414,7 @@ describe('BatchGD', () => {
                 y,
                 lossFunction,
                 gradientFunction,
+                initTheta: tf.zeros([X.shape[1], 1]),
             } as OptimizeParameters);
 
             // Should converge close to the true parameters [2, 2]

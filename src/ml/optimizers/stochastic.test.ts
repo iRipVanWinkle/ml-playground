@@ -65,6 +65,7 @@ describe('StochasticGD', () => {
                 y,
                 lossFunction,
                 gradientFunction,
+                initTheta: tf.zeros([X.shape[1], 1]),
             } as OptimizeParameters);
 
             expect(result).toBeDefined();
@@ -105,6 +106,7 @@ describe('StochasticGD', () => {
                     y,
                     lossFunction: () => tf.scalar(0.1),
                     gradientFunction: () => tf.tensor2d([[0.01], [0.01]]),
+                    initTheta: tf.zeros([X.shape[1], 1]),
                 } as OptimizeParameters);
 
                 expect(result).toBeDefined();
@@ -137,6 +139,7 @@ describe('StochasticGD', () => {
                     y,
                     lossFunction: () => tf.scalar(1),
                     gradientFunction: () => tf.tensor2d([[0], [0]]),
+                    initTheta: tf.zeros([X.shape[1], 1]),
                 } as OptimizeParameters),
             ).rejects.toThrow('Batch size cannot be larger than the number of samples.');
 
@@ -171,6 +174,7 @@ describe('StochasticGD', () => {
                 y,
                 lossFunction,
                 gradientFunction,
+                initTheta: tf.zeros([X.shape[1], 1]),
             } as OptimizeParameters);
 
             // All batches should have the expected size
@@ -203,6 +207,7 @@ describe('StochasticGD', () => {
                     expect(batchX.shape[0]).toBe(1); // Single sample
                     return tf.tensor2d([[0.01], [0.01]]);
                 },
+                initTheta: tf.zeros([X.shape[1], 1]),
             } as OptimizeParameters);
 
             expect(result).toBeDefined();
@@ -329,6 +334,7 @@ describe('StochasticGD', () => {
                         const errors = preds.sub(y);
                         return X.transpose().matMul(errors).div(X.shape[0]);
                     },
+                    initTheta: tf.zeros([X.shape[1], 1]),
                 } as OptimizeParameters);
 
                 results.push(result);

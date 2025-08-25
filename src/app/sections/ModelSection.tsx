@@ -22,6 +22,7 @@ import Optimizer from './model/Optimizer';
 import LossFunction from './model/LossFunction';
 import Regularization from './model/Regularization';
 import ClassificationType from './model/ClassificationType';
+import ThetaInitialization from './model/ThetaInitialization';
 
 type OptionList = Array<{
     value: string;
@@ -110,6 +111,12 @@ export default function ModelSection() {
                     regularization={data.regularization}
                     disabled={isTraining}
                     onChange={(regularization) => updateModelSettings({ regularization })}
+                />
+
+                <ThetaInitialization
+                    thetaInitialization={data.thetaInitialization}
+                    disabled={isTraining}
+                    onChange={(thetaInitialization) => updateModelSettings({ thetaInitialization })}
                 />
             </CardContent>
         </Card>

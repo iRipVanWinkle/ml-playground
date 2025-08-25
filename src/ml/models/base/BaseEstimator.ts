@@ -1,23 +1,27 @@
 import { concat, ones, tidy, type Scalar, type Tensor2D } from '@tensorflow/tfjs';
 import type { LossFunction, Optimizer, Model, Regularization } from '../../types';
 import { NoRegularization } from '../../regularization';
+import { zerosInitializer, type ThetaInitializer } from '../../utils/theta';
 
 export type ModelOptions = {
     lossFunc: LossFunction;
     optimizer: Optimizer;
     regularization?: Regularization;
+    thetaInitializer?: ThetaInitializer;
 };
 
 export abstract class BaseEstimator implements Model<Tensor2D> {
     protected lossFunc: LossFunction;
     protected optimizer: Optimizer;
     protected regularization: Regularization;
+    protected thetaInitializer: ThetaInitializer;
 
     protected theta: Tensor2D | null = null;
 
     constructor(options: ModelOptions) {
         this.lossFunc = options.lossFunc;
         this.optimizer = options.optimizer;
+        this.thetaInitializer = options.thetaInitializer ?? zerosInitializer();
         this.regularization = options.regularization ?? new NoRegularization();
     }
 

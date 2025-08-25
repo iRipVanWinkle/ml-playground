@@ -98,7 +98,8 @@ export const useModel = () => {
             }),
         );
 
-        worker.addEventListener('error', () => {
+        worker.addEventListener('error', (e) => {
+            console.error(e);
             toast.error('An error occurred during training. Please check the console for details.');
             setTrainingStatus('init');
             worker.terminate();
