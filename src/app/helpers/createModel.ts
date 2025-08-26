@@ -5,9 +5,9 @@ import {
     LinearRegressor,
     LogisticRegressor,
     OneVsRestLogisticRegressor,
+    PreprocessingModelDecorator,
     SoftmaxLogisticRegressor,
 } from '@/ml/models';
-import { ModelPipeline } from '@/ml/ModelPipeline';
 import { EventEmitter } from '@/ml/events/EventEmitter';
 import { getLossFunc } from './getLossFunc';
 import { getLearningRate } from './getLearningRate';
@@ -15,11 +15,18 @@ import { getNormalizeFunc } from './getNormalizeFunc';
 import { getRegularization } from './getRegularization';
 import { getTransformations } from './getTransformations';
 import { getThetaInitializer } from './getThetaInitializer';
+import type { Tensor2D } from '@tensorflow/tfjs';
 
-export function createModel(
-    modelSettings: ModelSettings,
+// Define a type mapping
+type ModelParamMap = {
+    linear: Tensor2D;
+    logistic: Tensor2D;
+};
+
+export function createModel<K extends keyof ModelParamMap>(
+    modelSettings: ModelSettings & { type: K },
     dataSettings: DataSettings,
-): [ModelPipeline, TrainingEventEmitter] {
+): [PreprocessingModelDecorator<ModelParamMap[K]>, TrainingEventEmitter<ModelParamMap[K]>] {
     const eventEmitter = new EventEmitter();
 
     const lossFunc = getLossFunc(modelSettings.lossFunction);
@@ -104,7 +111,7 @@ export function createModel(
         transformations,
     };
 
-    const pipeline = new ModelPipeline(model, featureTransform, eventEmitter);
+    const pipeline = new PreprocessingModelDecorator(model, featureTransform, eventEmitter);
 
     return [pipeline, eventEmitter];
 }

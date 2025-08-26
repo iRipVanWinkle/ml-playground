@@ -1,4 +1,4 @@
-import type { Rank, Scalar, Tensor2D, Variable } from '@tensorflow/tfjs';
+import type { Rank, Scalar, Tensor2D, Tensor3D, Variable } from '@tensorflow/tfjs';
 import type { EventEmitter } from './events/EventEmitter';
 
 export type Variable2D = Variable<Rank.R2>;
@@ -12,28 +12,36 @@ export type Variable2D = Variable<Rank.R2>;
  */
 export type MetricFunction = (yTrue: Tensor2D, yPred: Tensor2D) => Scalar;
 
-export type OptimizerCallbackParameters = Readonly<{
+/**
+ * Aggregates the predictions from multiple trees in the ensemble.
+ *
+ * @param predictions - The predictions from the individual trees.
+ * @returns The aggregated predictions.
+ */
+export type EnsembleAggregatorFn = (predictions: Tensor2D | Tensor3D) => Tensor2D;
+
+export type OptimizerCallbackParameters<T> = Readonly<{
     threadId: number;
     iteration: number;
     alfa: number;
     loss: number;
-    theta: Tensor2D;
+    theta: T;
     threadName?: string;
 }>;
-export type OptimizerCallback = (params: OptimizerCallbackParameters) => Promise<void> | void;
+export type OptimizerCallback<T> = (params: OptimizerCallbackParameters<T>) => Promise<void> | void;
 
 export type TrainingState = 'transforming' | 'training' | 'paused' | 'stopped' | 'stepped-forward';
 /**
  * Interface for training event listeners.
  */
-export interface TrainingEventEmitter extends EventEmitter {
+export interface TrainingEventEmitter<T> extends EventEmitter {
     on(event: 'state', listener: (state: TrainingState) => void): void;
-    on(event: 'callback', listener: (params: OptimizerCallbackParameters) => void): void;
+    on(event: 'callback', listener: (params: OptimizerCallbackParameters<T>) => void): void;
     on(event: 'error', listener: (message: string) => void): void;
     on(event: 'info', listener: (message: string) => void): void;
 
     emit(event: 'state', state: TrainingState): Promise<void>;
-    emit(event: 'callback', params: OptimizerCallbackParameters): Promise<void>;
+    emit(event: 'callback', params: OptimizerCallbackParameters<T>): Promise<void>;
     emit(event: 'error', message: string): Promise<void>;
     emit(event: 'info', message: string): Promise<void>;
 }
@@ -170,10 +178,23 @@ export interface Optimizer extends TrainingControl {
     dispose?(): void;
 }
 
+export type TreeNode = {
+    leftChild: TreeNode | null;
+    rightChild: TreeNode | null;
+    readonly featureIndex: number | null;
+    readonly threshold: number | null;
+    readonly value: number;
+    readonly probabilities?: number[]; // Optional for classification tasks
+};
+
+export type EnsembleTree = ReadonlyArray<TreeNode>;
+
+export type ModelRepresentation = Tensor2D | EnsembleTree;
+
 /**
  * Interface for machine learning models.
  */
-export interface Model<T = unknown> extends TrainingControl {
+export interface Model<T extends ModelRepresentation> extends TrainingControl {
     /**
      * Trains the model on the provided data.
      *

@@ -1,9 +1,18 @@
 import { createModel } from '@/app/helpers/createModel';
-import { encode } from '@/app/helpers/float32Array';
-import { accuracy } from '@/ml/metrics';
-import type { Model, TrainingState } from '@/ml/types';
+import type {
+    ModelRepresentation,
+    OptimizerCallbackParameters,
+    TrainingEventEmitter,
+    TrainingState,
+} from '@/ml/types';
+import type { PreprocessingModelDecorator } from '@/ml/models';
 import type { State } from '@/app/store';
-import { Tensor, memory, tensor2d, type Tensor2D, concat, type Scalar } from '@tensorflow/tfjs';
+import { Tensor, memory } from '@tensorflow/tfjs';
+import { DatasetManager } from './dataset-manager';
+import { TrainingSession } from './training-session';
+import { LiveMetricsProps } from './live-metrics-props';
+import { LiveMetrics } from './live-metrics';
+import { TrainingReportGenerator } from './training-report-generator';
 
 type TrainingCallbacks = {
     onReport: (report: Float32Array) => void;
@@ -13,196 +22,98 @@ type TrainingCallbacks = {
     onFinished: () => void;
 };
 
-export interface TrainerReport {
-    trainLossHistory: number[][];
-    trainAccuracy: number;
-    testAccuracy: number;
-    testLoss: number;
-    iterations: number[];
-    trainPredictedLabels: number[][];
-    testPredictedLabels: number[][];
-    predictionPredictedLabels: number[][];
-    theta: number[][];
-}
-
-function fixLength(matrix: number[][]): number[][] {
-    const minLength = Math.min(...matrix.map((m) => m.length));
-    return matrix.map((m) => m.slice(0, minLength));
-}
-
-function tensor2dIfPopulated(data?: number[][]): Tensor2D | undefined {
-    if (!data || data.length === 0) return undefined;
-
-    return tensor2d(data);
-}
-
-function getTensorArray(
-    tensor?: Tensor2D,
-    defaultValue?: number[][],
-): Promise<number[][] | undefined> {
-    if (tensor) {
-        return tensor.array();
-    }
-
-    return Promise.resolve(defaultValue);
-}
-
-async function getTensorData(tensor?: Scalar, defaultValue?: number): Promise<number | undefined> {
-    if (tensor) {
-        const data = await tensor.data();
-        return data[0];
-    }
-
-    return Promise.resolve(defaultValue);
-}
+type TrainedModel = PreprocessingModelDecorator<ModelRepresentation>;
 
 export class Trainer {
-    private model: Model | null = null;
+    private model: TrainedModel;
+    private datasetManager: DatasetManager;
+    private eventEmitter: TrainingEventEmitter<ModelRepresentation>;
+    private callbacks: TrainingCallbacks;
+    private liveMetrics: LiveMetrics;
+    private liveMetricsProps: LiveMetricsProps;
+    private reportGenerator: TrainingReportGenerator;
 
-    async train(state: State, byStep: boolean, callbacks: TrainingCallbacks) {
-        console.info('Start', memory());
+    private trainingSession: TrainingSession | null = null;
+    private isTraining = false;
+    private byStep = false;
 
-        const { modelSettings, dataSettings, taskType, data } = state;
-
-        const X = tensor2d(data.trainInputFeatures);
-        const y = tensor2d(data.trainTargetLabels);
-        const XTest = tensor2dIfPopulated(data.testInputFeatures);
-        const yTest = tensor2dIfPopulated(data.testTargetLabels);
-        const XPredictions = tensor2dIfPopulated(data.predictionInputFeatures);
+    constructor(state: State, callbacks: TrainingCallbacks) {
+        const { modelSettings, dataSettings, data } = state;
 
         const [model, eventEmitter] = createModel(modelSettings, dataSettings);
+
         this.model = model;
+        this.callbacks = callbacks;
+        this.eventEmitter = eventEmitter;
+        this.datasetManager = new DatasetManager(data);
+        this.liveMetricsProps = new LiveMetricsProps(state);
+        this.liveMetrics = new LiveMetrics(model, this.datasetManager, this.liveMetricsProps);
+        this.reportGenerator = new TrainingReportGenerator();
 
-        const isOneVsRest =
-            modelSettings.type === 'logistic' && modelSettings.classificationType === 'ovr';
-        const thetasArray: Tensor2D[] = [];
+        // Set up event handling
+        this.setupEventHandlers();
+    }
 
-        let numThreads = 1;
-        if (isOneVsRest) {
-            numThreads = data.categories?.length ?? 1;
+    async train(byStep: boolean): Promise<void> {
+        if (this.isTraining) {
+            throw new Error('Training already in progress');
         }
 
-        const lossHistoryArray: number[][] = Array.from({ length: numThreads }, () => []);
-        const iterations: number[] = Array.from({ length: numThreads }, () => 0);
+        this.isTraining = true;
 
-        eventEmitter.on('info', callbacks.onInfo);
+        console.info('Training started', memory());
 
-        eventEmitter.on('error', (message) => {
-            callbacks.onError(message);
+        try {
+            await this.executeTraining(byStep);
+        } catch (error) {
+            const prepareError = error instanceof Error ? error : new Error(String(error));
+            this.handleTrainingError(prepareError);
+        } finally {
+            this.cleanup();
+            this.isTraining = false;
+        }
 
-            model.stop();
-        });
+        console.info('Training finished', memory());
+    }
 
-        eventEmitter.on('state', (state) => {
-            callbacks.onState(state);
+    stop() {
+        this.model.stop();
+        this.isTraining = false;
+    }
 
-            // Prepare test data (for caching)
-            if (state === 'transforming' && XTest && yTest) {
-                model.prepareFeatures(XTest);
-                model.prepareLabels(yTest);
-            }
+    pause() {
+        this.model.pause();
+    }
 
-            // Prepare prediction data (for caching)
-            if (state === 'transforming' && XPredictions) {
-                model.prepareFeatures(XPredictions);
-            }
-        });
+    resume() {
+        this.model.resume();
+    }
 
-        eventEmitter.on('callback', async ({ threadId, iteration, theta, loss }) => {
-            const index = threadId;
+    step() {
+        this.model.step();
+    }
 
-            if (thetasArray[index] === undefined) {
-                thetasArray[index] = theta;
-            }
+    private async executeTraining(byStep: boolean): Promise<void> {
+        this.trainingSession = new TrainingSession(this.liveMetricsProps);
+        this.byStep = byStep;
 
-            const thetas = concat(thetasArray.filter(Boolean), 1);
+        const model = this.model;
+        const datasetManager = this.datasetManager;
+        const callbacks = this.callbacks;
 
-            let yPredictions: Tensor2D | undefined;
-            let yTraining: Tensor2D | undefined;
-            let yTrainingProbability: Tensor2D | undefined;
-            let yTesting: Tensor2D | undefined;
-            let yTestingProbability: Tensor2D | undefined;
-            let trainAccuracy: Scalar | undefined;
-            let testAccuracy: Scalar | undefined;
-            let trainLoss: Scalar | undefined;
-            let testLoss: Scalar | undefined;
+        await this.trainModel(model, datasetManager);
 
-            if (XPredictions) {
-                yPredictions = model.predict(XPredictions, thetas);
-            }
+        callbacks.onFinished?.();
+    }
 
-            const metrics = taskType === 'classification' ? [accuracy] : [];
-            // eslint-disable-next-line prefer-const
-            [yTraining, yTrainingProbability, trainLoss] = model.evaluate(X, y, thetas);
-            // eslint-disable-next-line prefer-const
-            [trainAccuracy] = metrics.map((metric) => metric(y, yTraining!));
+    private async trainModel(model: TrainedModel, datasetManager: DatasetManager): Promise<void> {
+        const { X, y } = datasetManager.getTrainingData();
 
-            if (XTest && yTest) {
-                [yTesting, yTestingProbability, testLoss] = model.evaluate(XTest, yTest, thetas);
-                [testAccuracy] = metrics.map((metric) => metric(yTest, yTesting!));
-            }
-
-            const [
-                thetaArray,
-                predictionLabels,
-                yTrainingArray,
-                yTestingArray,
-                trainAccuracyValue,
-                testAccuracyValue,
-                testLossValue,
-                trainLossValue,
-            ] = await Promise.all([
-                getTensorArray(thetas instanceof Tensor ? thetas : undefined, []),
-                getTensorArray(yPredictions),
-                getTensorArray(yTraining),
-                getTensorArray(yTesting),
-                getTensorData(trainAccuracy),
-                getTensorData(testAccuracy),
-                getTensorData(testLoss),
-                getTensorData(trainLoss),
-            ]);
-
-            // Dispose of all tensors to free up memory
-            yPredictions?.dispose();
-            yTraining?.dispose();
-            yTestingProbability?.dispose();
-            yTesting?.dispose();
-            yTrainingProbability?.dispose();
-            trainAccuracy?.dispose();
-            testAccuracy?.dispose();
-            trainLoss?.dispose();
-            testLoss?.dispose();
-            if (thetas instanceof Tensor) {
-                thetas.dispose();
-            }
-
-            const currentLoss = isOneVsRest ? loss : trainLossValue;
-
-            lossHistoryArray[index].push(currentLoss!);
-            iterations[index] = iteration + 1;
-
-            const report = encode({
-                trainLossHistory: fixLength(lossHistoryArray), // Ensure all loss history arrays are of the same length
-                trainAccuracy: trainAccuracyValue,
-                testAccuracy: testAccuracyValue,
-                testLoss: testLossValue,
-                iterations: iterations,
-                trainPredictedLabels: yTrainingArray,
-                testPredictedLabels: yTestingArray,
-                predictionPredictedLabels: predictionLabels,
-                theta: thetaArray,
-            });
-
-            callbacks.onReport(report);
-
-            if (byStep && iteration === 0) {
-                model.stop();
-            }
-        });
-
-        console.time('Training Linear Regression Model');
+        console.time('Model Training');
 
         const theta = await model.train(X, y);
+
+        console.timeEnd('Model Training');
 
         /**
          * Theta
@@ -222,45 +133,88 @@ export class Trainer {
          *
          */
 
-        console.timeEnd('Training Linear Regression Model');
-
-        X.dispose();
-        y.dispose();
-        XTest?.dispose();
-        yTest?.dispose();
-        XPredictions?.dispose();
-
         if (theta instanceof Tensor) {
+            theta.print();
             theta.dispose();
         }
+    }
 
-        if (thetasArray instanceof Tensor) {
-            thetasArray.forEach((t) => t.dispose());
+    private setupEventHandlers(): void {
+        const eventEmitter = this.eventEmitter;
+        const datasetManager = this.datasetManager;
+        const callbacks = this.callbacks;
+
+        eventEmitter.on('info', callbacks.onInfo);
+        eventEmitter.on('error', (message) => {
+            callbacks.onError(message);
+            this.stop();
+        });
+
+        eventEmitter.on('state', (state) => {
+            callbacks.onState(state);
+            this.handleStateChange(state, datasetManager);
+        });
+
+        this.eventEmitter.on('callback', async (params) => {
+            await this.handleTrainingIteration(params);
+        });
+    }
+
+    private async handleTrainingIteration(
+        params: OptimizerCallbackParameters<ModelRepresentation>,
+    ): Promise<void> {
+        if (!this.trainingSession) return;
+
+        // Update training session state
+        this.trainingSession.updateIteration(
+            params.threadId,
+            params.iteration,
+            params.theta,
+            params.loss,
+        );
+
+        const liveResults = await this.liveMetrics.calculate(this.trainingSession);
+
+        const report = this.reportGenerator.generateReport(liveResults, this.trainingSession);
+
+        this.callbacks.onReport(report);
+
+        // Handle step-by-step learning mode
+        if (this.shouldStopAfterIteration(params.iteration)) {
+            this.model.pause();
         }
-
-        model.dispose(true);
-        this.model = null;
-
-        console.info('End', memory());
-
-        callbacks.onFinished?.();
     }
 
-    stop() {
-        this.model?.stop();
-        this.model?.dispose(true);
-        this.model = null;
+    private shouldStopAfterIteration(iteration: number): boolean {
+        return this.byStep && iteration === 0;
     }
 
-    pause() {
-        this.model?.pause();
+    private handleStateChange(state: TrainingState, datasetManager: DatasetManager): void {
+        if (state === 'transforming') {
+            // Pre-cache transformed data
+            const testData = datasetManager.getTestData();
+            const predictionData = datasetManager.getPredictionData();
+
+            if (this.model && testData) {
+                this.model.prepareFeatures(testData.X);
+                this.model.prepareLabels(testData.y);
+            }
+
+            if (this.model && predictionData) {
+                this.model.prepareFeatures(predictionData);
+            }
+        }
     }
 
-    resume() {
-        this.model?.resume();
+    private cleanup(): void {
+        this.model.dispose(true);
+        this.eventEmitter.clear();
+        this.datasetManager.dispose();
+        this.trainingSession?.dispose();
     }
 
-    step() {
-        this.model?.step();
+    private handleTrainingError(error: Error): void {
+        console.error('Training failed:', error);
+        this.callbacks.onError(`Training failed: ${error.message}`);
     }
 }

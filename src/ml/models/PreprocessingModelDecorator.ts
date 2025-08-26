@@ -1,7 +1,7 @@
 import { concat, tidy, type Scalar, type Tensor2D } from '@tensorflow/tfjs-core/dist/base';
-import type { Model, TrainingEventEmitter } from './types';
-import type { NormalizatorFn } from './data-processing/normalization';
-import type { TransformationFn } from './data-processing/transformation';
+import type { Model, ModelRepresentation, TrainingEventEmitter } from '../types';
+import type { NormalizatorFn } from '../data-processing/normalization';
+import type { TransformationFn } from '../data-processing/transformation';
 
 export type FeatureTransformConfig = {
     polynomialDegree?: number;
@@ -10,24 +10,24 @@ export type FeatureTransformConfig = {
     transformations?: TransformationFn[];
 };
 
-export class ModelPipeline implements Model {
-    private model: Model;
+export class PreprocessingModelDecorator<T extends ModelRepresentation> implements Model<T> {
+    private model: Model<T>;
     private featureTransform?: FeatureTransformConfig;
-    private eventEmitter?: TrainingEventEmitter;
+    private eventEmitter?: TrainingEventEmitter<T>;
 
     private _cachedProcessedData: Map<number, Tensor2D> = new Map();
 
     constructor(
-        model: Model,
+        model: Model<T>,
         featureTransform?: FeatureTransformConfig,
-        eventEmitter?: TrainingEventEmitter,
+        eventEmitter?: TrainingEventEmitter<T>,
     ) {
         this.model = model;
         this.featureTransform = featureTransform;
         this.eventEmitter = eventEmitter;
     }
 
-    async train(X: Tensor2D, y: Tensor2D): Promise<unknown> {
+    async train(X: Tensor2D, y: Tensor2D): Promise<T> {
         this.eventEmitter?.emit('state', 'transforming');
 
         X = this.prepareFeatures(X);
@@ -43,7 +43,7 @@ export class ModelPipeline implements Model {
         return result;
     }
 
-    predict(X: Tensor2D, theta?: unknown): Tensor2D {
+    predict(X: Tensor2D, theta?: T): Tensor2D {
         X = this.prepareFeatures(X);
 
         const result = this.model.predict(X, theta);
@@ -53,7 +53,7 @@ export class ModelPipeline implements Model {
         return result;
     }
 
-    evaluate(X: Tensor2D, y: Tensor2D, theta?: unknown): [Tensor2D, Tensor2D, Scalar] {
+    evaluate(X: Tensor2D, y: Tensor2D, theta?: T): [Tensor2D, Tensor2D, Scalar] {
         X = this.prepareFeatures(X);
         y = this.prepareLabels(y);
 

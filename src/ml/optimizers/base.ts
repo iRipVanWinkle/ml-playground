@@ -17,7 +17,7 @@ export type OptimizerOptions = Readonly<{
     maxIterations: number;
     tolerance?: number;
     withBias?: boolean;
-    eventEmitter?: TrainingEventEmitter;
+    eventEmitter?: TrainingEventEmitter<Tensor2D>;
 }>;
 
 export abstract class BaseOptimizer implements Optimizer {
@@ -25,7 +25,7 @@ export abstract class BaseOptimizer implements Optimizer {
     protected maxIterations: number;
     protected tolerance: number;
     protected withBias: boolean;
-    protected eventEmitter?: TrainingEventEmitter;
+    protected eventEmitter?: TrainingEventEmitter<Tensor2D>;
 
     private isPaused = false;
     private isStopped = false;
@@ -97,7 +97,7 @@ export abstract class BaseOptimizer implements Optimizer {
         this.eventEmitter?.emit('error', message);
     }
 
-    protected callback(params: OptimizerCallbackParameters): Promise<void> | undefined {
+    protected callback(params: OptimizerCallbackParameters<Tensor2D>): Promise<void> | undefined {
         return this.eventEmitter?.emit('callback', params);
     }
 }
