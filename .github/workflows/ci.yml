@@ -4,45 +4,110 @@ on:
     push:
         branches: [master]
     pull_request:
+        branches: [master]
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+env:
+    NODE_VERSION: '20'
 
 jobs:
-    build:
+    setup:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout
               uses: actions/checkout@v4
 
-            - name: Setup Node.js
-              uses: actions/setup-node@v4
+            - name: Setup Node.js and Workspace
+              uses: ./.github/actions/setup-workspace
               with:
-                  node-version: '20'
-                  cache: 'npm'
+                  node-version: ${{ env.NODE_VERSION }}
 
-            - name: Install dependencies
-              run: npm ci
+    lint:
+        needs: setup
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
 
-            - name: Install Playwright Browsers
-              run: npx playwright install --with-deps
+            - name: Setup Node.js and Workspace
+              uses: ./.github/actions/setup-workspace
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
 
             - name: Lint
               run: npm run lint
 
+    typecheck:
+        needs: setup
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js and Workspace
+              uses: ./.github/actions/setup-workspace
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+
             - name: Type Check
               run: npm run typecheck
 
-            - name: Test
+    test:
+        needs: setup
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js and Workspace
+              uses: ./.github/actions/setup-workspace
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+
+            - name: Unit Tests
               run: npm run test:coverage
+
+    e2e-tests:
+        needs: setup
+        runs-on: ubuntu-latest
+        timeout-minutes: 30
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js and Workspace
+              uses: ./.github/actions/setup-workspace
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+
+            - name: Setup Playwright
+              uses: ./.github/actions/setup-playwright
 
             - name: Run Playwright tests
               run: npm run test:e2e
 
             - name: Upload Playwright Report
               uses: actions/upload-artifact@v4
-              if: always()
+              if: failure()
               with:
-                  name: playwright-report
+                  name: playwright-report-${{ github.run_id }}
                   path: playwright-report/
-                  retention-days: 30
+                  retention-days: 7
+
+    build:
+        needs: [setup, lint, typecheck, test, e2e-tests]
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js and Workspace
+              uses: ./.github/actions/setup-workspace
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
 
             - name: Build
               run: npm run build
