@@ -95,6 +95,19 @@ const PREPERED_CLASSIFICATION_DATASETS = [
         value: './data/XOR.csv',
         label: 'XOR',
     },
+
+    {
+        value: './data/iris-petal.csv',
+        label: 'Iris Petal',
+    },
+    {
+        value: './data/mnist-number.csv',
+        label: 'MNIST numbers',
+    },
+    {
+        value: './data/mnist-fashion.csv',
+        label: 'MNIST fashion',
+    },
 ];
 
 export default function DataSection() {
