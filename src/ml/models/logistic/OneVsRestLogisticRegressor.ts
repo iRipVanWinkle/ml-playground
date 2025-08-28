@@ -101,19 +101,15 @@ export class OneVsRestLogisticRegressor extends LogisticRegressor {
         y: Tensor2D,
     ): IterableIterator<[number, [Tensor2D, Tensor2D]]> {
         const labels = y;
-        const uniqueLabels = tidy(() => labels.unique().values);
-        const numClasses = uniqueLabels.shape[0];
+        const uniqueLabels = Array.from(new Set(labels.flatten().arraySync())); // WebGPU does not yet support the unique() function
+        const numClasses = uniqueLabels.length;
 
         for (let labelIndex = 0; labelIndex < numClasses; labelIndex++) {
             const features = X.clone();
-            const currentLabel = uniqueLabels.slice([labelIndex], [1]);
+            const currentLabel = uniqueLabels[labelIndex];
             const currentLabels = labels.equal(currentLabel).cast('int32') as Tensor2D;
 
-            const currentLabelValue = currentLabel.dataSync()[0]; // Get the label value for the current class
-
-            currentLabel.dispose();
-
-            yield [currentLabelValue, [features, currentLabels]];
+            yield [currentLabel, [features, currentLabels]];
         }
     }
 

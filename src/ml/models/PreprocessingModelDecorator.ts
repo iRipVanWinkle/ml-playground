@@ -127,7 +127,7 @@ export class PreprocessingModelDecorator<T extends ModelRepresentation> implemen
             const processedLabel = tidy(() => {
                 let processedLabel;
                 if (usesOneHotLabels) {
-                    const numClasses = labels.unique().values.shape[0];
+                    const numClasses = new Set(labels.flatten().arraySync()).size; // WebGPU does not yet support the unique() function
                     processedLabel = labels.flatten().toInt().oneHot(numClasses, 1, 0) as Tensor2D;
                 } else {
                     // Clone to ensure the model manages tensor disposal
