@@ -1,4 +1,4 @@
-import type { Tensor2D } from '@tensorflow/tfjs';
+import { getBackend, type Tensor2D } from '@tensorflow/tfjs';
 import { LearningRate } from '../LearningRate';
 import type {
     OptimizeParameters,
@@ -73,6 +73,10 @@ export abstract class BaseOptimizer implements Optimizer {
 
     async *iterator(): AsyncGenerator<number, void, unknown> {
         for (let iteration = 0; iteration < this.maxIterations; iteration++) {
+            if (this.isSyncBackend()) {
+                await new Promise((resolve) => setTimeout(resolve)); // Yield control to the event loop
+            }
+
             while (this.isPaused && !this.stepRequested) {
                 await new Promise((resolve) => setTimeout(resolve, 100)); // Wait while paused
             }
@@ -99,5 +103,9 @@ export abstract class BaseOptimizer implements Optimizer {
 
     protected callback(params: OptimizerCallbackParameters<Tensor2D>): Promise<void> | undefined {
         return this.eventEmitter?.emit('callback', params);
+    }
+
+    private isSyncBackend(): boolean {
+        return getBackend() === 'cpu' || getBackend() === 'wasm';
     }
 }
