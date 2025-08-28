@@ -22,10 +22,13 @@ function forType<T>(type: string, callback: (payload: T) => void) {
 export const useModel = () => {
     const workerRef = useRef<Worker | null>(null);
 
+    const terminateWorker = () => {
+        workerRef.current?.terminate();
+        workerRef.current = null;
+    };
+
     useEffect(() => {
-        return () => {
-            workerRef.current?.terminate();
-        };
+        return () => terminateWorker();
     }, []);
 
     const train = async () => {
@@ -76,8 +79,10 @@ export const useModel = () => {
         worker.addEventListener(
             'message',
             forType('error', (msg) => {
+                setTrainingStatus('init');
                 console.error(msg);
                 toast.error(msg as string);
+                terminateWorker();
             }),
         );
 
@@ -93,17 +98,15 @@ export const useModel = () => {
             'message',
             forType('finished', () => {
                 setTrainingStatus('init');
-                worker.terminate();
-                workerRef.current = null;
+                terminateWorker();
             }),
         );
 
         worker.addEventListener('error', (e) => {
-            console.error(e);
-            toast.error('An error occurred during training. Please check the console for details.');
             setTrainingStatus('init');
-            worker.terminate();
-            workerRef.current = null;
+            console.error(e);
+            toast.error(e.message);
+            terminateWorker();
         });
 
         worker.postMessage({
