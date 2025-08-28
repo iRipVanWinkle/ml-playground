@@ -38,6 +38,9 @@ export const initState: State = {
         predictionInputFeatures: undefined,
     },
     trainingState: 'init',
+    systemSettings: {
+        backend: 'auto',
+    },
     pendingAction: null,
     report: {
         trainLossHistory: [],

@@ -1,4 +1,4 @@
-import { encode } from '../helpers/float32Array';
+import { encode } from '../../helpers/float32Array';
 import type { LiveResults } from './live-metrics';
 import type { TrainingSession } from './training-session';
 

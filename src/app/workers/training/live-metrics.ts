@@ -1,8 +1,6 @@
 import { Tensor, type Scalar, type Tensor2D } from '@tensorflow/tfjs';
-import type { Model, ModelRepresentation } from '@/ml/types';
-import { accuracy } from '@/ml/metrics';
+import type { MetricFunction, Model, ModelRepresentation } from '@/ml/types';
 import type { DatasetManager } from './dataset-manager';
-import type { LiveMetricsProps } from './live-metrics-props';
 import type { TrainingSession } from './training-session';
 
 export type LiveResults = {
@@ -39,19 +37,13 @@ async function getTensorData(tensor?: Scalar, defaultValue?: number): Promise<nu
 export class LiveMetrics {
     private model: Model<ModelRepresentation>;
     private datasetManager: DatasetManager;
-    private props: LiveMetricsProps;
 
-    constructor(
-        model: Model<ModelRepresentation>,
-        datasetManager: DatasetManager,
-        props: LiveMetricsProps,
-    ) {
+    constructor(model: Model<ModelRepresentation>, datasetManager: DatasetManager) {
         this.model = model;
         this.datasetManager = datasetManager;
-        this.props = props;
     }
 
-    async calculate(session: TrainingSession): Promise<LiveResults> {
+    async calculate(session: TrainingSession, metrics: MetricFunction[]): Promise<LiveResults> {
         const combinedTheta = session.getCombinedTheta();
 
         const trainingData = this.datasetManager.getTrainingData();
@@ -72,7 +64,6 @@ export class LiveMetrics {
             yPredictions = this.model.predict(predictionData, combinedTheta);
         }
 
-        const metrics = this.props.isClassificationTask ? [accuracy] : [];
         // eslint-disable-next-line prefer-const
         [yTraining, yTrainingProbability, trainLoss] = this.model.evaluate(
             trainingData.X,

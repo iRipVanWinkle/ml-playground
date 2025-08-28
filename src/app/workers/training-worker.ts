@@ -1,5 +1,5 @@
 import type { State } from '@/app/store';
-import { Trainer } from './trainer';
+import { TrainingOrchestrator } from './training/training-orchestrator';
 import type { TrainingState } from '@/ml/types';
 
 interface WorkerMessage {
@@ -15,7 +15,15 @@ function send(type: string, payload?: string | object, transfer?: Transferable[]
     }
 }
 
-let trainer: Trainer | null = null;
+const callbacks = {
+    onReport: (report: Float32Array) => send('report', report.buffer, [report.buffer]),
+    onState: (state: TrainingState) => send('state', state),
+    onInfo: (msg: string) => send('info', msg),
+    onError: (msg: string) => send('error', msg),
+    onFinished: () => send('finished'),
+};
+
+let trainer: TrainingOrchestrator | null = null;
 
 self.onmessage = (event: MessageEvent<WorkerMessage>) => {
     try {
@@ -24,16 +32,13 @@ self.onmessage = (event: MessageEvent<WorkerMessage>) => {
         switch (type) {
             case 'train':
             case 'train-step':
-                trainer = new Trainer(payload as State, {
-                    onReport: (report: Float32Array) =>
-                        send('report', report.buffer, [report.buffer]),
-                    onState: (state: TrainingState) => send('state', state),
-                    onInfo: (msg: string) => send('info', msg),
-                    onError: (msg: string) => send('error', msg),
-                    onFinished: () => send('finished'),
-                });
-
-                trainer.train(type === 'train-step');
+                (async () => {
+                    trainer = await TrainingOrchestrator.createOrchestrator(
+                        payload as State,
+                        callbacks,
+                    );
+                    trainer.train(type === 'train-step');
+                })();
                 break;
             case 'stop':
                 trainer?.stop();

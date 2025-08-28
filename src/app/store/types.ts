@@ -17,6 +17,8 @@ export type Regularization = 'none' | 'l2';
 export type TrainingState = 'init' | 'preparing' | 'training' | 'paused';
 export type PendingAction = 'pause' | 'stop' | 'step' | 'resume' | null;
 
+export type TensorBackend = 'auto' | 'webgpu' | 'webgl' | 'cpu' | 'wasm';
+
 export type DataSettings = {
     normalization: NormalizationFunction;
     transformations: Array<{ type: TransformationFunction; degree: number }>;
@@ -133,11 +135,16 @@ export type DataState = {
     categories?: string[];
 };
 
+export type SystemSettings = {
+    backend: TensorBackend;
+};
+
 export type State = {
     taskType: TaskType;
     dataSettings: DataSettings;
     modelSettings: ModelSettings;
     data: DataState;
+    systemSettings: SystemSettings;
     trainingState: TrainingState;
     pendingAction: PendingAction;
     report: TrainingReport;

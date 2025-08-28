@@ -1,4 +1,4 @@
-import type { State, TaskType } from '../store';
+import type { State, TaskType } from '../../store';
 
 export class LiveMetricsProps {
     readonly isOneVsRest: boolean;

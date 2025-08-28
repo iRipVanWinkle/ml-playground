@@ -100,6 +100,16 @@ export function updateModelSettings(newSettings: Partial<State['modelSettings']>
     }));
 }
 
+export function updateSystemSettings(newSettings: Partial<State['systemSettings']>) {
+    useAppState.setState((state) => ({
+        ...state,
+        systemSettings: {
+            ...state.systemSettings,
+            ...newSettings,
+        },
+    }));
+}
+
 type ExtractFeaturesOptions = {
     file: File;
     shuffleData?: boolean;

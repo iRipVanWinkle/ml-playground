@@ -3,6 +3,7 @@ import ModelSection from './sections/ModelSection';
 import ResultSection from './sections/training/TrainingSection';
 import { Tabs, TabsList, TabsTrigger } from './components/ui/tabs';
 import { setTaskType, useIsTraining, useTaskType, type TaskType } from './store';
+import { SystemSettings } from './sections/settings/SystemSettings';
 
 export default function MLLayout() {
     const isTraining = useIsTraining();
@@ -35,6 +36,9 @@ export default function MLLayout() {
 
                 {/* Model Section */}
                 <ModelSection />
+
+                {/* System Settings Section */}
+                <SystemSettings />
             </div>
 
             <div className="lg:col-span-2">

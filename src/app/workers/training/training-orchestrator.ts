@@ -1,3 +1,7 @@
+import { Tensor, memory, ready, setBackend } from '@tensorflow/tfjs';
+import '@tensorflow/tfjs-backend-webgpu';
+import '@tensorflow/tfjs-backend-wasm';
+import { setWasmPaths } from '@tensorflow/tfjs-backend-wasm';
 import { createModel } from '@/app/helpers/createModel';
 import type {
     ModelRepresentation,
@@ -7,12 +11,12 @@ import type {
 } from '@/ml/types';
 import type { PreprocessingModelDecorator } from '@/ml/models';
 import type { State } from '@/app/store';
-import { Tensor, memory } from '@tensorflow/tfjs';
 import { DatasetManager } from './dataset-manager';
 import { TrainingSession } from './training-session';
 import { LiveMetricsProps } from './live-metrics-props';
 import { LiveMetrics } from './live-metrics';
 import { TrainingReportGenerator } from './training-report-generator';
+import { accuracy } from '@/ml/metrics/accuracy';
 
 type TrainingCallbacks = {
     onReport: (report: Float32Array) => void;
@@ -24,7 +28,7 @@ type TrainingCallbacks = {
 
 type TrainedModel = PreprocessingModelDecorator<ModelRepresentation>;
 
-export class Trainer {
+export class TrainingOrchestrator {
     private model: TrainedModel;
     private datasetManager: DatasetManager;
     private eventEmitter: TrainingEventEmitter<ModelRepresentation>;
@@ -36,6 +40,7 @@ export class Trainer {
     private trainingSession: TrainingSession | null = null;
     private isTraining = false;
     private byStep = false;
+    private isClassificationTask = false;
 
     constructor(state: State, callbacks: TrainingCallbacks) {
         const { modelSettings, dataSettings, data } = state;
@@ -47,11 +52,33 @@ export class Trainer {
         this.eventEmitter = eventEmitter;
         this.datasetManager = new DatasetManager(data);
         this.liveMetricsProps = new LiveMetricsProps(state);
-        this.liveMetrics = new LiveMetrics(model, this.datasetManager, this.liveMetricsProps);
+        this.liveMetrics = new LiveMetrics(model, this.datasetManager);
         this.reportGenerator = new TrainingReportGenerator();
+        this.isClassificationTask = state.taskType === 'classification';
 
         // Set up event handling
         this.setupEventHandlers();
+    }
+
+    static async createOrchestrator(
+        state: State,
+        callbacks: TrainingCallbacks,
+    ): Promise<TrainingOrchestrator> {
+        const { systemSettings } = state;
+
+        if (systemSettings.backend !== 'auto') {
+            const wasmPath =
+                import.meta.env.PROD && import.meta.env.BASE_URL !== '/'
+                    ? `${import.meta.env.BASE_URL}wasm/`
+                    : '/wasm/';
+
+            setWasmPaths(wasmPath);
+            setBackend(systemSettings.backend);
+        }
+
+        await ready();
+
+        return new TrainingOrchestrator(state, callbacks);
     }
 
     async train(byStep: boolean): Promise<void> {
@@ -173,7 +200,8 @@ export class Trainer {
             params.loss,
         );
 
-        const liveResults = await this.liveMetrics.calculate(this.trainingSession);
+        const metrics = this.isClassificationTask ? [accuracy] : [];
+        const liveResults = await this.liveMetrics.calculate(this.trainingSession, metrics);
 
         const report = this.reportGenerator.generateReport(liveResults, this.trainingSession);
 
