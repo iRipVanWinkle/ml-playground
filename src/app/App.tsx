@@ -7,7 +7,7 @@ function App() {
     return (
         <>
             <MLLayout />
-            <Toaster position="top-center" expand richColors />
+            <Toaster position="top-right" expand richColors closeButton />
         </>
     );
 }
