@@ -134,7 +134,7 @@ export default function Optimizer({ optimizer, disabled, onChange }: OptimizerPr
             )}
 
             <div className="grid grid-cols-2 gap-2">
-                <Field label="Max iterations">
+                <Field label="Max Iterations">
                     <Input
                         disabled={disabled}
                         type="number"
