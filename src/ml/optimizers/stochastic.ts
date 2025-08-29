@@ -2,6 +2,7 @@ import { tensor1d, tidy, variable, type Tensor2D } from '@tensorflow/tfjs';
 import { BaseOptimizer, type OptimizerOptions } from './base';
 import type { OptimizeParameters } from '../types';
 import { assert, range } from '../utils';
+import { Randomizer } from '../random/Randomizer';
 
 type StochasticOptimizerOptions = OptimizerOptions & {
     batchSize?: number;
@@ -113,13 +114,20 @@ export class StochasticGD extends BaseOptimizer {
 
     private refillBatchPool(sampleCount: number): void {
         this.batchIndexPool = range(sampleCount);
+
+        const randomIndicesTensor = Randomizer.randomUniform([sampleCount - 1], 0, sampleCount);
+        const randomIndices = randomIndicesTensor.dataSync();
+
         for (let i = sampleCount - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
+            const j = Math.round(randomIndices[i - 1]);
             [this.batchIndexPool[i], this.batchIndexPool[j]] = [
                 this.batchIndexPool[j],
                 this.batchIndexPool[i],
             ];
         }
+
         this.batchPoolPointer = 0;
+
+        randomIndicesTensor.dispose();
     }
 }

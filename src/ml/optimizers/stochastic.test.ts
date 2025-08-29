@@ -319,7 +319,7 @@ describe('StochasticGD', () => {
                     learningRate: 0.01,
                     maxIterations: 20,
                     withBias: false,
-                    batchSize: 2,
+                    batchSize: i + 1,
                 });
 
                 const result = await opt.optimize({

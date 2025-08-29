@@ -4,13 +4,14 @@ import { cn } from '@/app/lib/utils';
 
 type FieldProps = React.ComponentProps<'div'> & {
     label: string;
+    htmlFor?: string;
     className?: string;
 };
 
-function Field({ label, className, children, ...props }: FieldProps) {
+function Field({ label, className, children, htmlFor, ...props }: FieldProps) {
     return (
         <div className={cn('grid gap-2', className)} {...props}>
-            <Label>{label}</Label>
+            <Label htmlFor={htmlFor}>{label}</Label>
             {children}
         </div>
     );

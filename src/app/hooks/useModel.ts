@@ -9,7 +9,7 @@ import {
     type TrainingReport,
 } from '@/app/store';
 import { decode } from '@/app/helpers/float32Array';
-import TrainingWorker from '../workers/training-worker.ts?worker';
+import TrainingWorker from '../workers/trainingOrchestrator.worker.ts?worker';
 
 function forType<T>(type: string, callback: (payload: T) => void) {
     return (event: MessageEvent) => {

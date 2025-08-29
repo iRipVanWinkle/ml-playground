@@ -18,12 +18,12 @@ function send(type: string, payload?: string | object, transfer?: Transferable[]
 const callbacks = {
     onReport: (report: Float32Array) => send('report', report.buffer, [report.buffer]),
     onState: (state: TrainingState) => send('state', state),
-    onInfo: (msg: string) => send('info', msg),
-    onError: (msg: string) => send('error', msg),
+    onInfo: (message: string) => send('info', message),
+    onError: (message: string) => send('error', message),
     onFinished: () => send('finished'),
 };
 
-let trainer: TrainingOrchestrator | null = null;
+let orchestrator: TrainingOrchestrator | null = null;
 
 self.onmessage = (event: MessageEvent<WorkerMessage>) => {
     try {
@@ -33,31 +33,29 @@ self.onmessage = (event: MessageEvent<WorkerMessage>) => {
             case 'train':
             case 'train-step':
                 (async () => {
-                    trainer = await TrainingOrchestrator.createOrchestrator(
-                        payload as State,
-                        callbacks,
-                    );
-                    trainer.train(type === 'train-step');
+                    const state = payload as State;
+                    orchestrator = await TrainingOrchestrator.createOrchestrator(state, callbacks);
+                    orchestrator.train(type === 'train-step');
                 })();
                 break;
             case 'stop':
-                trainer?.stop();
+                orchestrator?.stop();
                 break;
             case 'pause':
-                trainer?.pause();
+                orchestrator?.pause();
                 break;
             case 'resume':
-                trainer?.resume();
+                orchestrator?.resume();
                 break;
             case 'step':
-                trainer?.step();
+                orchestrator?.step();
                 break;
             default:
                 console.warn(`Unknown message type: ${type}`);
         }
     } catch (error) {
         console.error('Worker error:', error);
-        const message = error instanceof Error ? error.message : String(error);
-        send('error', `Worker error: ${message}`);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        send('error', `Worker error: ${errorMessage}`);
     }
 };

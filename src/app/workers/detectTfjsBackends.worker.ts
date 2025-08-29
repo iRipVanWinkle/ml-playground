@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { getBackend, ready } from "@tensorflow/tfjs";
+import { getBackend, ready } from '@tensorflow/tfjs';
 import '@tensorflow/tfjs-backend-webgpu';
 import '@tensorflow/tfjs-backend-wasm';
 

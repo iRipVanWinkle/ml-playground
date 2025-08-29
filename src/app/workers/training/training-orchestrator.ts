@@ -2,7 +2,7 @@ import { Tensor, memory, ready, setBackend } from '@tensorflow/tfjs';
 import '@tensorflow/tfjs-backend-webgpu';
 import '@tensorflow/tfjs-backend-wasm';
 import { setWasmPaths } from '@tensorflow/tfjs-backend-wasm';
-import { createModel } from '@/app/helpers/createModel';
+import { createModel, setRandomSeed } from '@/app/helpers';
 import type {
     ModelRepresentation,
     OptimizerCallbackParameters,
@@ -43,7 +43,7 @@ export class TrainingOrchestrator {
     private isClassificationTask = false;
 
     constructor(state: State, callbacks: TrainingCallbacks) {
-        const { modelSettings, dataSettings, data } = state;
+        const { modelSettings, dataSettings, systemSettings, data } = state;
 
         const [model, eventEmitter] = createModel(modelSettings, dataSettings);
 
@@ -56,6 +56,7 @@ export class TrainingOrchestrator {
         this.reportGenerator = new TrainingReportGenerator();
         this.isClassificationTask = state.taskType === 'classification';
 
+        setRandomSeed(systemSettings.randomSeed);
         // Set up event handling
         this.setupEventHandlers();
     }

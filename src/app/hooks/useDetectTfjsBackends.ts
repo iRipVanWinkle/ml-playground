@@ -1,8 +1,13 @@
 import { useEffect, useState } from 'react';
 import DetectTfjsBackends from '../workers/detectTfjsBackends.worker.ts?worker';
 
+type BackendInfo = {
+    supported: string[];
+    current?: string;
+};
+
 export const useDetectTfjsBackends = () => {
-    const [backendInfo, setBackendInfo] = useState<{ supported: string[], current?: string }>({ supported: [] });
+    const [backendInfo, setBackendInfo] = useState<BackendInfo>({ supported: [] });
 
     useEffect(() => {
         const worker = new DetectTfjsBackends();

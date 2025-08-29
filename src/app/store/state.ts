@@ -40,6 +40,7 @@ export const initState: State = {
     trainingState: 'init',
     systemSettings: {
         backend: 'auto',
+        randomSeed: 42,
     },
     pendingAction: null,
     report: {

@@ -137,6 +137,7 @@ export type DataState = {
 
 export type SystemSettings = {
     backend: TensorBackend;
+    randomSeed?: number;
 };
 
 export type State = {

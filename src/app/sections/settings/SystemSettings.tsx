@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card';
 import { updateSystemSettings, useIsTraining, useSystemSettings } from '@/app/store';
 import { Backend } from './Backend';
+import { RandomSeed } from './RandomSeed';
 
 export function SystemSettings() {
     const isTraining = useIsTraining();
@@ -16,6 +17,12 @@ export function SystemSettings() {
                     value={settings.backend}
                     disabled={isTraining}
                     onChange={(backend) => updateSystemSettings({ backend })}
+                />
+
+                <RandomSeed
+                    value={settings.randomSeed}
+                    disabled={isTraining}
+                    onChange={(randomSeed) => updateSystemSettings({ randomSeed })}
                 />
             </CardContent>
         </Card>

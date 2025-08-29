@@ -34,18 +34,21 @@ export function Backend({ value, disabled, onChange }: BackendProps) {
     const { supported = [], current } = useDetectTfjsBackends();
 
     const availableBackendOptions = [
-        { value: 'auto', label: current ? `Default (${BACKEND_LABELS[current] ?? current})` : 'Default' },
+        {
+            value: 'auto',
+            label: current ? `Default (${BACKEND_LABELS[current] ?? current})` : 'Default',
+        },
         ...AVAILABLE_BACKENDS.filter(({ value }) => supported.includes(value)),
     ];
 
     return (
-        <Field label="TensorFlow Backend">
+        <Field label="TensorFlow Backend" htmlFor="tensorflow-backend">
             <Select
                 value={value}
                 disabled={disabled}
                 onValueChange={(value) => onChange(value as TensorBackend)}
             >
-                <SelectTrigger className="w-full truncate">
+                <SelectTrigger id="tensorflow-backend" className="w-full truncate">
                     <SelectValue placeholder="Select TensorFlow Backend" />
                 </SelectTrigger>
                 <SelectContent>

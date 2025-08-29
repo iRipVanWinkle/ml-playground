@@ -1,13 +1,5 @@
-import {
-    zeros,
-    ones,
-    type Tensor2D,
-    fill,
-    randomUniform,
-    randomNormal,
-    concat,
-    tidy,
-} from '@tensorflow/tfjs';
+import { zeros, ones, type Tensor2D, fill, concat, tidy, Rank } from '@tensorflow/tfjs';
+import { Randomizer } from '../random/Randomizer';
 
 export type ThetaInitializer = (shape: [number, number], withBias?: boolean) => Tensor2D;
 
@@ -51,7 +43,7 @@ export function constantInitializer(value: number): ThetaInitializer {
 export function uniformInitializer(min: number, max: number): ThetaInitializer {
     return (shape, withBias = true) =>
         tidy(() => {
-            const tensor = randomUniform(shape, min, max, 'float32', 42) as Tensor2D;
+            const tensor = Randomizer.randomUniform<Rank.R2>(shape, min, max);
             return withBias ? addBiasRow(tensor) : tensor;
         });
 }
@@ -62,7 +54,7 @@ export function uniformInitializer(min: number, max: number): ThetaInitializer {
 export function normalInitializer(mean: number, stddev: number): ThetaInitializer {
     return (shape, withBias = true) =>
         tidy(() => {
-            const tensor = randomNormal(shape, mean, stddev, 'float32', 42) as Tensor2D;
+            const tensor = Randomizer.randomNormal<Rank.R2>(shape, mean, stddev);
             return withBias ? addBiasRow(tensor) : tensor;
         });
 }
@@ -75,7 +67,7 @@ export function xavierUniformInitializer(): ThetaInitializer {
         tidy(() => {
             const [fanIn, fanOut] = shape;
             const limit = Math.sqrt(6 / (fanIn + fanOut));
-            const tensor = randomUniform(shape, -limit, limit, 'float32', 42) as Tensor2D;
+            const tensor = Randomizer.randomUniform<Rank.R2>(shape, -limit, limit);
             return withBias ? addBiasRow(tensor) : tensor;
         });
 }
@@ -88,7 +80,7 @@ export function xavierNormalInitializer(): ThetaInitializer {
         tidy(() => {
             const [fanIn, fanOut] = shape;
             const stddev = Math.sqrt(2 / (fanIn + fanOut));
-            const tensor = randomNormal(shape, 0, stddev, 'float32', 42) as Tensor2D;
+            const tensor = Randomizer.randomNormal<Rank.R2>(shape, 0, stddev);
             return withBias ? addBiasRow(tensor) : tensor;
         });
 }
@@ -101,7 +93,7 @@ export function heUniformInitializer(): ThetaInitializer {
         tidy(() => {
             const fanIn = shape[0];
             const limit = Math.sqrt(6 / fanIn);
-            const tensor = randomUniform(shape, -limit, limit, 'float32', 42) as Tensor2D;
+            const tensor = Randomizer.randomUniform<Rank.R2>(shape, -limit, limit);
             return withBias ? addBiasRow(tensor) : tensor;
         });
 }
@@ -114,7 +106,7 @@ export function heNormalInitializer(): ThetaInitializer {
         tidy(() => {
             const fanIn = shape[0];
             const stddev = Math.sqrt(2 / fanIn);
-            const tensor = randomNormal(shape, 0, stddev, 'float32', 42) as Tensor2D;
+            const tensor = Randomizer.randomNormal<Rank.R2>(shape, 0, stddev);
             return withBias ? addBiasRow(tensor) : tensor;
         });
 }
