@@ -83,9 +83,13 @@ export default function Optimizer({ optimizer, disabled, onChange }: OptimizerPr
 
     return (
         <>
-            <Field label="Optimizer">
+            <Field label="Optimizer" htmlFor="optimizerSelect">
                 <Select disabled={disabled} value={optimizer.type} onValueChange={handleTypeChange}>
-                    <SelectTrigger className="w-full truncate">
+                    <SelectTrigger
+                        id="optimizerSelect"
+                        className="w-full truncate"
+                        data-testid="optimizer-select"
+                    >
                         <SelectValue placeholder="Select optimizer" />
                     </SelectTrigger>
                     <SelectContent>
@@ -103,8 +107,10 @@ export default function Optimizer({ optimizer, disabled, onChange }: OptimizerPr
             </Field>
 
             {optimizer.type === 'sgd' && (
-                <Field label="Batch Size">
+                <Field label="Batch Size" htmlFor="batchSizeInput">
                     <Input
+                        id="batchSizeInput"
+                        data-testid="batch-size-input"
                         className="w-1/2"
                         disabled={disabled}
                         step={1}
@@ -118,8 +124,9 @@ export default function Optimizer({ optimizer, disabled, onChange }: OptimizerPr
             )}
 
             {optimizer.type === 'momentum' && (
-                <Field label="Beta (Momentum Factor)">
+                <Field label="Beta (Momentum Factor)" htmlFor="momentumBetaInput">
                     <Input
+                        id="momentumBetaInput"
                         className="w-1/2"
                         disabled={disabled}
                         type="number"
@@ -134,8 +141,10 @@ export default function Optimizer({ optimizer, disabled, onChange }: OptimizerPr
             )}
 
             <div className="grid grid-cols-2 gap-2">
-                <Field label="Max Iterations">
+                <Field label="Max Iterations" htmlFor="maxIterationsInput">
                     <Input
+                        id="maxIterationsInput"
+                        data-testid="max-iterations-input"
                         disabled={disabled}
                         type="number"
                         placeholder="Max Iterations"
@@ -144,8 +153,9 @@ export default function Optimizer({ optimizer, disabled, onChange }: OptimizerPr
                     />
                 </Field>
 
-                <Field label="Tolerance">
+                <Field label="Tolerance" htmlFor="toleranceInput">
                     <Input
+                        id="toleranceInput"
                         disabled={disabled}
                         type="number"
                         min={0}
@@ -157,8 +167,10 @@ export default function Optimizer({ optimizer, disabled, onChange }: OptimizerPr
                 </Field>
             </div>
             <div className="grid grid-cols-2 gap-2">
-                <Field label="Learning Rate">
+                <Field label="Learning Rate" htmlFor="learningRateInput">
                     <Input
+                        id="learningRateInput"
+                        data-testid="learning-rate-input"
                         disabled={disabled}
                         type="number"
                         step={0.001}
@@ -170,19 +182,22 @@ export default function Optimizer({ optimizer, disabled, onChange }: OptimizerPr
                 </Field>
                 <div className="flex items-center gap-2 mt-6">
                     <Checkbox
-                        id="scheduler"
+                        id="schedulerCheckbox"
+                        data-testid="scheduler-checkbox"
                         disabled={disabled}
                         checked={!!optimizer.scheduler}
                         onCheckedChange={(checked) => handleSchedulerChange(checked === true)}
                     />
-                    <Label htmlFor="scheduler">Enable scheduler</Label>
+                    <Label htmlFor="schedulerCheckbox">Enable scheduler</Label>
                 </div>
             </div>
 
             {optimizer.scheduler && (
                 <div className="grid grid-cols-2 gap-2">
-                    <Field label="Decay Offset (s₀)">
+                    <Field label="Decay Offset (s₀)" htmlFor="decayOffsetInput">
                         <Input
+                            id="decayOffsetInput"
+                            data-testid="decay-offset-input"
                             disabled={disabled}
                             type="number"
                             step={0.1}
@@ -191,8 +206,10 @@ export default function Optimizer({ optimizer, disabled, onChange }: OptimizerPr
                             onChange={(e) => handleSchedulerConfigChange('s0', e.target.value)}
                         />
                     </Field>
-                    <Field label="Decay Power (p)">
+                    <Field label="Decay Power (p)" htmlFor="decayPowerInput">
                         <Input
+                            id="decayPowerInput"
+                            data-testid="decay-power-input"
                             disabled={disabled}
                             type="number"
                             step={0.1}

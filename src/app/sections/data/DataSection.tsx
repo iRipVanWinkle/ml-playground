@@ -175,7 +175,7 @@ export default function DataSection() {
             </CardHeader>
             <CardContent className="grid gap-5">
                 <div className="grid gap-2">
-                    <Label>
+                    <Label htmlFor="datasetSelect">
                         Dataset{' '}
                         <InfoTooltip>
                             Choose your dataset from available options or upload a new one.
@@ -186,7 +186,11 @@ export default function DataSection() {
                         onValueChange={handleChangeDataset}
                         disabled={isTraining}
                     >
-                        <SelectTrigger className="w-full truncate">
+                        <SelectTrigger
+                            id="datasetSelect"
+                            className="w-full truncate"
+                            data-testid="dataset-select"
+                        >
                             <SelectValue placeholder="Select dataset" />
                         </SelectTrigger>
                         <SelectContent>
@@ -196,11 +200,14 @@ export default function DataSection() {
                                 </SelectItem>
                             ))}
                             <SelectSeparator />
-                            <SelectItem value="custom">Custom Dataset</SelectItem>
+                            <SelectItem value="custom" data-testid="custom-dataset-option">
+                                Custom Dataset
+                            </SelectItem>
                         </SelectContent>
                     </Select>
                     {state.datasetPath === 'custom' && (
                         <Input
+                            data-testid="custom-dataset-input"
                             type="file"
                             accept=".csv"
                             disabled={isTraining}
@@ -226,6 +233,7 @@ export default function DataSection() {
                         </div>
                         <Switch
                             id="shuffle"
+                            data-testid="shuffle-switch"
                             disabled={isTraining}
                             checked={state.shuffleData}
                             onCheckedChange={(checked) =>
@@ -255,7 +263,7 @@ export default function DataSection() {
                 </div>
 
                 <div className="grid gap-2">
-                    <Label>
+                    <Label htmlFor="normalizationSelect">
                         Normalization{' '}
                         <InfoTooltip>
                             Scale features to improve model training.{' '}
@@ -269,7 +277,11 @@ export default function DataSection() {
                         value={dataSettings.normalization}
                         onValueChange={handleChangeNormalization}
                     >
-                        <SelectTrigger className="w-50">
+                        <SelectTrigger
+                            id="normalizationSelect"
+                            className="w-50"
+                            data-testid="normalization-select"
+                        >
                             <SelectValue placeholder="Select normalization" />
                         </SelectTrigger>
                         <SelectContent>

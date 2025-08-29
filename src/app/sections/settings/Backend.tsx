@@ -42,13 +42,17 @@ export function Backend({ value, disabled, onChange }: BackendProps) {
     ];
 
     return (
-        <Field label="TensorFlow Backend" htmlFor="tensorflow-backend">
+        <Field label="TensorFlow Backend" htmlFor="tensorflowBackendSelect">
             <Select
                 value={value}
                 disabled={disabled}
                 onValueChange={(value) => onChange(value as TensorBackend)}
             >
-                <SelectTrigger id="tensorflow-backend" className="w-full truncate">
+                <SelectTrigger
+                    id="tensorflowBackendSelect"
+                    className="w-full truncate"
+                    data-testid="tensorflow-backend-select"
+                >
                     <SelectValue placeholder="Select TensorFlow Backend" />
                 </SelectTrigger>
                 <SelectContent>

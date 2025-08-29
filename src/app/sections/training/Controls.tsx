@@ -22,7 +22,7 @@ export function Controls() {
     const handleStep = () => model.step();
 
     let buttons = (
-        <Button onClick={handleTrain} disabled={!hasData}>
+        <Button onClick={handleTrain} disabled={!hasData} data-testid="start-training">
             <Play />
             Start Training
         </Button>
@@ -40,13 +40,17 @@ export function Controls() {
     if (state === 'training') {
         buttons = (
             <>
-                <Button onClick={handleStop} disabled={isPendingStop}>
+                <Button onClick={handleStop} disabled={isPendingStop} data-testid="stop-training">
                     <DelayedLoader flag={isPendingStop}>
                         <Square />
                     </DelayedLoader>
                     Stop
                 </Button>
-                <Button onClick={handlePause} disabled={isPendingPause || isPendingStop}>
+                <Button
+                    onClick={handlePause}
+                    disabled={isPendingPause || isPendingStop}
+                    data-testid="pause-training"
+                >
                     <DelayedLoader flag={isPendingPause}>
                         <Pause />
                     </DelayedLoader>
@@ -59,19 +63,27 @@ export function Controls() {
     if (state === 'paused') {
         buttons = (
             <>
-                <Button onClick={handleStop} disabled={isPendingStop}>
+                <Button onClick={handleStop} disabled={isPendingStop} data-testid="stop-training">
                     <DelayedLoader flag={isPendingStop}>
                         <Square />
                     </DelayedLoader>
                     Stop
                 </Button>
-                <Button onClick={handleResume} disabled={isPendingResume || isPendingStop}>
+                <Button
+                    onClick={handleResume}
+                    disabled={isPendingResume || isPendingStop}
+                    data-testid="resume-training"
+                >
                     <DelayedLoader flag={isPendingResume}>
                         <Play />
                     </DelayedLoader>
                     Resume
                 </Button>
-                <Button onClick={handleStep} disabled={isPendingStep || isPendingStop}>
+                <Button
+                    onClick={handleStep}
+                    disabled={isPendingStep || isPendingStop}
+                    data-testid="step-forward"
+                >
                     <DelayedLoader flag={isPendingStep}>
                         <StepForward />
                     </DelayedLoader>

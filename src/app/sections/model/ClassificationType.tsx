@@ -66,6 +66,7 @@ export default function ClassificationType({
                                 <RadioGroupItem
                                     value={model.value}
                                     id={model.value}
+                                    data-testid={`classification-type-${model.value}`}
                                     disabled={model.disabled || disabledBinary}
                                 />
                                 <Label className="font-normal" htmlFor={model.value}>

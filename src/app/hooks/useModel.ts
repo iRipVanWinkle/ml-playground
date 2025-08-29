@@ -99,6 +99,7 @@ export const useModel = () => {
             forType('finished', () => {
                 setTrainingStatus('init');
                 terminateWorker();
+                toast.success('Training finished');
             }),
         );
 

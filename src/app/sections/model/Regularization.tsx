@@ -58,13 +58,17 @@ export default function Regularization({
     return (
         <>
             <div className={containerClass}>
-                <Field label="Regularization">
+                <Field label="Regularization" htmlFor="regularizationSelect">
                     <Select
                         disabled={disabled}
                         value={regularization.type as string}
                         onValueChange={(value) => handleFunctionChange(value as RegularizationName)}
                     >
-                        <SelectTrigger className="w-full truncate">
+                        <SelectTrigger
+                            id="regularizationSelect"
+                            className="w-full truncate"
+                            data-testid="regularization-select"
+                        >
                             <SelectValue placeholder="Select regularization method" />
                         </SelectTrigger>
                         <SelectContent>
@@ -82,8 +86,10 @@ export default function Regularization({
                 </Field>
 
                 {isL && (
-                    <Field label="Lambda">
+                    <Field label="Lambda" htmlFor="lambdaInput">
                         <Input
+                            id="lambdaInput"
+                            data-testid="lambda-input"
                             disabled={disabled}
                             placeholder="Lambda (λ)"
                             step={0.1}

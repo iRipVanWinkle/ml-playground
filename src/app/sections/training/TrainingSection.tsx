@@ -33,7 +33,7 @@ export default function TrainingSection() {
                         <Controls />
                     </div>
 
-                    <div className="flex items-center justify-end">
+                    <div className="flex items-center justify-end" data-testid="training-progress">
                         {currentIteration.toFixed(0)}/{maxIterations}
                     </div>
                 </div>

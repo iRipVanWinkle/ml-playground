@@ -13,9 +13,10 @@ export function RandomSeed({ value, disabled, onChange }: RandomSeedProps) {
     };
 
     return (
-        <Field label="Random Seed" htmlFor="random-seed">
+        <Field label="Random Seed" htmlFor="randomSeedInput">
             <Input
-                id="random-seed"
+                id="randomSeedInput"
+                data-testid="random-seed-input"
                 className="w-50"
                 type="number"
                 value={value ?? ''}

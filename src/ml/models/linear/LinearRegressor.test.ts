@@ -514,4 +514,58 @@ describe('LinearRegressor', () => {
             normalizedModel.dispose?.();
         });
     });
+
+    describe('compare with tensorflow implementation', () => {
+        it('should return similar results', async () => {
+            // y = X * weights + bias
+            const numSamples = 100;
+            const numFeatures = 2;
+            const learningRate = 0.01;
+            const iterations = 100;
+
+            // Data
+            const X = tf.randomNormal([numSamples, numFeatures]) as tf.Tensor2D;
+            const trueWeights = tf.tensor2d([[2.5], [1.8]]);
+            const trueBias = 0.5;
+            const y = X.matMul(trueWeights).add(trueBias) as tf.Tensor2D;
+
+            // TensorFlow.js model
+            const weights = tf.variable(tf.zeros([numFeatures, 1]));
+            const bias = tf.variable(tf.scalar(0));
+            const optimizer = tf.train.sgd(learningRate);
+            for (let i = 0; i < iterations; i++) {
+                const grads = tf.variableGrads(() => {
+                    const yPred = X.matMul(weights).add(bias);
+                    return tf.losses.meanSquaredError(y, yPred);
+                });
+                optimizer.applyGradients(grads.grads);
+            }
+
+            const biasValue = bias.dataSync()[0];
+            const weightsValue = weights.arraySync() as number[][];
+
+            // Homemade implementation
+            const customModel = new LinearRegressor({
+                lossFunc: new MeanSquaredError(),
+                optimizer: new BatchGD({
+                    learningRate: learningRate * 2, // Increase learning rate since custom MSE implementation omits the ×2 factor
+                    maxIterations: 100,
+                }),
+            });
+
+            const theta = await customModel.train(X, y);
+            const thetaArray = theta.arraySync();
+
+            expect(thetaArray[0][0]).toBeCloseTo(biasValue, 5);
+            expect(thetaArray[1][0]).toBeCloseTo(weightsValue[0][0], 5);
+            expect(thetaArray[2][0]).toBeCloseTo(weightsValue[1][0], 5);
+
+            X.dispose();
+            y.dispose();
+            theta.dispose();
+            weights.dispose();
+            bias.dispose();
+            trueWeights.dispose();
+        });
+    });
 });

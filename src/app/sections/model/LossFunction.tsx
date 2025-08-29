@@ -83,13 +83,17 @@ export default function LossFunction({
 
     return (
         <div className={containerClass}>
-            <Field label="Loss Function" htmlFor="loss-function">
+            <Field label="Loss Function" htmlFor="lossFunctionSelect">
                 <Select
                     disabled={disabled}
                     value={lossFunction.type as string}
                     onValueChange={(value) => handleFunctionChange(value as LossFunctionName)}
                 >
-                    <SelectTrigger id="loss-function" className="w-full truncate">
+                    <SelectTrigger
+                        id="lossFunctionSelect"
+                        className="w-full truncate"
+                        data-testid="loss-function-select"
+                    >
                         <SelectValue placeholder="Select loss function" />
                     </SelectTrigger>
                     <SelectContent>
@@ -106,9 +110,10 @@ export default function LossFunction({
                 </Select>
             </Field>
             {lossFunction.type === 'huber' && (
-                <Field label="Delta" htmlFor="huber-delta">
+                <Field label="Delta" htmlFor="huberDeltaInput">
                     <Input
-                        id="huber-delta"
+                        id="huberDeltaInput"
+                        data-testid="huber-delta-input"
                         disabled={disabled}
                         placeholder="Delta"
                         step={0.1}

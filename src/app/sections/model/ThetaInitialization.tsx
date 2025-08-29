@@ -55,7 +55,7 @@ export default function ThetaInitialization({
 
     return (
         <>
-            <Field label="Weight Initialization">
+            <Field label="Weight Initialization" htmlFor="thetaInitializationSelect">
                 <Select
                     disabled={disabled}
                     value={thetaInitialization.type}
@@ -63,7 +63,11 @@ export default function ThetaInitialization({
                         handleTypeChange(value as ThetaInitializationConfig['type'])
                     }
                 >
-                    <SelectTrigger className="w-full truncate">
+                    <SelectTrigger
+                        id="thetaInitializationSelect"
+                        className="w-full truncate"
+                        data-testid="theta-initialization-select"
+                    >
                         <SelectValue placeholder="Select initial weight" />
                     </SelectTrigger>
                     <SelectContent>
@@ -82,8 +86,10 @@ export default function ThetaInitialization({
 
             {thetaInitialization.type === 'constant' && (
                 <div className="grid grid-cols-2 gap-2">
-                    <Field label="Constant Value">
+                    <Field label="Constant Value" htmlFor="constantValueInput">
                         <Input
+                            id="constantValueInput"
+                            data-testid="constant-value-input"
                             disabled={disabled}
                             type="number"
                             step={0.1}
@@ -96,8 +102,9 @@ export default function ThetaInitialization({
 
             {thetaInitialization.type === 'uniform' && (
                 <div className="grid grid-cols-2 gap-2">
-                    <Field label="Min Value">
+                    <Field label="Min Value" htmlFor="uniformMinInput">
                         <Input
+                            id="uniformMinInput"
                             disabled={disabled}
                             type="number"
                             step={0.01}
@@ -106,8 +113,9 @@ export default function ThetaInitialization({
                         />
                     </Field>
 
-                    <Field label="Max Value">
+                    <Field label="Max Value" htmlFor="uniformMaxInput">
                         <Input
+                            id="uniformMaxInput"
                             disabled={disabled}
                             type="number"
                             step={0.01}
@@ -120,8 +128,9 @@ export default function ThetaInitialization({
 
             {thetaInitialization.type === 'normal' && (
                 <div className="grid grid-cols-2 gap-2">
-                    <Field label="Mean">
+                    <Field label="Mean" htmlFor="normalMeanInput">
                         <Input
+                            id="normalMeanInput"
                             disabled={disabled}
                             type="number"
                             step={0.01}
@@ -130,8 +139,9 @@ export default function ThetaInitialization({
                         />
                     </Field>
 
-                    <Field label="Standard Deviation">
+                    <Field label="Standard Deviation" htmlFor="normalStddevInput">
                         <Input
+                            id="normalStddevInput"
                             disabled={disabled}
                             type="number"
                             step={0.01}

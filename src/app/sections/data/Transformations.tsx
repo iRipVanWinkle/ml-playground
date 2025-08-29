@@ -68,6 +68,7 @@ export default function Transformations({
                 return (
                     <div
                         key={index}
+                        data-testid="transformation-container"
                         className="flex flex-col gap-2 rounded-lg border bg-accent/40 p-2"
                     >
                         <div className="grid grid-cols-[2fr_1fr_1fr] gap-2 items-center">
@@ -76,7 +77,10 @@ export default function Transformations({
                                 value={transformation.type}
                                 onValueChange={(value) => handleUpdateType(index, value)}
                             >
-                                <SelectTrigger className="w-full bg-white">
+                                <SelectTrigger
+                                    className="w-full bg-white"
+                                    data-testid="transformation-type-select"
+                                >
                                     <SelectValue placeholder="Transform" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -85,6 +89,7 @@ export default function Transformations({
                                 </SelectContent>
                             </Select>
                             <Input
+                                data-testid="degree-input"
                                 className="bg-white"
                                 type="number"
                                 min={1}
@@ -95,6 +100,7 @@ export default function Transformations({
                             />
                             <Button
                                 size="sm"
+                                data-testid="remove-transformation-button"
                                 className="px-2 py-1"
                                 variant="destructive"
                                 disabled={disabled}
@@ -118,7 +124,12 @@ export default function Transformations({
                 );
             })}
 
-            <Button size="sm" disabled={disabled} onClick={handleNewTransformation}>
+            <Button
+                size="sm"
+                disabled={disabled}
+                onClick={handleNewTransformation}
+                data-testid="add-transformation-button"
+            >
                 + Add Transformation
             </Button>
         </>
