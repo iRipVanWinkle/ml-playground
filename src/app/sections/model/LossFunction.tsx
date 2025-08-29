@@ -8,6 +8,7 @@ import {
 } from '@/app/components/ui/select';
 import type { LossFunction as LossFunctionName, LossFunctionConfig, TaskType } from '@/app/store';
 import type { OptionList } from '../types';
+import { Input } from '@/app/components/ui/input';
 
 type LossFunctionProps = {
     taskType: TaskType;
@@ -15,6 +16,8 @@ type LossFunctionProps = {
     disabled?: boolean;
     onChange: (config: LossFunctionConfig) => void;
 };
+
+const DEFAULT_HUBER_DELTA = 1;
 
 const DEFAULT_LINEAR_LOSS_FUNCTIONS: OptionList = [
     {
@@ -24,6 +27,10 @@ const DEFAULT_LINEAR_LOSS_FUNCTIONS: OptionList = [
     {
         value: 'mae',
         label: 'MAE (Mean Absolute Error)',
+    },
+    {
+        value: 'huber',
+        label: 'Huber',
     },
 ];
 
@@ -53,7 +60,11 @@ export default function LossFunction({
     onChange,
 }: LossFunctionProps) {
     const handleFunctionChange = (type: LossFunctionName) => {
-        onChange({ type });
+        if (type === 'huber') {
+            onChange({ type: 'huber', delta: DEFAULT_HUBER_DELTA });
+        } else {
+            onChange({ type });
+        }
     };
 
     const lossFunctions =
@@ -61,15 +72,20 @@ export default function LossFunction({
             ? DEFAULT_LOGISTIC_LOSS_FUNCTIONS
             : DEFAULT_LINEAR_LOSS_FUNCTIONS;
 
+    let containerClass = 'grid gap-2';
+    if (lossFunction.type === 'huber') {
+        containerClass += ' grid-cols-2';
+    }
+
     return (
-        <div className="grid gap-2">
-            <Field label="Loss Function">
+        <div className={containerClass}>
+            <Field label="Loss Function" htmlFor="loss-function">
                 <Select
                     disabled={disabled}
                     value={lossFunction.type as string}
                     onValueChange={(value) => handleFunctionChange(value as LossFunctionName)}
                 >
-                    <SelectTrigger className="w-full truncate">
+                    <SelectTrigger id="loss-function" className="w-full truncate">
                         <SelectValue placeholder="Select loss function" />
                     </SelectTrigger>
                     <SelectContent>
@@ -85,6 +101,21 @@ export default function LossFunction({
                     </SelectContent>
                 </Select>
             </Field>
+            {lossFunction.type === 'huber' && (
+                <Field label="Delta" htmlFor="huber-delta">
+                    <Input
+                        id="huber-delta"
+                        disabled={disabled}
+                        placeholder="Delta"
+                        step={0.1}
+                        type="number"
+                        value={lossFunction.delta}
+                        onChange={(e) =>
+                            onChange({ ...lossFunction, delta: parseFloat(e.target.value) })
+                        }
+                    />
+                </Field>
+            )}
         </div>
     );
 }

@@ -7,6 +7,7 @@ export type TransformationFunction = 'sinusoid' | 'polynomial';
 export type LossFunction =
     | 'mse'
     | 'mae'
+    | 'huber'
     | 'binaryCrossentropy'
     | 'categoricalCrossentropy'
     | 'logitsBasedBinaryCrossentropy'
@@ -53,10 +54,15 @@ export type OptimizerConfig = OptimizerBatchConfig | OptimizerSGDConfig | Optimi
 // LOSS FUNCTION
 
 type LossFunctionGeneralConfig = {
-    type: LossFunction;
+    type: Exclude<LossFunction, 'huber'>;
 };
 
-export type LossFunctionConfig = LossFunctionGeneralConfig;
+type LossFunctionHuberConfig = {
+    type: 'huber';
+    delta: number;
+};
+
+export type LossFunctionConfig = LossFunctionGeneralConfig | LossFunctionHuberConfig;
 
 // REGULARIZATION
 
