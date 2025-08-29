@@ -1,5 +1,5 @@
 export * from './useModel';
-export * from './useSupportedBackends';
+export * from './useDetectTfjsBackends';
 export * from './useLinearPlotData';
 export * from './useLogisticPlotData';
 export * from './useMNISTGridFrame';
