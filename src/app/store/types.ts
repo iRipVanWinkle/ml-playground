@@ -8,6 +8,7 @@ export type LossFunction =
     | 'mse'
     | 'mae'
     | 'huber'
+    | 'logcosh'
     | 'binaryCrossentropy'
     | 'categoricalCrossentropy'
     | 'logitsBasedBinaryCrossentropy'

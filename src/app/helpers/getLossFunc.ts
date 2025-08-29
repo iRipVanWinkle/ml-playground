@@ -6,6 +6,7 @@ import {
     CategoricalCrossentropy,
     CategoricalCrossentropyLogits,
     Huber,
+    LogCosh,
 } from '@/ml/losses';
 import type { LossFunction } from '@/ml/types';
 import type { LossFunctionConfig } from '@/app/store';
@@ -20,10 +21,13 @@ export function getLossFunc(lossFunction: LossFunctionConfig): LossFunction {
             return new CategoricalCrossentropy();
         case 'logitsBasedCategoricalCrossentropy':
             return new CategoricalCrossentropyLogits();
-        case 'mae':
-            return new MeanAbsoluteError();
+        case 'logcosh':
+            return new LogCosh();
         case 'huber':
             return new Huber(lossFunction.delta);
+        case 'mae':
+            return new MeanAbsoluteError();
+
         case 'mse':
         default:
             return new MeanSquaredError();

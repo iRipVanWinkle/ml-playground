@@ -32,6 +32,10 @@ const DEFAULT_LINEAR_LOSS_FUNCTIONS: OptionList = [
         value: 'huber',
         label: 'Huber',
     },
+    {
+        value: 'logcosh',
+        label: 'Log-Cosh',
+    },
 ];
 
 const DEFAULT_LOGISTIC_LOSS_FUNCTIONS: OptionList = [
