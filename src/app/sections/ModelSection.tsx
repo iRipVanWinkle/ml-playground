@@ -23,6 +23,7 @@ import LossFunction from './model/LossFunction';
 import Regularization from './model/Regularization';
 import ClassificationType from './model/ClassificationType';
 import ThetaInitialization from './model/ThetaInitialization';
+import TreeSettings from './model/TreeSettings';
 
 type OptionList = Array<{
     value: string;
@@ -35,12 +36,20 @@ const DEFAULT_REGRESSION_MODEL_TYPES = [
         value: 'linear',
         label: 'Linear Regression',
     },
+    {
+        value: 'tree',
+        label: 'Decision Tree',
+    },
 ] as OptionList;
 
 const DEFAULT_CLASSIFICATION_MODEL_TYPES = [
     {
         value: 'logistic',
         label: 'Logistic Regression',
+    },
+    {
+        value: 'tree',
+        label: 'Decision Tree',
     },
 ] as OptionList;
 
@@ -55,6 +64,8 @@ export default function ModelSection() {
         taskType === 'regression'
             ? DEFAULT_REGRESSION_MODEL_TYPES
             : DEFAULT_CLASSIFICATION_MODEL_TYPES;
+
+    const isTreeModel = data.type === 'tree';
 
     return (
         <Card className="gap-5">
@@ -94,30 +105,50 @@ export default function ModelSection() {
                     />
                 )}
 
-                <LossFunction
-                    taskType={taskType}
-                    lossFunction={data.lossFunction}
-                    disabled={isTraining}
-                    onChange={(lossFunction) => updateModelSettings({ lossFunction })}
-                />
+                {isTreeModel && (
+                    <>
+                        <TreeSettings
+                            taskType={taskType}
+                            settings={data.tree}
+                            lossFunction={data.lossFunction}
+                            disabled={isTraining}
+                            onChange={(tree) => updateModelSettings({ tree })}
+                            onChangeLossFunction={(lossFunction) =>
+                                updateModelSettings({ lossFunction })
+                            }
+                        />
+                    </>
+                )}
+                {!isTreeModel && (
+                    <>
+                        <LossFunction
+                            taskType={taskType}
+                            lossFunction={data.lossFunction}
+                            disabled={isTraining}
+                            onChange={(lossFunction) => updateModelSettings({ lossFunction })}
+                        />
 
-                <Optimizer
-                    optimizer={data.optimizer}
-                    disabled={isTraining}
-                    onChange={(optimizer) => updateModelSettings({ optimizer })}
-                />
+                        <Optimizer
+                            optimizer={data.optimizer}
+                            disabled={isTraining}
+                            onChange={(optimizer) => updateModelSettings({ optimizer })}
+                        />
 
-                <Regularization
-                    regularization={data.regularization}
-                    disabled={isTraining}
-                    onChange={(regularization) => updateModelSettings({ regularization })}
-                />
+                        <Regularization
+                            regularization={data.regularization}
+                            disabled={isTraining}
+                            onChange={(regularization) => updateModelSettings({ regularization })}
+                        />
 
-                <ThetaInitialization
-                    thetaInitialization={data.thetaInitialization}
-                    disabled={isTraining}
-                    onChange={(thetaInitialization) => updateModelSettings({ thetaInitialization })}
-                />
+                        <ThetaInitialization
+                            thetaInitialization={data.thetaInitialization}
+                            disabled={isTraining}
+                            onChange={(thetaInitialization) =>
+                                updateModelSettings({ thetaInitialization })
+                            }
+                        />
+                    </>
+                )}
             </CardContent>
         </Card>
     );

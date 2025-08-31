@@ -1,6 +1,6 @@
 import { type Scalar, type Tensor2D, tidy } from '@tensorflow/tfjs';
 import { BaseEstimator } from '../base/BaseEstimator';
-import { assertThetaTrained } from '../../utils';
+import { assertModelTrained } from '../../utils';
 
 export class LinearRegressor extends BaseEstimator {
     async train(X: Tensor2D, y: Tensor2D): Promise<Tensor2D> {
@@ -49,7 +49,7 @@ export class LinearRegressor extends BaseEstimator {
     }
 
     predict(X: Tensor2D, theta?: Tensor2D): Tensor2D {
-        assertThetaTrained(theta ?? this.theta);
+        assertModelTrained(theta ?? this.theta);
 
         const result = this.hypothesis(X, theta ?? this.theta!);
 
@@ -57,7 +57,7 @@ export class LinearRegressor extends BaseEstimator {
     }
 
     evaluate(X: Tensor2D, y: Tensor2D, theta?: Tensor2D): [Tensor2D, Tensor2D, Scalar] {
-        assertThetaTrained(theta ?? this.theta);
+        assertModelTrained(theta ?? this.theta);
 
         const result = tidy(() => {
             const yPred = this.hypothesis(X, theta ?? this.theta!);

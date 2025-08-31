@@ -20,28 +20,36 @@ export type MetricFunction = (yTrue: Tensor2D, yPred: Tensor2D) => Scalar;
  */
 export type EnsembleAggregatorFn = (predictions: Tensor2D | Tensor3D) => Tensor2D;
 
-export type OptimizerCallbackParameters<T> = Readonly<{
+export type TreeCallbackParameters = Readonly<{
+    threadId: number;
+    iteration: number;
+    tree: TreeNode;
+    threadName?: string;
+}>;
+
+export type OptimizerCallbackParameters = Readonly<{
     threadId: number;
     iteration: number;
     alfa: number;
     loss: number;
-    theta: T;
+    theta: Tensor2D;
     threadName?: string;
 }>;
-export type OptimizerCallback<T> = (params: OptimizerCallbackParameters<T>) => Promise<void> | void;
+
+export type CallbackParameters = OptimizerCallbackParameters | TreeCallbackParameters;
 
 export type TrainingState = 'transforming' | 'training' | 'paused' | 'stopped' | 'stepped-forward';
 /**
  * Interface for training event listeners.
  */
-export interface TrainingEventEmitter<T> extends EventEmitter {
+export interface TrainingEventEmitter extends EventEmitter {
     on(event: 'state', listener: (state: TrainingState) => void): void;
-    on(event: 'callback', listener: (params: OptimizerCallbackParameters<T>) => void): void;
+    on(event: 'callback', listener: (params: CallbackParameters) => void): void;
     on(event: 'error', listener: (message: string) => void): void;
     on(event: 'info', listener: (message: string) => void): void;
 
     emit(event: 'state', state: TrainingState): Promise<void>;
-    emit(event: 'callback', params: OptimizerCallbackParameters<T>): Promise<void>;
+    emit(event: 'callback', params: CallbackParameters): Promise<void>;
     emit(event: 'error', message: string): Promise<void>;
     emit(event: 'info', message: string): Promise<void>;
 }
@@ -137,6 +145,30 @@ export interface LossFunction {
      * @returns boolean indicating whether the loss function uses logits.
      */
     usesLogits?(): boolean;
+
+    /**
+     * Disposes of any resources used by the loss function.
+     */
+    dispose?(): void;
+}
+
+export interface CriterionFunction {
+    /**
+     * Computes the impurity score for a set of values.
+     *
+     * @param yValues - The values to compute the impurity score for.
+     * @returns Scalar representing the impurity score.
+     */
+    impurity(yTrue: number[][]): number;
+
+    /**
+     * Computes the loss between true values and predicted values.
+     *
+     * @param yTrue - The true values (labels).
+     * @param yPred - The predicted values.
+     * @returns Scalar representing the computed loss.
+     */
+    loss(yTrue: Tensor2D, yPred: Tensor2D): Scalar;
 
     /**
      * Disposes of any resources used by the loss function.

@@ -6,7 +6,7 @@ import type {
     OptimizerCallbackParameters,
     TrainingEventEmitter,
 } from '../types';
-import { DEFAULT_TOLERANCE } from '../constants';
+import { DEFAULT_TOLERANCE, EVENT_LOOP_YIELD_MS, PAUSE_CHECK_INTERVAL_MS } from '../constants';
 import { assert } from '../utils';
 
 /**
@@ -17,7 +17,7 @@ export type OptimizerOptions = Readonly<{
     maxIterations: number;
     tolerance?: number;
     withBias?: boolean;
-    eventEmitter?: TrainingEventEmitter<Tensor2D>;
+    eventEmitter?: TrainingEventEmitter;
 }>;
 
 export abstract class BaseOptimizer implements Optimizer {
@@ -25,7 +25,7 @@ export abstract class BaseOptimizer implements Optimizer {
     protected maxIterations: number;
     protected tolerance: number;
     protected withBias: boolean;
-    protected eventEmitter?: TrainingEventEmitter<Tensor2D>;
+    protected eventEmitter?: TrainingEventEmitter;
 
     private isPaused = false;
     private isStopped = false;
@@ -73,19 +73,11 @@ export abstract class BaseOptimizer implements Optimizer {
 
     async *iterator(): AsyncGenerator<number, void, unknown> {
         for (let iteration = 0; iteration < this.maxIterations; iteration++) {
-            if (this.isSyncBackend()) {
-                await new Promise((resolve) => setTimeout(resolve)); // Yield control to the event loop
-            }
-
-            while (this.isPaused && !this.stepRequested) {
-                await new Promise((resolve) => setTimeout(resolve, 100)); // Wait while paused
-            }
+            await this.handleControlFlow();
 
             if (this.isStopped) {
                 break; // Stop the generator
             }
-
-            this.stepRequested = false; // Reset step request
 
             yield iteration; // Yield the current iteration
         }
@@ -101,8 +93,22 @@ export abstract class BaseOptimizer implements Optimizer {
         this.eventEmitter?.emit('error', message);
     }
 
-    protected callback(params: OptimizerCallbackParameters<Tensor2D>): Promise<void> | undefined {
+    protected callback(params: OptimizerCallbackParameters): Promise<void> | undefined {
         return this.eventEmitter?.emit('callback', params);
+    }
+
+    private async handleControlFlow(): Promise<void> {
+        // Yield to event loop
+        if (this.isSyncBackend()) {
+            await new Promise((resolve) => setTimeout(resolve, EVENT_LOOP_YIELD_MS));
+        }
+
+        // Handle pause state
+        while (this.isPaused && !this.stepRequested && !this.isStopped) {
+            await new Promise((resolve) => setTimeout(resolve, PAUSE_CHECK_INTERVAL_MS));
+        }
+
+        this.stepRequested = false; // Reset step request
     }
 
     private isSyncBackend(): boolean {

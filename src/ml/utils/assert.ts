@@ -1,5 +1,3 @@
-import type { Tensor2D } from '@tensorflow/tfjs';
-
 /**
  * Asserts that a condition is true. If not, throws an error with the provided message.
  * @param condition - The condition to check.
@@ -15,6 +13,9 @@ export function assert(condition: boolean, message: string) {
  * Asserts that the model has been trained by checking if the theta parameter is not null.
  * @param theta - The model parameters to check.
  */
-export function assertThetaTrained(theta: Tensor2D | null): void {
-    assert(!!theta, 'Model has not been trained yet. Please call train() first.');
+export function assertModelTrained(value: unknown): void {
+    assert(
+        !!value && (!Array.isArray(value) || value.length > 0),
+        'Model has not been trained yet. Please call train() first.',
+    );
 }

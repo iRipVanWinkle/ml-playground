@@ -4,8 +4,8 @@ import '@tensorflow/tfjs-backend-wasm';
 import { setWasmPaths } from '@tensorflow/tfjs-backend-wasm';
 import { createModel, setRandomSeed } from '@/app/helpers';
 import type {
+    CallbackParameters,
     ModelRepresentation,
-    OptimizerCallbackParameters,
     TrainingEventEmitter,
     TrainingState,
 } from '@/ml/types';
@@ -31,7 +31,7 @@ type TrainedModel = PreprocessingModelDecorator<ModelRepresentation>;
 export class TrainingOrchestrator {
     private model: TrainedModel;
     private datasetManager: DatasetManager;
-    private eventEmitter: TrainingEventEmitter<ModelRepresentation>;
+    private eventEmitter: TrainingEventEmitter;
     private callbacks: TrainingCallbacks;
     private liveMetrics: LiveMetrics;
     private liveMetricsProps: LiveMetricsProps;
@@ -43,9 +43,9 @@ export class TrainingOrchestrator {
     private isClassificationTask = false;
 
     constructor(state: State, callbacks: TrainingCallbacks) {
-        const { modelSettings, dataSettings, systemSettings, data } = state;
+        const { modelSettings, dataSettings, systemSettings, data, taskType } = state;
 
-        const [model, eventEmitter] = createModel(modelSettings, dataSettings);
+        const [model, eventEmitter] = createModel(modelSettings, dataSettings, taskType);
 
         this.model = model;
         this.callbacks = callbacks;
@@ -188,18 +188,11 @@ export class TrainingOrchestrator {
         });
     }
 
-    private async handleTrainingIteration(
-        params: OptimizerCallbackParameters<ModelRepresentation>,
-    ): Promise<void> {
+    private async handleTrainingIteration(params: CallbackParameters): Promise<void> {
         if (!this.trainingSession) return;
 
         // Update training session state
-        this.trainingSession.updateIteration(
-            params.threadId,
-            params.iteration,
-            params.theta,
-            params.loss,
-        );
+        this.trainingSession.updateIteration(params);
 
         const metrics = this.isClassificationTask ? [accuracy] : [];
         const liveResults = await this.liveMetrics.calculate(this.trainingSession, metrics);

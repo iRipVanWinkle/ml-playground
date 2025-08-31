@@ -44,7 +44,7 @@ export class LiveMetrics {
     }
 
     async calculate(session: TrainingSession, metrics: MetricFunction[]): Promise<LiveResults> {
-        const combinedTheta = session.getCombinedTheta();
+        const modelRepresentation = session.getModelRepresentation();
 
         const trainingData = this.datasetManager.getTrainingData();
         const testData = this.datasetManager.getTestData();
@@ -61,14 +61,14 @@ export class LiveMetrics {
         let testLoss: Scalar | undefined;
 
         if (predictionData) {
-            yPredictions = this.model.predict(predictionData, combinedTheta);
+            yPredictions = this.model.predict(predictionData, modelRepresentation);
         }
 
         // eslint-disable-next-line prefer-const
         [yTraining, yTrainingProbability, trainLoss] = this.model.evaluate(
             trainingData.X,
             trainingData.y,
-            combinedTheta,
+            modelRepresentation,
         );
         // eslint-disable-next-line prefer-const
         [trainAccuracy] = metrics.map((metric) => metric(trainingData.y, yTraining!));
@@ -77,7 +77,7 @@ export class LiveMetrics {
             [yTesting, yTestingProbability, testLoss] = this.model.evaluate(
                 testData.X,
                 testData.y,
-                combinedTheta,
+                modelRepresentation,
             );
             [testAccuracy] = metrics.map((metric) => metric(testData.y, yTesting!));
         }
@@ -92,7 +92,10 @@ export class LiveMetrics {
             testLossValue,
             trainLossValue,
         ] = await Promise.all([
-            getTensorArray(combinedTheta instanceof Tensor ? combinedTheta : undefined, []),
+            getTensorArray(
+                modelRepresentation instanceof Tensor ? modelRepresentation : undefined,
+                [],
+            ),
             getTensorArray(yPredictions),
             getTensorArray(yTraining),
             getTensorArray(yTesting),
@@ -112,8 +115,8 @@ export class LiveMetrics {
         testAccuracy?.dispose();
         trainLoss?.dispose();
         testLoss?.dispose();
-        if (combinedTheta instanceof Tensor) {
-            combinedTheta.dispose();
+        if (modelRepresentation instanceof Tensor) {
+            modelRepresentation.dispose();
         }
 
         return {

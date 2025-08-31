@@ -37,9 +37,18 @@ export function setModelType(modelType: ModelType) {
         modelSettings: {
             ...state.modelSettings,
             type: modelType,
-            lossFunction: {
-                type: state.taskType === 'regression' ? 'mse' : 'binaryCrossentropy',
-            },
+            ...(modelType === 'tree'
+                ? {
+                      tree: {
+                          ...state.modelSettings.tree,
+                          criterion: { type: state.taskType === 'regression' ? 'mse' : 'gini' },
+                      },
+                  }
+                : {
+                      lossFunction: {
+                          type: state.taskType === 'regression' ? 'mse' : 'binaryCrossentropy',
+                      },
+                  }),
             thetaInitialization: {
                 type: 'zeros',
             },

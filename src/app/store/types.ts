@@ -1,5 +1,5 @@
 export type TaskType = 'regression' | 'classification';
-export type ModelType = 'linear' | 'logistic';
+export type ModelType = 'linear' | 'logistic' | 'tree';
 export type ClassificationType = 'binary' | 'softmax' | 'ovr';
 export type NormalizationFunction = 'none' | 'zscore';
 export type TransformationFunction = 'sinusoid' | 'polynomial';
@@ -13,7 +13,7 @@ export type LossFunction =
     | 'categoricalCrossentropy'
     | 'logitsBasedBinaryCrossentropy'
     | 'logitsBasedCategoricalCrossentropy';
-
+export type CriterionFunction = 'mse' | 'mae' | 'huber' | 'logcosh' | 'gini' | 'entropy';
 export type Regularization = 'none' | 'l2';
 
 export type TrainingState = 'init' | 'preparing' | 'training' | 'paused';
@@ -107,6 +107,32 @@ export type ThetaInitializationConfig =
     | ThetaInitializationUniformConfig
     | ThetaInitializationNormalConfig;
 
+// TREE
+
+export type TreeModelVariant = 'decision' | 'bagging' | 'forest' | 'extra';
+
+type CriterionFunctionGeneralConfig = {
+    type: Exclude<CriterionFunction, 'huber'>;
+};
+
+type CriterionFunctionHuberConfig = {
+    type: 'huber';
+    delta: number;
+};
+
+export type CriterionFunctionConfig = CriterionFunctionGeneralConfig | CriterionFunctionHuberConfig;
+
+export type TreeSettings = {
+    modelVariant: TreeModelVariant;
+    criterion: CriterionFunctionConfig;
+    maxDepth?: number;
+    minSamplesSplit?: number;
+    minSamplesLeaf?: number;
+    maxFeatures?: number;
+    numRandomThresholds?: number;
+    estimators?: number;
+};
+
 // MODEL SETTINGS
 
 export type ModelSettings = {
@@ -116,6 +142,7 @@ export type ModelSettings = {
     optimizer: OptimizerConfig;
     regularization: RegularizationConfig;
     thetaInitialization: ThetaInitializationConfig;
+    tree: TreeSettings;
 };
 
 export type TrainingReport = {

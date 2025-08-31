@@ -1,6 +1,6 @@
 import { tidy, type Scalar, type Tensor2D } from '@tensorflow/tfjs';
 import { LogisticRegressor } from './LogisticRegressor';
-import { assertThetaTrained } from '../../utils';
+import { assertModelTrained } from '../../utils';
 
 export class SoftmaxLogisticRegressor extends LogisticRegressor {
     private _initTheta: Tensor2D | null = null; // for testing purposes
@@ -52,7 +52,7 @@ export class SoftmaxLogisticRegressor extends LogisticRegressor {
     }
 
     predict(X: Tensor2D, theta?: Tensor2D): Tensor2D {
-        assertThetaTrained(theta ?? this.theta);
+        assertModelTrained(theta ?? this.theta);
 
         const result = tidy(() => {
             // Compute probabilities for each class
@@ -64,7 +64,7 @@ export class SoftmaxLogisticRegressor extends LogisticRegressor {
     }
 
     evaluate(X: Tensor2D, y: Tensor2D, theta?: Tensor2D): [Tensor2D, Tensor2D, Scalar] {
-        assertThetaTrained(theta ?? this.theta);
+        assertModelTrained(theta ?? this.theta);
 
         const result = tidy(() => {
             const probability = this.hypothesis(X, theta ?? this.theta!);

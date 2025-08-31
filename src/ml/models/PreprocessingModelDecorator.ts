@@ -13,14 +13,14 @@ export type FeatureTransformConfig = {
 export class PreprocessingModelDecorator<T extends ModelRepresentation> implements Model<T> {
     private model: Model<T>;
     private featureTransform?: FeatureTransformConfig;
-    private eventEmitter?: TrainingEventEmitter<T>;
+    private eventEmitter?: TrainingEventEmitter;
 
     private _cachedProcessedData: Map<number, Tensor2D> = new Map();
 
     constructor(
         model: Model<T>,
         featureTransform?: FeatureTransformConfig,
-        eventEmitter?: TrainingEventEmitter<T>,
+        eventEmitter?: TrainingEventEmitter,
     ) {
         this.model = model;
         this.featureTransform = featureTransform;

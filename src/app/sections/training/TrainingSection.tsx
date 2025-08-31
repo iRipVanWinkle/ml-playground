@@ -16,6 +16,7 @@ export default function TrainingSection() {
 
     const isRegression = taskType === 'regression';
     const isClassification = taskType === 'classification';
+    const isTree = modelSettings.type === 'tree';
 
     const { maxIterations } = modelSettings.optimizer;
 
@@ -32,18 +33,23 @@ export default function TrainingSection() {
                     <div className="flex gap-4">
                         <Controls />
                     </div>
-
-                    <div className="flex items-center justify-end" data-testid="training-progress">
-                        {currentIteration.toFixed(0)}/{maxIterations}
-                    </div>
+                    {!isTree && (
+                        <div
+                            className="flex items-center justify-end"
+                            data-testid="training-progress"
+                        >
+                            {currentIteration.toFixed(0)}/{maxIterations}
+                        </div>
+                    )}
                 </div>
 
-                <Progress
-                    value={currentIteration}
-                    max={maxIterations}
-                    className="w-full bg-gray-200 rounded-full h-0.25"
-                />
-
+                {!isTree && (
+                    <Progress
+                        value={currentIteration}
+                        max={maxIterations}
+                        className="w-full bg-gray-200 rounded-full h-0.25"
+                    />
+                )}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                     {isClassification && (
                         <>

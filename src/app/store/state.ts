@@ -25,6 +25,16 @@ export const initState: State = {
         thetaInitialization: {
             type: 'zeros',
         },
+        tree: {
+            modelVariant: 'decision',
+            criterion: { type: 'mse' },
+            maxDepth: 5,
+            minSamplesSplit: 2,
+            minSamplesLeaf: 1,
+            estimators: 10,
+            maxFeatures: 1,
+            numRandomThresholds: 1,
+        },
     },
     data: {
         trainInputFeatures: [],
