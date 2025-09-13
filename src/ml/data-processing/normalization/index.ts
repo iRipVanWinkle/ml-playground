@@ -9,7 +9,9 @@ export type NormalizatorFn = (tensor: tf.Tensor2D) => tf.Tensor2D;
  * @returns A new tf.Tensor2D with z-score normalized values.
  */
 export function noScaling(tensor: tf.Tensor2D): tf.Tensor2D {
-    return tensor;
+    return tensor.clone();
 }
 
 export * from './zScoreScaling';
+export * from './logScaling';
+export * from './linearScaling';

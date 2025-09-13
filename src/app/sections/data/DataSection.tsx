@@ -287,6 +287,8 @@ export default function DataSection() {
                         <SelectContent>
                             <SelectItem value="none">None</SelectItem>
                             <SelectItem value="zscore">Z-Score</SelectItem>
+                            <SelectItem value="linear">Min-Max</SelectItem>
+                            <SelectItem value="log">Log</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
