@@ -1,5 +1,7 @@
 import type { NormalizatorFn } from '@/ml/data-processing/normalization';
 import {
+    cosinusoidGenerator,
+    fourierGenerator,
     fullPolynomialGenerator,
     sinusoidGenerator,
     type TransformationFn,
@@ -19,6 +21,12 @@ export function getTransformations(
         switch (type) {
             case 'sinusoid':
                 transformations.push(sinusoidGenerator(degree));
+                break;
+            case 'cosinusoid':
+                transformations.push(cosinusoidGenerator(degree));
+                break;
+            case 'fourier':
+                transformations.push(fourierGenerator(degree));
                 break;
             case 'polynomial':
                 transformations.push(

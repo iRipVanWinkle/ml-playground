@@ -2,7 +2,7 @@ export type TaskType = 'regression' | 'classification';
 export type ModelType = 'linear' | 'logistic' | 'tree';
 export type ClassificationType = 'binary' | 'softmax' | 'ovr';
 export type NormalizationFunction = 'none' | 'zscore' | 'linear' | 'log';
-export type TransformationFunction = 'sinusoid' | 'polynomial';
+export type TransformationFunction = 'sinusoid' | 'cosinusoid' | 'fourier' | 'polynomial';
 
 export type LossFunction =
     | 'mse'

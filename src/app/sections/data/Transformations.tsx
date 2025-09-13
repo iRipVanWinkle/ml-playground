@@ -85,6 +85,8 @@ export default function Transformations({
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="sinusoid">Sinusoid</SelectItem>
+                                    <SelectItem value="cosinusoid">Cosinusoid</SelectItem>
+                                    <SelectItem value="fourier">Fourier</SelectItem>
                                     <SelectItem value="polynomial">Polynomial</SelectItem>
                                 </SelectContent>
                             </Select>

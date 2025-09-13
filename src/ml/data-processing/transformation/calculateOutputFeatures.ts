@@ -27,7 +27,10 @@ export const calculateOutputFeatures = (
 ): number => {
     switch (type) {
         case 'sinusoid':
+        case 'cosinusoid':
             return numFeatures * degree;
+        case 'fourier':
+            return numFeatures * degree * 2;
         case 'polynomial':
             // Polynomial features are generated from all combinations of features raised to powers up to degree
             return countNewPolynomialFeatures(numFeatures, degree);
