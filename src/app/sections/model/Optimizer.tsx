@@ -22,12 +22,14 @@ const DEFAULT_OPTIMIZER_TYPES: OptionList = [
     { value: 'batch', label: 'Batch Gradient Descent' },
     { value: 'sgd', label: 'Stochastic Gradient Descent' },
     { value: 'momentum', label: 'Momentum' },
+    { value: 'adam', label: 'Adam' },
 ];
 
 const DEFAULT_OPTIMIZER_CONFIGS = {
     batch: { type: 'batch' },
     sgd: { type: 'sgd', batchSize: 32 },
     momentum: { type: 'momentum', beta: 0.9 },
+    adam: { type: 'adam', beta1: 0.9, beta2: 0.999 },
 } as Record<OptimizerConfig['type'], OptimizerConfig>;
 
 export default function Optimizer({ optimizer, disabled, onChange }: OptimizerProps) {
@@ -50,7 +52,7 @@ export default function Optimizer({ optimizer, disabled, onChange }: OptimizerPr
 
     // Handle input changes for optimizer parameters
     const handleInputChange = (
-        key: keyof OptimizerConfig | 'batchSize' | 'beta',
+        key: keyof OptimizerConfig | 'batchSize' | 'beta' | 'beta1' | 'beta2',
         value: string,
     ) => {
         let preperedValue: number;
@@ -138,6 +140,37 @@ export default function Optimizer({ optimizer, disabled, onChange }: OptimizerPr
                         onChange={(e) => handleInputChange('beta', e.target.value)}
                     />
                 </Field>
+            )}
+
+            {optimizer.type === 'adam' && (
+                <div className="grid grid-cols-2 gap-2">
+                    <Field label="Beta 1">
+                        <Input
+                            className="w-full"
+                            disabled={disabled}
+                            type="number"
+                            step={0.01}
+                            min={0}
+                            max={0.99}
+                            placeholder="Beta 1"
+                            value={optimizer.beta1}
+                            onChange={(e) => handleInputChange('beta1', e.target.value)}
+                        />
+                    </Field>
+                    <Field label="Beta 2">
+                        <Input
+                            className="w-full"
+                            disabled={disabled}
+                            type="number"
+                            step={0.01}
+                            min={0}
+                            max={0.9999}
+                            placeholder="Beta 2"
+                            value={optimizer.beta2}
+                            onChange={(e) => handleInputChange('beta2', e.target.value)}
+                        />
+                    </Field>
+                </div>
             )}
 
             <div className="grid grid-cols-2 gap-2">

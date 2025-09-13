@@ -50,7 +50,17 @@ type OptimizerMomentumConfig = OptimizerBasicConfig & {
     beta: number;
 };
 
-export type OptimizerConfig = OptimizerBatchConfig | OptimizerSGDConfig | OptimizerMomentumConfig;
+type OptimizerAdaConfig = OptimizerBasicConfig & {
+    type: 'adam';
+    beta1: number;
+    beta2: number;
+};
+
+export type OptimizerConfig =
+    | OptimizerBatchConfig
+    | OptimizerSGDConfig
+    | OptimizerMomentumConfig
+    | OptimizerAdaConfig;
 
 // LOSS FUNCTION
 

@@ -25,6 +25,7 @@ import { getTransformations } from './getTransformations';
 import { getThetaInitializer } from './getThetaInitializer';
 import type { Tensor2D } from '@tensorflow/tfjs';
 import { getCriterionFunc } from './getCriterionFunction';
+import { AdamGD } from '@/ml/optimizers/adam';
 
 export function createModel(
     modelSettings: ModelSettings,
@@ -189,6 +190,11 @@ function createOptimizer(optimizerConfig: ModelSettings['optimizer'], eventEmitt
     };
 
     switch (optimizerConfig.type) {
+        case 'adam': {
+            const { beta1, beta2 } = optimizerConfig;
+            return new AdamGD({ ...baseConfig, beta1, beta2 });
+        }
+
         case 'momentum': {
             const { beta } = optimizerConfig;
             return new MomentumGD({ ...baseConfig, beta });
