@@ -14,7 +14,7 @@ export type LossFunction =
     | 'logitsBasedBinaryCrossentropy'
     | 'logitsBasedCategoricalCrossentropy';
 export type CriterionFunction = 'mse' | 'mae' | 'huber' | 'logcosh' | 'gini' | 'entropy';
-export type Regularization = 'none' | 'l2';
+export type Regularization = 'none' | 'l1' | 'l2' | 'elasticnet';
 
 export type TrainingState = 'init' | 'preparing' | 'training' | 'paused';
 export type PendingAction = 'pause' | 'stop' | 'step' | 'resume' | null;
@@ -72,11 +72,20 @@ type RegularizationNoneConfig = {
 };
 
 type RegularizationLConfig = {
-    type: 'l2';
+    type: 'l1' | 'l2';
     lambda: number;
 };
 
-export type RegularizationConfig = RegularizationNoneConfig | RegularizationLConfig;
+type RegularizationElasticNetConfig = {
+    type: 'elasticnet';
+    lambda: number;
+    alpha: number;
+};
+
+export type RegularizationConfig =
+    | RegularizationNoneConfig
+    | RegularizationLConfig
+    | RegularizationElasticNetConfig;
 
 // THETA INITIALIZATION
 

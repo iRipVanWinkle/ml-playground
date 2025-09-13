@@ -9,6 +9,7 @@ import {
 } from '@/app/components/ui/select';
 import type { Regularization as RegularizationName, RegularizationConfig } from '@/app/store';
 import type { OptionList } from '../types';
+import { Slider } from '@/app/components/ui/slider';
 
 type RegularizationProps = {
     regularization: RegularizationConfig;
@@ -17,6 +18,7 @@ type RegularizationProps = {
 };
 
 const DEFAULT_LAMBDA = 1;
+const DEFAULT_ELASTICNET_ALPHA = 0.5;
 
 const DEFAULT_REGULARIZATIONS: OptionList = [
     {
@@ -27,6 +29,14 @@ const DEFAULT_REGULARIZATIONS: OptionList = [
         value: 'l2',
         label: 'L2 (Ridge)',
     },
+    {
+        value: 'l1',
+        label: 'L1 (Lasso)',
+    },
+    {
+        value: 'elasticnet',
+        label: 'Elastic Net',
+    },
 ];
 
 export default function Regularization({
@@ -36,22 +46,34 @@ export default function Regularization({
 }: RegularizationProps) {
     const handleFunctionChange = (type: RegularizationName) => {
         let lambda = undefined;
+        let alpha = undefined;
 
         if (regularization.type !== 'none') {
             lambda = regularization.lambda;
         }
 
+        if (regularization.type === 'elasticnet') {
+            alpha = regularization.alpha;
+        }
+
         if (type === 'none') {
             onChange({ type: 'none' });
+        } else if (type === 'elasticnet') {
+            onChange({
+                type: 'elasticnet',
+                lambda: lambda ?? DEFAULT_LAMBDA,
+                alpha: alpha ?? DEFAULT_ELASTICNET_ALPHA,
+            });
         } else {
             onChange({ type, lambda: lambda ?? DEFAULT_LAMBDA });
         }
     };
 
-    const isL = regularization.type === 'l2';
+    const isL = regularization.type === 'l1' || regularization.type === 'l2';
+    const isElasticNet = regularization.type === 'elasticnet';
 
     let containerClass = 'grid gap-2';
-    if (isL) {
+    if (isL || isElasticNet) {
         containerClass += ' grid-cols-2';
     }
 
@@ -85,7 +107,7 @@ export default function Regularization({
                     </Select>
                 </Field>
 
-                {isL && (
+                {(isL || isElasticNet) && (
                     <Field label="Lambda" htmlFor="lambdaInput">
                         <Input
                             id="lambdaInput"
@@ -102,6 +124,27 @@ export default function Regularization({
                     </Field>
                 )}
             </div>
+
+            {isElasticNet && (
+                <Field label="Alpha (α)" htmlFor="alphaInput">
+                    <div className="flex justify-between">
+                        <span className="text-xs text-muted-foreground">
+                            L1 ({regularization.alpha.toFixed(1)})
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                            L2 ({(1 - regularization.alpha).toFixed(1)})
+                        </span>
+                    </div>
+                    <Slider
+                        defaultValue={[regularization.alpha]}
+                        max={1}
+                        min={0}
+                        step={0.1}
+                        disabled={disabled}
+                        onValueChange={(value) => onChange({ ...regularization, alpha: value[0] })}
+                    />
+                </Field>
+            )}
         </>
     );
 }
