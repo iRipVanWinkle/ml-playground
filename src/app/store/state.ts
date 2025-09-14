@@ -25,6 +25,9 @@ export const initState: State = {
         thetaInitialization: {
             type: 'zeros',
         },
+        layers: [
+            { units: 1, activation: 'linear' }, // Default layer for linear regression
+        ],
         tree: {
             modelVariant: 'decision',
             criterion: { type: 'mse' },

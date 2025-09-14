@@ -4,6 +4,8 @@ export * from './logistic/LogisticRegressor';
 export * from './logistic/OneVsRestLogisticRegressor';
 export * from './logistic/SoftmaxLogisticRegressor';
 
+export * from './neural/NeuralNetwork';
+
 export * from './tree/DecisionTreeRegressor';
 export * from './tree/DecisionTreeClassifier';
 export * from './tree/RandomForestRegressor';

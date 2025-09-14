@@ -82,7 +82,7 @@ export const useModel = () => {
                 setTrainingStatus('init');
                 console.error(msg);
                 toast.error(msg as string);
-                terminateWorker();
+                // terminateWorker();
             }),
         );
 

@@ -24,6 +24,7 @@ import Regularization from './model/Regularization';
 import ClassificationType from './model/ClassificationType';
 import ThetaInitialization from './model/ThetaInitialization';
 import TreeSettings from './model/TreeSettings';
+import Layers from './model/Layers';
 
 type OptionList = Array<{
     value: string;
@@ -37,6 +38,10 @@ const DEFAULT_REGRESSION_MODEL_TYPES = [
         label: 'Linear Regression',
     },
     {
+        value: 'neural',
+        label: 'Neural Networks',
+    },
+    {
         value: 'tree',
         label: 'Decision Tree',
     },
@@ -46,6 +51,10 @@ const DEFAULT_CLASSIFICATION_MODEL_TYPES = [
     {
         value: 'logistic',
         label: 'Logistic Regression',
+    },
+    {
+        value: 'neural',
+        label: 'Neural Networks',
     },
     {
         value: 'tree',
@@ -95,6 +104,14 @@ export default function ModelSection() {
                         </SelectContent>
                     </Select>
                 </Field>
+
+                {data.type === 'neural' && (
+                    <Layers
+                        layers={data.layers}
+                        disabled={isTraining}
+                        onChange={(layers) => updateModelSettings({ layers })}
+                    />
+                )}
 
                 {data.type === 'logistic' && (
                     <ClassificationType

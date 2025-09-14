@@ -1,4 +1,4 @@
-import type { DataSettings, ModelSettings, TaskType } from '@/app/store';
+import type { DataSettings, ModelSettings, OptimizerConfig, TaskType } from '@/app/store';
 import type { EnsembleTree, Model, ModelRepresentation, TrainingEventEmitter } from '@/ml/types';
 import { BatchGD, MomentumGD, StochasticGD } from '@/ml/optimizers';
 import {
@@ -10,6 +10,7 @@ import {
     ExtraTreesRegressor,
     LinearRegressor,
     LogisticRegressor,
+    NeuralNetwork,
     OneVsRestLogisticRegressor,
     PreprocessingModelDecorator,
     RandomForestClassifier,
@@ -26,15 +27,23 @@ import { getThetaInitializer } from './getThetaInitializer';
 import type { Tensor2D } from '@tensorflow/tfjs';
 import { getCriterionFunc } from './getCriterionFunction';
 import { AdamGD } from '@/ml/optimizers/adam';
+import { calculateOutputFeatures } from '@/ml/data-processing/transformation';
 
 export function createModel(
     modelSettings: ModelSettings,
     dataSettings: DataSettings,
     taskType: TaskType,
+    numFeatures: number,
 ): [PreprocessingModelDecorator<ModelRepresentation>, TrainingEventEmitter] {
     try {
         const eventEmitter = new EventEmitter();
-        const model = createBaseModel(modelSettings, taskType, eventEmitter);
+        const model = createBaseModel(
+            modelSettings,
+            dataSettings,
+            taskType,
+            numFeatures,
+            eventEmitter,
+        );
         const pipeline = createPreprocessingPipeline(model, dataSettings, eventEmitter);
 
         return [pipeline, eventEmitter];
@@ -47,7 +56,9 @@ export function createModel(
 
 function createBaseModel(
     modelSettings: ModelSettings,
+    dataSettings: DataSettings,
     taskType: TaskType,
+    numFeatures: number,
     eventEmitter: EventEmitter,
 ): Model<ModelRepresentation> {
     switch (modelSettings.type) {
@@ -55,7 +66,13 @@ function createBaseModel(
             return createTreeModel(taskType, eventEmitter, modelSettings);
         case 'linear':
         case 'logistic':
-            return createRegressionOrNNModel(modelSettings, eventEmitter);
+        case 'neural':
+            return createRegressionOrNNModel(
+                modelSettings,
+                dataSettings,
+                numFeatures,
+                eventEmitter,
+            );
         default:
             throw new Error(`Unsupported model type: ${modelSettings.type}`);
     }
@@ -135,6 +152,8 @@ function createTreeModel(
 
 function createRegressionOrNNModel(
     modelSettings: ModelSettings,
+    dataSettings: DataSettings,
+    numFeatures: number,
     eventEmitter: EventEmitter,
 ): Model<Tensor2D> {
     const lossFunc = getLossFunc(modelSettings.lossFunction);
@@ -154,6 +173,22 @@ function createRegressionOrNNModel(
 
     let model;
     switch (modelType) {
+        case 'neural': {
+            const { layers } = modelSettings;
+            const unitsOfInputLayer = dataSettings.transformations.reduce(
+                (acc, { type, degree }) => {
+                    return acc + calculateOutputFeatures(type, degree, numFeatures);
+                },
+                numFeatures,
+            );
+            const layersWithInput = [{ units: unitsOfInputLayer }, ...layers];
+
+            model = new NeuralNetwork({
+                ...commonModelParams,
+                layers: layersWithInput,
+            });
+            break;
+        }
         case 'logistic': {
             const { classificationType } = modelSettings;
             if (classificationType === 'softmax') {
@@ -174,7 +209,7 @@ function createRegressionOrNNModel(
     return model;
 }
 
-function createOptimizer(optimizerConfig: ModelSettings['optimizer'], eventEmitter: EventEmitter) {
+function createOptimizer(optimizerConfig: OptimizerConfig, eventEmitter: EventEmitter) {
     const { scheduler, schedulerConfig, maxIterations, tolerance } = optimizerConfig;
 
     const learningRate = getLearningRate(

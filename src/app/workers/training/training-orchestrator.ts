@@ -45,14 +45,21 @@ export class TrainingOrchestrator {
     constructor(state: State, callbacks: TrainingCallbacks) {
         const { modelSettings, dataSettings, systemSettings, data, taskType } = state;
 
-        const [model, eventEmitter] = createModel(modelSettings, dataSettings, taskType);
+        const datasetManager = new DatasetManager(data);
+        const numFeatures = datasetManager.getTrainingData().X.shape[1];
+        const [model, eventEmitter] = createModel(
+            modelSettings,
+            dataSettings,
+            taskType,
+            numFeatures,
+        );
 
         this.model = model;
         this.callbacks = callbacks;
         this.eventEmitter = eventEmitter;
-        this.datasetManager = new DatasetManager(data);
+        this.datasetManager = datasetManager;
         this.liveMetricsProps = new LiveMetricsProps(state);
-        this.liveMetrics = new LiveMetrics(model, this.datasetManager);
+        this.liveMetrics = new LiveMetrics(model, datasetManager);
         this.reportGenerator = new TrainingReportGenerator();
         this.isClassificationTask = state.taskType === 'classification';
 
