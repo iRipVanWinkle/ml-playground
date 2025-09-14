@@ -9,7 +9,6 @@ export const initState: State = {
     },
     modelSettings: {
         type: 'linear',
-        classificationType: 'binary',
         lossFunction: { type: 'mse' },
         optimizer: {
             type: 'batch',
@@ -24,19 +23,6 @@ export const initState: State = {
         },
         thetaInitialization: {
             type: 'zeros',
-        },
-        layers: [
-            { units: 1, activation: 'linear' }, // Default layer for linear regression
-        ],
-        tree: {
-            modelVariant: 'decision',
-            criterion: { type: 'mse' },
-            maxDepth: 5,
-            minSamplesSplit: 2,
-            minSamplesLeaf: 1,
-            estimators: 10,
-            maxFeatures: 1,
-            numRandomThresholds: 1,
         },
     },
     data: {

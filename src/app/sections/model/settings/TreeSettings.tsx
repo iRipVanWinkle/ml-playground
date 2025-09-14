@@ -1,24 +1,21 @@
 import { Field } from '@/app/components/ui/field';
 import { Input } from '@/app/components/ui/input';
 import type {
-    LossFunctionConfig,
     TaskType,
     TreeModelVariant,
     TreeSettings,
     TreeSettings as TreeSettingsType,
 } from '@/app/store';
-import type { OptionList } from '../types';
+import type { OptionList } from '../../types';
 import { RadioGroup, RadioGroupItem } from '@/app/components/ui/radio-group';
 import { Label } from '@/app/components/ui/label';
-import Criterion from './Criterion';
+import { Criterion } from '../components';
 
 type TreeSettingsProps = {
     taskType: TaskType;
     settings: TreeSettingsType;
-    lossFunction: LossFunctionConfig;
     disabled?: boolean;
     onChange: (config: TreeSettingsType) => void;
-    onChangeLossFunction: (config: LossFunctionConfig) => void;
 };
 
 const DEFAULT_MODEL_VARIANTS: OptionList = [
@@ -57,19 +54,26 @@ export default function TreeSettings({
         estimators,
     } = settings;
 
-    const handleModelVariantChange = (value: string) => {
-        onChange({ ...settings, modelVariant: value as TreeModelVariant });
+    const handleChange = (newSettings: Partial<TreeSettingsType>) => {
+        console.info({ ...settings, ...newSettings });
+        onChange({ ...settings, ...newSettings });
     };
 
-    // Handle input changes for optimizer parameters
-    const handleInputChange = (key: keyof TreeSettings, value: string) => {
-        const newConfig = { ...settings, [key]: parseInt(value) };
-        onChange(newConfig as TreeSettings);
+    const handleModelVariantChange = (value: string) => {
+        handleChange({ modelVariant: value as TreeModelVariant });
     };
+
+    const handleInputChange = (key: keyof TreeSettingsType, value: string) => {
+        handleChange({ [key]: parseInt(value) });
+    };
+
+    const needsEstimators =
+        modelVariant === 'bagging' || modelVariant === 'forest' || modelVariant === 'extra';
+    const needsMaxFeatures = modelVariant === 'forest' || modelVariant === 'extra';
+    const needsRandomThresholds = modelVariant === 'extra';
 
     return (
         <>
-            {/* <div className="grid gap-2"> */}
             <Field label="Model Variant">
                 <RadioGroup
                     value={modelVariant}
@@ -134,7 +138,7 @@ export default function TreeSettings({
                     />
                 </Field>
             </div>
-            {modelVariant !== 'decision' && (
+            {needsEstimators && (
                 <>
                     <Field label="Estimators">
                         <Input
@@ -147,40 +151,38 @@ export default function TreeSettings({
                             onChange={(e) => handleInputChange('estimators', e.target.value)}
                         />
                     </Field>
-                    {(modelVariant === 'forest' || modelVariant === 'extra') && (
-                        <div className="grid gap-2 grid-cols-2">
-                            <Field label="Max Features">
-                                <Input
-                                    disabled={disabled}
-                                    placeholder="Max Features"
-                                    step={1}
-                                    min={1}
-                                    type="number"
-                                    value={maxFeatures}
-                                    onChange={(e) =>
-                                        handleInputChange('maxFeatures', e.target.value)
-                                    }
-                                />
-                            </Field>
-                            {modelVariant === 'extra' && (
-                                <Field label="Random Thresholds">
-                                    <Input
-                                        disabled={disabled}
-                                        placeholder="Random Thresholds"
-                                        step={1}
-                                        min={1}
-                                        type="number"
-                                        value={numRandomThresholds}
-                                        onChange={(e) =>
-                                            handleInputChange('numRandomThresholds', e.target.value)
-                                        }
-                                    />
-                                </Field>
-                            )}
-                        </div>
-                    )}
                 </>
             )}
+            <div className="grid gap-2 grid-cols-2">
+                {needsMaxFeatures && (
+                    <Field label="Max Features">
+                        <Input
+                            disabled={disabled}
+                            placeholder="Max Features"
+                            step={1}
+                            min={1}
+                            type="number"
+                            value={maxFeatures}
+                            onChange={(e) => handleInputChange('maxFeatures', e.target.value)}
+                        />
+                    </Field>
+                )}
+                {needsRandomThresholds && (
+                    <Field label="Random Thresholds">
+                        <Input
+                            disabled={disabled}
+                            placeholder="Random Thresholds"
+                            step={1}
+                            min={1}
+                            type="number"
+                            value={numRandomThresholds}
+                            onChange={(e) =>
+                                handleInputChange('numRandomThresholds', e.target.value)
+                            }
+                        />
+                    </Field>
+                )}
+            </div>
         </>
     );
 }

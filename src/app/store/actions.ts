@@ -6,8 +6,10 @@ import type {
     TaskType,
     TrainingReport,
     TrainingState,
-    ClassificationType,
     PendingAction,
+    ModelSettings,
+    LossFunction,
+    ThetaInitializationConfig,
 } from './types';
 import {
     calculateMinMax,
@@ -16,67 +18,49 @@ import {
     labelEncoding,
 } from './data/utils';
 import { initState, useAppState } from './state';
+import { modelSettingsDefaults } from './defaults';
 
 export function setTaskType(taskType: TaskType) {
+    const modelSettings =
+        modelSettingsDefaults[taskType === 'regression' ? 'linear' : 'logistic'](taskType);
+
     useAppState.setState((state) => ({
         ...state,
         taskType,
+        modelSettings,
     }));
 
     resetTrainingReport();
     resetData();
-    setModelType(taskType === 'regression' ? 'linear' : 'logistic');
-    if (taskType === 'classification') {
-        setClassificationType('binary');
-    }
 }
 
 export function setModelType(modelType: ModelType) {
-    useAppState.setState((state) => ({
-        ...state,
-        modelSettings: {
-            ...state.modelSettings,
-            type: modelType,
-            ...(modelType === 'tree'
-                ? {
-                      tree: {
-                          ...state.modelSettings.tree,
-                          criterion: { type: state.taskType === 'regression' ? 'mse' : 'gini' },
-                      },
-                  }
-                : {
-                      lossFunction: {
-                          type: state.taskType === 'regression' ? 'mse' : 'binaryCrossentropy',
-                      },
-                  }),
-            thetaInitialization: {
-                type: 'zeros',
-            },
-        },
-    }));
+    useAppState.setState((state) => {
+        const newDefaults = modelSettingsDefaults[modelType](state.taskType);
+        const oldSettings = state.modelSettings;
+        const modelSettings = { ...newDefaults };
 
-    if (modelType === 'logistic') {
-        setClassificationType('binary');
-    }
-}
+        for (const key in oldSettings) {
+            if (key === 'type') continue;
 
-export function setClassificationType(classificationType: ClassificationType) {
-    useAppState.setState((state) => ({
-        ...state,
-        modelSettings: {
-            ...state.modelSettings,
-            classificationType,
-            lossFunction: {
-                type:
-                    classificationType === 'softmax'
-                        ? 'categoricalCrossentropy'
-                        : 'binaryCrossentropy',
-            },
-            thetaInitialization: {
-                type: classificationType === 'softmax' ? 'xavierUniform' : 'zeros',
-            },
-        },
-    }));
+            if (key in newDefaults) {
+                Object.assign(modelSettings, {
+                    [key]: oldSettings[key as keyof typeof oldSettings],
+                });
+            }
+        }
+        console.info(state.taskType);
+        console.info(modelSettings);
+
+        return {
+            ...state,
+            modelSettings,
+        };
+    });
+
+    // if (modelType === 'logistic') {
+    //     updateModelSettings({ classificationType: 'binary' });
+    // }
 }
 
 export function setNormalizationFunction(normalization: NormalizationFunction) {
@@ -99,13 +83,36 @@ export function setTransformation(transformations: State['dataSettings']['transf
     }));
 }
 
-export function updateModelSettings(newSettings: Partial<State['modelSettings']>) {
+function prefillClassificationSettings(newSettings: Partial<Omit<ModelSettings, 'type'>>) {
+    // Only prefill if classificationType is being set and related fields are missing
+    if ('classificationType' in newSettings) {
+        const classificationType = newSettings.classificationType;
+        let lossType: LossFunction = 'binaryCrossentropy';
+        let initType: ThetaInitializationConfig['type'] = 'zeros';
+
+        if (classificationType === 'softmax') {
+            lossType = 'categoricalCrossentropy';
+            initType = 'xavierUniform';
+        }
+
+        console.info(lossType, initType);
+
+        return {
+            ...newSettings,
+            lossFunction: { type: lossType },
+            thetaInitialization: { type: initType },
+        };
+    }
+
+    return newSettings;
+}
+
+export function updateModelSettings(newSettings: Partial<Omit<ModelSettings, 'type'>>) {
+    const updatedSettings = prefillClassificationSettings(newSettings);
+
     useAppState.setState((state) => ({
         ...state,
-        modelSettings: {
-            ...state.modelSettings,
-            ...newSettings,
-        },
+        modelSettings: { ...state.modelSettings, ...updatedSettings } as ModelSettings,
     }));
 }
 

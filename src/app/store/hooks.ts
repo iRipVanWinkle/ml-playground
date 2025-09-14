@@ -7,7 +7,11 @@ export const useModelSettings = () => useAppState((state) => state.modelSettings
 export const useDataSettings = () => useAppState((state) => state.dataSettings);
 export const useSystemSettings = () => useAppState((state) => state.systemSettings);
 export const useClassificationType = () =>
-    useAppState((state) => state.modelSettings.classificationType);
+    useAppState((state) =>
+        state.modelSettings.type === 'logistic'
+            ? state.modelSettings.classificationType
+            : undefined,
+    );
 
 export const useData = () => useAppState((state) => state.data);
 export const useHasData = () => useAppState((state) => state.data.trainInputFeatures.length > 0);

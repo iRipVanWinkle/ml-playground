@@ -1,5 +1,5 @@
 import DataSection from './sections/data/DataSection';
-import ModelSection from './sections/ModelSection';
+import { ModelSection } from './sections/model';
 import ResultSection from './sections/training/TrainingSection';
 import { Tabs, TabsList, TabsTrigger } from './components/ui/tabs';
 import { setTaskType, useIsTraining, useTaskType, type TaskType } from './store';

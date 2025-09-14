@@ -7,7 +7,7 @@ import {
     SelectValue,
 } from '@/app/components/ui/select';
 import type { LossFunction as LossFunctionName, LossFunctionConfig, TaskType } from '@/app/store';
-import type { OptionList } from '../types';
+import type { OptionList } from '../../types';
 import { Input } from '@/app/components/ui/input';
 
 type LossFunctionProps = {

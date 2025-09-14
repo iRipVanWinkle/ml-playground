@@ -6,7 +6,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/app/components/ui/select';
-import type { OptionList } from '../types';
+import type { OptionList } from '../../types';
 import { Input } from '@/app/components/ui/input';
 import type { ThetaInitializationConfig } from '@/app/store/types';
 

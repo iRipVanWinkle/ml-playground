@@ -10,7 +10,7 @@ import {
     SelectValue,
 } from '@/app/components/ui/select';
 import type { OptimizerConfig } from '@/app/store';
-import type { OptionList } from '../types';
+import type { OptionList } from '../../types';
 
 type OptimizerProps = {
     optimizer: OptimizerConfig;

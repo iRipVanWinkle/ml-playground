@@ -8,7 +8,7 @@ import {
     SelectValue,
 } from '@/app/components/ui/select';
 import type { Regularization as RegularizationName, RegularizationConfig } from '@/app/store';
-import type { OptionList } from '../types';
+import type { OptionList } from '../../types';
 import { Slider } from '@/app/components/ui/slider';
 
 type RegularizationProps = {

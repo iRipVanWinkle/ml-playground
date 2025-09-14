@@ -1,4 +1,13 @@
-import type { DataSettings, ModelSettings, OptimizerConfig, TaskType } from '@/app/store';
+import type {
+    DataSettings,
+    LinearSettings,
+    LogisticSettings,
+    ModelSettings,
+    NeuralSettings,
+    OptimizerConfig,
+    TaskType,
+    TreeSettings,
+} from '@/app/store';
 import type { EnsembleTree, Model, ModelRepresentation, TrainingEventEmitter } from '@/ml/types';
 import { BatchGD, MomentumGD, StochasticGD } from '@/ml/optimizers';
 import {
@@ -66,15 +75,11 @@ function createBaseModel(
             return createTreeModel(taskType, eventEmitter, modelSettings);
         case 'linear':
         case 'logistic':
+            return createRegressionModel(modelSettings, eventEmitter);
         case 'neural':
-            return createRegressionOrNNModel(
-                modelSettings,
-                dataSettings,
-                numFeatures,
-                eventEmitter,
-            );
+            return createNeuralNetworkModel(modelSettings, dataSettings, numFeatures, eventEmitter);
         default:
-            throw new Error(`Unsupported model type: ${modelSettings.type}`);
+            throw new Error(`Unsupported model type`);
     }
 }
 
@@ -97,7 +102,7 @@ function createPreprocessingPipeline(
 function createTreeModel(
     taskType: TaskType,
     eventEmitter: EventEmitter,
-    modelSettings: ModelSettings,
+    modelSettings: TreeSettings,
 ): Model<EnsembleTree> {
     const {
         modelVariant,
@@ -108,7 +113,7 @@ function createTreeModel(
         minSamplesLeaf,
         maxFeatures,
         numRandomThresholds,
-    } = modelSettings.tree;
+    } = modelSettings;
     const isRegression = taskType === 'regression';
 
     const criterion = getCriterionFunc(criterionConfig);
@@ -150,10 +155,8 @@ function createTreeModel(
     return model;
 }
 
-function createRegressionOrNNModel(
-    modelSettings: ModelSettings,
-    dataSettings: DataSettings,
-    numFeatures: number,
+function createRegressionModel(
+    modelSettings: LinearSettings | LogisticSettings,
     eventEmitter: EventEmitter,
 ): Model<Tensor2D> {
     const lossFunc = getLossFunc(modelSettings.lossFunction);
@@ -173,22 +176,6 @@ function createRegressionOrNNModel(
 
     let model;
     switch (modelType) {
-        case 'neural': {
-            const { layers } = modelSettings;
-            const unitsOfInputLayer = dataSettings.transformations.reduce(
-                (acc, { type, degree }) => {
-                    return acc + calculateOutputFeatures(type, degree, numFeatures);
-                },
-                numFeatures,
-            );
-            const layersWithInput = [{ units: unitsOfInputLayer }, ...layers];
-
-            model = new NeuralNetwork({
-                ...commonModelParams,
-                layers: layersWithInput,
-            });
-            break;
-        }
         case 'logistic': {
             const { classificationType } = modelSettings;
             if (classificationType === 'softmax') {
@@ -205,6 +192,37 @@ function createRegressionOrNNModel(
             model = new LinearRegressor(commonModelParams);
             break;
     }
+
+    return model;
+}
+
+function createNeuralNetworkModel(
+    modelSettings: NeuralSettings,
+    dataSettings: DataSettings,
+    numFeatures: number,
+    eventEmitter: EventEmitter,
+): Model<Tensor2D> {
+    const lossFunc = getLossFunc(modelSettings.lossFunction);
+
+    const { optimizer: optimizerConfig } = modelSettings;
+
+    const optimizer = createOptimizer(optimizerConfig, eventEmitter);
+    const regularization = getRegularization(modelSettings.regularization);
+    const thetaInitializer = getThetaInitializer(modelSettings.thetaInitialization);
+
+    const { layers } = modelSettings;
+    const unitsOfInputLayer = dataSettings.transformations.reduce((acc, { type, degree }) => {
+        return acc + calculateOutputFeatures(type, degree, numFeatures);
+    }, numFeatures);
+    const layersWithInput = [{ units: unitsOfInputLayer }, ...layers];
+
+    const model = new NeuralNetwork({
+        lossFunc,
+        optimizer,
+        regularization,
+        thetaInitializer,
+        layers: layersWithInput,
+    });
 
     return model;
 }

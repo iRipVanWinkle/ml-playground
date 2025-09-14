@@ -8,7 +8,7 @@ import {
     SelectValue,
 } from '@/app/components/ui/select';
 import type { CriterionFunction, TaskType, CriterionFunctionConfig } from '@/app/store';
-import type { OptionList } from '../types';
+import type { OptionList } from '../../types';
 
 type CriterionProps = {
     taskType: TaskType;

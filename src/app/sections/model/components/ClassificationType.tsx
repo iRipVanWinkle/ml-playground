@@ -4,7 +4,7 @@ import { Label } from '@/app/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/app/components/ui/radio-group';
 import { TooltipWrapper } from '@/app/components/ui/tooltip-wrapper';
 import type { ClassificationType as ClassificationTypeName } from '@/app/store';
-import type { Option } from '../types';
+import type { Option } from '../../types';
 
 type ClassificationTypeProps = {
     classificationType: ClassificationTypeName;
