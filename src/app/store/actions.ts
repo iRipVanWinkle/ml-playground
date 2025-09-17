@@ -19,6 +19,7 @@ import {
 } from './data/utils';
 import { initState, useAppState } from './state';
 import { modelSettingsDefaults } from './defaults';
+import { Randomizer } from '@/ml/random/Randomizer';
 
 export function setTaskType(taskType: TaskType) {
     const modelType = taskType === 'regression' ? 'linear' : 'logistic';
@@ -135,7 +136,10 @@ export async function extractFeatures({
 
     if (shuffleData) {
         // Shuffle the data randomly
-        rawData.sort(() => Math.random() - 0.5);
+        const seed = useAppState.getState().systemSettings.randomSeed;
+
+        Randomizer.setSeed(seed);
+        Randomizer.shuffle(rawData);
     }
 
     const splitIndex = Math.floor(((trainTestSplit || 1) / 100) * rawData.length);

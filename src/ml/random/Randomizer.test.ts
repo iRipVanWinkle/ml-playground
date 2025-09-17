@@ -438,6 +438,61 @@ describe('Randomizer', () => {
         });
     });
 
+    describe('shuffle', () => {
+        it('should modify the original array in place', () => {
+            const original = [1, 2, 3, 4, 5];
+            const originalCopy = [...original];
+            Randomizer.shuffle(original);
+
+            // Original array should be modified
+            expect(original).not.toEqual(originalCopy);
+        });
+
+        it('should produce deterministic results with the same seed', () => {
+            const original1 = [1, 2, 3, 4, 5];
+            const original2 = [1, 2, 3, 4, 5];
+            Randomizer.shuffle(original1, 123);
+            Randomizer.shuffle(original2, 123);
+
+            expect(original1).toEqual(original2);
+        });
+
+        it('should use global seed when no seed provided', () => {
+            Randomizer.setSeed(456);
+            const original1 = [1, 2, 3, 4, 5];
+            Randomizer.shuffle(original1);
+
+            Randomizer.setSeed(456);
+            const original2 = [1, 2, 3, 4, 5];
+            Randomizer.shuffle(original2);
+
+            expect(original1).toEqual(original2);
+        });
+
+        it('should handle empty array', () => {
+            const original: number[] = [];
+            Randomizer.shuffle(original);
+
+            expect(original).toEqual([]);
+        });
+
+        it('should handle single element array', () => {
+            const original = [42];
+            Randomizer.shuffle(original);
+
+            expect(original).toEqual([42]);
+        });
+
+        it('should work with different types', () => {
+            const original = ['a', 'b', 'c'];
+            const originalCopy = [...original];
+            Randomizer.shuffle(original, 999);
+
+            expect(original).toHaveLength(3);
+            expect(original).toEqual(expect.arrayContaining(originalCopy));
+        });
+    });
+
     describe('seed merging behavior', () => {
         it('should use global seed when no local seed provided', () => {
             Randomizer.setSeed(333);
