@@ -337,7 +337,6 @@ export class NeuralNetwork extends BaseEstimator {
         const weights: Tensor2D[] = [];
         for (let i = 0; i < layerSizes.length - 1; i++) {
             const shape: [number, number] = [layerSizes[i], layerSizes[i + 1]];
-            console.info(this.thetaInitializer);
             const theta = this.thetaInitializer(shape);
 
             weights.push(theta);

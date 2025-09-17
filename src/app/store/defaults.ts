@@ -31,7 +31,7 @@ export const modelSettingsDefaults: Record<ModelType, (taskType: TaskType) => Mo
         lossFunction: { type: taskType === 'regression' ? 'mse' : 'binaryCrossentropy' },
         optimizer: DEFAULT_OPTIMIZER,
         regularization: { type: 'none' },
-        thetaInitialization: { type: 'zeros' },
+        thetaInitialization: { type: 'xavierNormal' },
         layers: [{ units: 1, activation: 'linear' }],
     }),
     tree: (taskType) => ({

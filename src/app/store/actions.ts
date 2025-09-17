@@ -21,8 +21,8 @@ import { initState, useAppState } from './state';
 import { modelSettingsDefaults } from './defaults';
 
 export function setTaskType(taskType: TaskType) {
-    const modelSettings =
-        modelSettingsDefaults[taskType === 'regression' ? 'linear' : 'logistic'](taskType);
+    const modelType = taskType === 'regression' ? 'linear' : 'logistic';
+    const modelSettings = modelSettingsDefaults[modelType](taskType);
 
     useAppState.setState((state) => ({
         ...state,
@@ -36,31 +36,13 @@ export function setTaskType(taskType: TaskType) {
 
 export function setModelType(modelType: ModelType) {
     useAppState.setState((state) => {
-        const newDefaults = modelSettingsDefaults[modelType](state.taskType);
-        const oldSettings = state.modelSettings;
-        const modelSettings = { ...newDefaults };
-
-        for (const key in oldSettings) {
-            if (key === 'type') continue;
-
-            if (key in newDefaults) {
-                Object.assign(modelSettings, {
-                    [key]: oldSettings[key as keyof typeof oldSettings],
-                });
-            }
-        }
-        console.info(state.taskType);
-        console.info(modelSettings);
+        const modelSettings = modelSettingsDefaults[modelType](state.taskType);
 
         return {
             ...state,
             modelSettings,
         };
     });
-
-    // if (modelType === 'logistic') {
-    //     updateModelSettings({ classificationType: 'binary' });
-    // }
 }
 
 export function setNormalizationFunction(normalization: NormalizationFunction) {
@@ -109,7 +91,6 @@ function prefillClassificationSettings(newSettings: Partial<Omit<ModelSettings, 
 
 export function updateModelSettings(newSettings: Partial<Omit<ModelSettings, 'type'>>) {
     const updatedSettings = prefillClassificationSettings(newSettings);
-
     useAppState.setState((state) => ({
         ...state,
         modelSettings: { ...state.modelSettings, ...updatedSettings } as ModelSettings,
