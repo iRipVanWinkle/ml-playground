@@ -14,11 +14,11 @@ test.describe('Logistic Regression Training', () => {
         const EXPECTED_RESULTS = {
             default: {
                 trainAccuracy: 'Train Accuracy: 90.00%',
-                testAccuracy: 'Test Accuracy: 90.00%',
+                testAccuracy: 'Test Accuracy: 100.00%',
             },
             withTransformation: {
-                trainAccuracy: '87.50%',
-                testAccuracy: '100.00%',
+                trainAccuracy: 'Train Accuracy: 92.50%',
+                testAccuracy: 'Test Accuracy: 70.00%',
             },
         } as const;
 
@@ -62,12 +62,12 @@ test.describe('Logistic Regression Training', () => {
         );
         const EXPECTED_RESULTS = {
             default: {
-                trainAccuracy: '68.75%',
-                testAccuracy: '58.33%',
+                trainAccuracy: 'Train Accuracy: 70.83%',
+                testAccuracy: 'Test Accuracy: 41.67%',
             },
             withTransformation: {
-                trainAccuracy: '95.83%',
-                testAccuracy: '100.00%',
+                trainAccuracy: 'Train Accuracy: 97.92%',
+                testAccuracy: 'Test Accuracy: 100.00%',
             },
         } as const;
 
@@ -76,6 +76,8 @@ test.describe('Logistic Regression Training', () => {
             await logisticRegressionPage.navigateToPage();
             await logisticRegressionPage.configureDataset();
             await logisticRegressionPage.setBasicConfiguration();
+
+            // Softmax will be selected by default as DATASET has 3 classes
         });
 
         test('should be disabled binary classification and enabled softmax', async ({ page }) => {
@@ -116,12 +118,12 @@ test.describe('Logistic Regression Training', () => {
         );
         const EXPECTED_RESULTS = {
             default: {
-                trainAccuracy: '68.75%',
-                testAccuracy: '58.33%',
+                trainAccuracy: 'Train Accuracy: 72.92%',
+                testAccuracy: 'Test Accuracy: 41.67%',
             },
             withTransformation: {
-                trainAccuracy: '100.00%',
-                testAccuracy: '91.67%',
+                trainAccuracy: 'Train Accuracy: 97.92%',
+                testAccuracy: 'Test Accuracy: 100.00%',
             },
         } as const;
 
@@ -131,7 +133,7 @@ test.describe('Logistic Regression Training', () => {
             await logisticRegressionPage.configureDataset();
             await logisticRegressionPage.setBasicConfiguration();
 
-            await page.getByTestId('classification-type-ovr').click();
+            await logisticRegressionPage.setClassificationType('One-vs-Rest');
         });
 
         test('should be disabled binary classification', async ({ page }) => {

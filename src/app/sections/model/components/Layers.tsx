@@ -9,6 +9,7 @@ import {
     SelectValue,
 } from '@/app/components/ui/select';
 import { useState, type ChangeEvent } from 'react';
+import type { OptionList } from '../../types';
 
 type Layers = { units: number; activation?: string };
 
@@ -17,6 +18,14 @@ type LayersProps = {
     disabled?: boolean;
     onChange: (layers: Layers[]) => void;
 };
+
+const DEFAULT_ACTIVATION_FUNCTIONS: OptionList = [
+    { value: 'linear', label: 'Linear' },
+    { value: 'relu', label: 'ReLU', title: 'Rectified Linear Unit' },
+    { value: 'sigmoid', label: 'Sigmoid' },
+    { value: 'tanh', label: 'Tanh', title: 'Hyperbolic Tangent' },
+    { value: 'softmax', label: 'Softmax' },
+];
 
 export default function Layers({ layers, onChange, disabled }: LayersProps) {
     const [localLayers, setLocalLayers] = useState(layers);
@@ -60,11 +69,13 @@ export default function Layers({ layers, onChange, disabled }: LayersProps) {
                 return (
                     <div
                         key={index}
+                        data-testid="layer-item"
                         className="flex flex-col gap-2 rounded-lg border bg-accent/40 p-2"
                     >
                         <div className="grid grid-cols-[1fr_2fr_1fr] gap-2 items-center">
                             <Input
                                 className="bg-white"
+                                data-testid="units-input"
                                 type="number"
                                 min={1}
                                 placeholder="Units"
@@ -78,24 +89,28 @@ export default function Layers({ layers, onChange, disabled }: LayersProps) {
                                 value={layer.activation}
                                 onValueChange={(value) => handleUpdateActivation(index, value)}
                             >
-                                <SelectTrigger className="w-full bg-white">
+                                <SelectTrigger
+                                    className="w-full bg-white"
+                                    data-testid="activation-select"
+                                >
                                     <SelectValue placeholder="Activation" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="linear">Linear</SelectItem>
-                                    <SelectItem value="relu" title="Rectified Linear Unit">
-                                        ReLU
-                                    </SelectItem>
-                                    <SelectItem value="sigmoid">Sigmoid</SelectItem>
-                                    <SelectItem value="tanh" title="Hyperbolic Tangent">
-                                        Tanh
-                                    </SelectItem>
-                                    <SelectItem value="softmax">Softmax</SelectItem>
+                                    {DEFAULT_ACTIVATION_FUNCTIONS.map((item) => (
+                                        <SelectItem
+                                            key={item.value}
+                                            value={item.value}
+                                            title={item.title}
+                                        >
+                                            {item.label}
+                                        </SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
 
                             <Button
                                 size="sm"
+                                data-testid="remove-layer-button"
                                 className="px-2 py-1"
                                 variant="destructive"
                                 disabled={disabled || localLayers.length === 1}
@@ -108,7 +123,12 @@ export default function Layers({ layers, onChange, disabled }: LayersProps) {
                 );
             })}
 
-            <Button size="sm" disabled={disabled} onClick={handleNewTransformation}>
+            <Button
+                size="sm"
+                disabled={disabled}
+                onClick={handleNewTransformation}
+                data-testid="add-layer-button"
+            >
                 + Add Layer
             </Button>
         </Field>

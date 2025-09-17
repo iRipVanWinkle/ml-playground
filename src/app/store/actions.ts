@@ -78,8 +78,6 @@ function prefillClassificationSettings(newSettings: Partial<Omit<ModelSettings, 
             initType = 'xavierUniform';
         }
 
-        console.info(lossType, initType);
-
         return {
             ...newSettings,
             lossFunction: { type: lossType },

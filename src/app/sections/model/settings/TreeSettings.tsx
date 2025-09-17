@@ -55,7 +55,6 @@ export default function TreeSettings({
     } = settings;
 
     const handleChange = (newSettings: Partial<TreeSettingsType>) => {
-        console.info({ ...settings, ...newSettings });
         onChange({ ...settings, ...newSettings });
     };
 

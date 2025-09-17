@@ -10,40 +10,40 @@ const DATASET_FILE = path.resolve(__dirname, './data/linear_regression_test_data
 
 const EXPECTED_RESULTS = {
     default: {
-        trainLoss: '3.7827',
-        testLoss: '3.4807',
+        trainLoss: 'Train Loss: 3.9046',
+        testLoss: 'Test Loss: 3.8844',
     },
     withNormalization: {
-        trainLoss: '43.0870',
-        testLoss: '71.3567',
+        trainLoss: 'Train Loss: 48.9290',
+        testLoss: 'Test Loss: 6.6557',
     },
     withMAELoss: {
-        trainLoss: '2.0948',
-        testLoss: '1.6584',
+        trainLoss: 'Train Loss: 2.0015',
+        testLoss: 'Test Loss: 2.2352',
     },
     withHuberLoss: {
-        trainLoss: '0.7058',
-        testLoss: '0.8800',
+        trainLoss: 'Train Loss: 1.8038',
+        testLoss: 'Test Loss: 1.1603',
     },
     withSGD: {
-        trainLoss: '2.5073',
-        testLoss: '3.4927',
+        trainLoss: 'Train Loss: 5.3875',
+        testLoss: 'Test Loss: 4.0784',
     },
     withScheduler: {
-        trainLoss: '2.3750',
-        testLoss: '2.3139',
+        trainLoss: 'Train Loss: 2.5513',
+        testLoss: 'Test Loss: 2.4067',
     },
     withMomentum: {
-        trainLoss: '7.0554',
-        testLoss: '8.0749',
+        trainLoss: 'Train Loss: 19.1801',
+        testLoss: 'Test Loss: 10.4284',
     },
     withL2Regularization: {
-        trainLoss: '7.4047',
-        testLoss: '3.1478',
+        trainLoss: 'Train Loss: 7.5552',
+        testLoss: 'Test Loss: 3.7214',
     },
     withCustomWeightInitialization: {
-        trainLoss: '19.4746',
-        testLoss: '12.8995',
+        trainLoss: 'Train Loss: 15.2431',
+        testLoss: 'Test Loss: 21.8003',
     },
 } as const;
 

@@ -68,13 +68,17 @@ export default function ModelSection() {
                 <CardTitle>Model</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-5">
-                <Field label="Model Type">
+                <Field label="Model Type" htmlFor="modelType">
                     <Select
                         disabled={isTraining}
                         value={data.type}
                         onValueChange={(value) => setModelType(value as ModelType)}
                     >
-                        <SelectTrigger className="w-full truncate">
+                        <SelectTrigger
+                            className="w-full truncate"
+                            id="modelType"
+                            data-testid="model-type-select"
+                        >
                             <SelectValue placeholder="Select Model Type" />
                         </SelectTrigger>
                         <SelectContent>

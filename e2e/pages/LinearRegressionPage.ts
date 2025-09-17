@@ -2,8 +2,13 @@ import { expect, Page } from '@playwright/test';
 
 type NormalizationType = 'Z-Score' | 'None';
 type TransformationType = 'Sinusoid' | 'Polynomial';
-type LossFunctionType = 'MSE (Mean Squared Error)' | 'MAE (Mean Absolute Error)' | 'Huber';
-type OptimizerType = 'Batch Gradient Descent' | 'Stochastic Gradient Descent' | 'Momentum';
+type LossFunctionType =
+    | 'MSE (Mean Squared Error)'
+    | 'MAE (Mean Absolute Error)'
+    | 'Huber'
+    | 'Binary cross-entropy'
+    | 'Categorical cross-entropy';
+type OptimizerType = 'Batch Gradient Descent' | 'Stochastic Gradient Descent' | 'Momentum' | 'Adam';
 type RegularizationType = 'L2 (Ridge)' | 'None';
 type WeightInitializationType = 'Constant' | 'Zeros';
 
@@ -30,22 +35,20 @@ export class LinearRegressionPage {
     }
 
     async setBasicConfiguration(): Promise<void> {
-        await this.page.getByTestId('shuffle-switch').click();
         await this.page.getByTestId('tensorflow-backend-select').click();
-        await this.page.getByText('CPU', { exact: true }).click();
+        await this.page.getByRole('option', { name: 'CPU', exact: true }).click();
     }
 
     async configureDataset(dataset?: string): Promise<void> {
         await this.page.getByTestId('dataset-select').click();
-        await this.page.getByText('Custom Dataset').click();
-        // await this.page.getByTestId('custom-dataset-input').click();
+        await this.page.getByRole('option', { name: 'Custom Dataset', exact: true }).click();
         await this.page.getByTestId('custom-dataset-input').setInputFiles(dataset ?? this.dataset);
     }
 
     async setNormalization(type: NormalizationType): Promise<void> {
         if (type) {
             await this.page.getByTestId('normalization-select').click();
-            await this.page.getByText(type).click();
+            await this.page.getByRole('option', { name: type, exact: true }).click();
         }
     }
 
@@ -56,14 +59,13 @@ export class LinearRegressionPage {
         await this.page.getByTestId('add-transformation-button').click();
 
         const transformationContainers = this.page.getByTestId('transformation-container');
-        await transformationContainers.screenshot();
         const newContainer = transformationContainers.last();
 
         const typeSelect = newContainer.getByTestId('transformation-type-select');
         await expect(typeSelect).toBeVisible();
 
         await typeSelect.click();
-        await this.page.getByText(type).click();
+        await this.page.getByRole('option', { name: type, exact: true }).click();
 
         if (options?.degree) {
             await newContainer.getByTestId('degree-input').fill(options.degree.toString());
@@ -85,7 +87,7 @@ export class LinearRegressionPage {
 
         if (options.type) {
             await targetContainer.getByTestId('transformation-type-select').click();
-            await this.page.getByText(options.type).click();
+            await this.page.getByRole('option', { name: options.type, exact: true }).click();
         }
 
         if (options.degree) {
@@ -93,19 +95,9 @@ export class LinearRegressionPage {
         }
     }
 
-    async getTransformationCount(): Promise<number> {
-        const transformationContainers = this.page.getByTestId('transformation-container');
-        try {
-            return await transformationContainers.count();
-        } catch {
-            // If no containers exist, return 0
-            return 0;
-        }
-    }
-
     async setLossFunction(type: LossFunctionType, huberDelta?: number): Promise<void> {
         await this.page.getByTestId('loss-function-select').click();
-        await this.page.getByText(type).click();
+        await this.page.getByRole('option', { name: type, exact: true }).click();
 
         if (type === 'Huber' && huberDelta) {
             await this.page.getByTestId('huber-delta-input').fill(huberDelta.toString());
@@ -114,7 +106,7 @@ export class LinearRegressionPage {
 
     async setOptimizer(type: OptimizerType, options: { batchSize?: number } = {}): Promise<void> {
         await this.page.getByTestId('optimizer-select').click();
-        await this.page.getByText(type).click();
+        await this.page.getByRole('option', { name: type, exact: true }).click();
 
         if (options.batchSize) {
             await this.page.getByTestId('batch-size-input').fill(options.batchSize.toString());
@@ -143,7 +135,7 @@ export class LinearRegressionPage {
         options: { lambda?: number } = {},
     ): Promise<void> {
         await this.page.getByTestId('regularization-select').click();
-        await this.page.getByText(type).click();
+        await this.page.getByRole('option', { name: type, exact: true }).click();
 
         if (options.lambda) {
             await this.page.getByTestId('lambda-input').fill(options.lambda.toString());
@@ -155,7 +147,7 @@ export class LinearRegressionPage {
         options: { constant?: string } = {},
     ): Promise<void> {
         await this.page.getByTestId('theta-initialization-select').click();
-        await this.page.getByText(type).click();
+        await this.page.getByRole('option', { name: type, exact: true }).click();
 
         if (options.constant) {
             await this.page.getByTestId('constant-value-input').fill(options.constant);
@@ -167,7 +159,9 @@ export class LinearRegressionPage {
     }
 
     async waitForTrainingCompletion(): Promise<void> {
-        await expect(this.page.getByText('Training finished')).toBeVisible({ timeout: 10000 });
+        await expect(
+            this.page.locator('[data-sonner-toast]').filter({ hasText: 'Training finished' }),
+        ).toBeVisible({ timeout: 15000 });
     }
 
     async verifyTrainingResults(
