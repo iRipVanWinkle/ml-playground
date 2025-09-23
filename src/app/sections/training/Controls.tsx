@@ -1,8 +1,9 @@
 import { Button } from '@/app/components/ui/button';
 import { DelayedLoader } from '@/app/components/ui/delayed-loader';
-import { useModel } from '@/app/hooks/useModel';
+import { useModel } from '@/app/hooks';
 import { useHasData, usePendingAction, useTrainingState } from '@/app/store';
 import { Loader, Pause, Play, Square, StepForward } from 'lucide-react';
+import { StartButton } from './StartButton';
 
 export function Controls() {
     const state = useTrainingState();
@@ -15,18 +16,15 @@ export function Controls() {
     const isPendingResume = pendingAction === 'resume';
     const isPendingStep = pendingAction === 'step';
 
-    const handleTrain = () => model.train();
+    const handleTrain = (byStep = false) => {
+        model.train({ byStep });
+    };
     const handleStop = () => model.stop();
     const handlePause = () => model.pause();
     const handleResume = () => model.resume();
     const handleStep = () => model.step();
 
-    let buttons = (
-        <Button onClick={handleTrain} disabled={!hasData} data-testid="start-training">
-            <Play />
-            Start Training
-        </Button>
-    );
+    let buttons = <StartButton onTrain={handleTrain} disabled={!hasData} />;
 
     if (state === 'preparing') {
         buttons = (

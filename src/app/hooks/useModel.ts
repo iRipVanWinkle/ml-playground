@@ -31,7 +31,7 @@ export const useModel = () => {
         return () => terminateWorker();
     }, []);
 
-    const train = async () => {
+    const train = async ({ byStep = false }: { byStep?: boolean } = {}) => {
         resetTrainingReport();
 
         if (workerRef.current) return;
@@ -111,7 +111,7 @@ export const useModel = () => {
         });
 
         worker.postMessage({
-            type: 'train',
+            type: byStep ? 'train-step' : 'train',
             payload: useAppState.getState(),
         });
 
