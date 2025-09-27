@@ -6,6 +6,7 @@ import { createModel, setRandomSeed } from '@/app/helpers';
 import type {
     CallbackParameters,
     ModelRepresentation,
+    TrainingControl,
     TrainingEventEmitter,
     TrainingState,
 } from '@/ml/types';
@@ -32,6 +33,7 @@ export class TrainingOrchestrator {
     private model: TrainedModel;
     private datasetManager: DatasetManager;
     private eventEmitter: TrainingEventEmitter;
+    private trainingController: TrainingControl;
     private callbacks: TrainingCallbacks;
     private liveMetrics: LiveMetrics;
     private liveMetricsProps: LiveMetricsProps;
@@ -47,7 +49,7 @@ export class TrainingOrchestrator {
 
         const datasetManager = new DatasetManager(data);
         const numFeatures = datasetManager.getTrainingData().X.shape[1];
-        const [model, eventEmitter] = createModel(
+        const [model, eventEmitter, trainingController] = createModel(
             modelSettings,
             dataSettings,
             taskType,
@@ -57,6 +59,7 @@ export class TrainingOrchestrator {
         this.model = model;
         this.callbacks = callbacks;
         this.eventEmitter = eventEmitter;
+        this.trainingController = trainingController;
         this.datasetManager = datasetManager;
         this.liveMetricsProps = new LiveMetricsProps(state);
         this.liveMetrics = new LiveMetrics(model, datasetManager);
@@ -112,20 +115,20 @@ export class TrainingOrchestrator {
     }
 
     stop() {
-        this.model.stop();
+        this.trainingController.stop();
         this.isTraining = false;
     }
 
     pause() {
-        this.model.pause();
+        this.trainingController.pause();
     }
 
     resume() {
-        this.model.resume();
+        this.trainingController.resume();
     }
 
     step() {
-        this.model.step();
+        this.trainingController.step();
     }
 
     private async executeTraining(byStep: boolean): Promise<void> {
@@ -210,7 +213,7 @@ export class TrainingOrchestrator {
 
         // Handle step-by-step learning mode
         if (this.shouldStopAfterIteration(params.iteration)) {
-            this.model.pause();
+            this.pause();
         }
     }
 

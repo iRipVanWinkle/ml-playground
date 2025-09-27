@@ -77,6 +77,17 @@ export interface TrainingControl {
      * Performs a single training step.
      */
     step(): void;
+
+    /**
+     * Indicates if the training process has been stopped.
+     */
+    get isTrainingStopped(): boolean;
+
+    /**
+     * Handles control flow for the training process.
+     * @param isSyncBackend - Indicates if the backend is synchronous (e.g., CPU). If true, yields control to the event loop.
+     */
+    handleControlFlow(isSyncBackend?: boolean): Promise<void>;
 }
 
 /**
@@ -195,7 +206,7 @@ export type OptimizeParameters = Readonly<{
 /**
  * Interface for optimizers.
  */
-export interface Optimizer extends TrainingControl {
+export interface Optimizer {
     /**
      * Optimizes the model parameters.
      *
@@ -226,7 +237,7 @@ export type ModelRepresentation = Tensor2D | EnsembleTree;
 /**
  * Interface for machine learning models.
  */
-export interface Model<T extends ModelRepresentation> extends TrainingControl {
+export interface Model<T extends ModelRepresentation> {
     /**
      * Trains the model on the provided data.
      *

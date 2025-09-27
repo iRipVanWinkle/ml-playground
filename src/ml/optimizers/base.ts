@@ -4,9 +4,10 @@ import type {
     OptimizeParameters,
     Optimizer,
     OptimizerCallbackParameters,
+    TrainingControl,
     TrainingEventEmitter,
 } from '../types';
-import { DEFAULT_TOLERANCE, EVENT_LOOP_YIELD_MS, PAUSE_CHECK_INTERVAL_MS } from '../constants';
+import { DEFAULT_TOLERANCE } from '../constants';
 import { assert } from '../utils';
 
 /**
@@ -18,6 +19,7 @@ export type OptimizerOptions = Readonly<{
     tolerance?: number;
     withBias?: boolean;
     eventEmitter?: TrainingEventEmitter;
+    trainingController?: TrainingControl;
 }>;
 
 export abstract class BaseOptimizer implements Optimizer {
@@ -26,16 +28,14 @@ export abstract class BaseOptimizer implements Optimizer {
     protected tolerance: number;
     protected withBias: boolean;
     protected eventEmitter?: TrainingEventEmitter;
-
-    private isPaused = false;
-    private isStopped = false;
-    private stepRequested = false;
+    protected trainingController?: TrainingControl;
 
     constructor(options: OptimizerOptions) {
         const {
             learningRate,
             maxIterations,
             eventEmitter,
+            trainingController,
             tolerance = DEFAULT_TOLERANCE,
             withBias = true,
         } = options;
@@ -52,30 +52,16 @@ export abstract class BaseOptimizer implements Optimizer {
         this.tolerance = tolerance;
         this.withBias = withBias;
         this.eventEmitter = eventEmitter;
-    }
-
-    stop(): void {
-        this.isPaused = false;
-        this.isStopped = true;
-    }
-
-    pause(): void {
-        this.isPaused = true;
-    }
-
-    resume(): void {
-        this.isPaused = false;
-    }
-
-    step(): void {
-        this.stepRequested = true;
+        this.trainingController = trainingController;
     }
 
     async *iterator(): AsyncGenerator<number, void, unknown> {
-        for (let iteration = 0; iteration < this.maxIterations; iteration++) {
-            await this.handleControlFlow();
+        const isSyncBackend = this.isSyncBackend();
 
-            if (this.isStopped) {
+        for (let iteration = 0; iteration < this.maxIterations; iteration++) {
+            await this.trainingController?.handleControlFlow(isSyncBackend);
+
+            if (this.trainingController?.isTrainingStopped) {
                 break; // Stop the generator
             }
 
@@ -95,20 +81,6 @@ export abstract class BaseOptimizer implements Optimizer {
 
     protected callback(params: OptimizerCallbackParameters): Promise<void> | undefined {
         return this.eventEmitter?.emit('callback', params);
-    }
-
-    private async handleControlFlow(): Promise<void> {
-        // Yield to event loop
-        if (this.isSyncBackend()) {
-            await new Promise((resolve) => setTimeout(resolve, EVENT_LOOP_YIELD_MS));
-        }
-
-        // Handle pause state
-        while (this.isPaused && !this.stepRequested && !this.isStopped) {
-            await new Promise((resolve) => setTimeout(resolve, PAUSE_CHECK_INTERVAL_MS));
-        }
-
-        this.stepRequested = false; // Reset step request
     }
 
     private isSyncBackend(): boolean {

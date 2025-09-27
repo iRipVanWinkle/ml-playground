@@ -8,7 +8,14 @@ import type {
     TaskType,
     TreeSettings,
 } from '@/app/store';
-import type { EnsembleTree, Model, ModelRepresentation, TrainingEventEmitter } from '@/ml/types';
+import type {
+    EnsembleTree,
+    Model,
+    ModelRepresentation,
+    Optimizer,
+    TrainingControl,
+    TrainingEventEmitter,
+} from '@/ml/types';
 import { BatchGD, MomentumGD, StochasticGD } from '@/ml/optimizers';
 import {
     BaggingClassifier,
@@ -37,25 +44,28 @@ import type { Tensor2D } from '@tensorflow/tfjs';
 import { getCriterionFunc } from './getCriterionFunction';
 import { AdamGD } from '@/ml/optimizers/adam';
 import { calculateOutputFeatures } from '@/ml/data-processing/transformation';
+import { TrainingController } from '@/ml/controllers/TrainingController';
 
 export function createModel(
     modelSettings: ModelSettings,
     dataSettings: DataSettings,
     taskType: TaskType,
     numFeatures: number,
-): [PreprocessingModelDecorator<ModelRepresentation>, TrainingEventEmitter] {
+): [PreprocessingModelDecorator<ModelRepresentation>, TrainingEventEmitter, TrainingControl] {
     try {
         const eventEmitter = new EventEmitter();
+        const trainingController = new TrainingController(eventEmitter);
         const model = createBaseModel(
             modelSettings,
             dataSettings,
             taskType,
             numFeatures,
             eventEmitter,
+            trainingController,
         );
         const pipeline = createPreprocessingPipeline(model, dataSettings, eventEmitter);
 
-        return [pipeline, eventEmitter];
+        return [pipeline, eventEmitter, trainingController];
     } catch (error) {
         throw new Error(
             `Failed to create model of type ${modelSettings.type}: ${error instanceof Error ? error.message : 'Unknown error'}`,
@@ -69,15 +79,22 @@ function createBaseModel(
     taskType: TaskType,
     numFeatures: number,
     eventEmitter: EventEmitter,
+    trainingController: TrainingControl,
 ): Model<ModelRepresentation> {
     switch (modelSettings.type) {
         case 'tree':
-            return createTreeModel(taskType, eventEmitter, modelSettings);
+            return createTreeModel(taskType, eventEmitter, modelSettings, trainingController);
         case 'linear':
         case 'logistic':
-            return createRegressionModel(modelSettings, eventEmitter);
+            return createRegressionModel(modelSettings, eventEmitter, trainingController);
         case 'neural':
-            return createNeuralNetworkModel(modelSettings, dataSettings, numFeatures, eventEmitter);
+            return createNeuralNetworkModel(
+                modelSettings,
+                dataSettings,
+                numFeatures,
+                eventEmitter,
+                trainingController,
+            );
         default:
             throw new Error(`Unsupported model type`);
     }
@@ -103,6 +120,7 @@ function createTreeModel(
     taskType: TaskType,
     eventEmitter: EventEmitter,
     modelSettings: TreeSettings,
+    trainingController: TrainingControl,
 ): Model<EnsembleTree> {
     const {
         modelVariant,
@@ -123,6 +141,7 @@ function createTreeModel(
         minSamplesSplit,
         minSamplesLeaf,
         eventEmitter,
+        trainingController,
     };
     const ensembleParams = { ...commonParams, estimators };
     const forestParams = { ...ensembleParams, maxFeatures };
@@ -158,12 +177,13 @@ function createTreeModel(
 function createRegressionModel(
     modelSettings: LinearSettings | LogisticSettings,
     eventEmitter: EventEmitter,
+    trainingController: TrainingControl,
 ): Model<Tensor2D> {
     const lossFunc = getLossFunc(modelSettings.lossFunction);
 
     const { type: modelType, optimizer: optimizerConfig } = modelSettings;
 
-    const optimizer = createOptimizer(optimizerConfig, eventEmitter);
+    const optimizer = createOptimizer(optimizerConfig, eventEmitter, trainingController);
     const regularization = getRegularization(modelSettings.regularization);
     const thetaInitializer = getThetaInitializer(modelSettings.thetaInitialization);
 
@@ -201,12 +221,13 @@ function createNeuralNetworkModel(
     dataSettings: DataSettings,
     numFeatures: number,
     eventEmitter: EventEmitter,
+    trainingController: TrainingControl,
 ): Model<Tensor2D> {
     const lossFunc = getLossFunc(modelSettings.lossFunction);
 
     const { optimizer: optimizerConfig } = modelSettings;
 
-    const optimizer = createOptimizer(optimizerConfig, eventEmitter);
+    const optimizer = createOptimizer(optimizerConfig, eventEmitter, trainingController);
     const regularization = getRegularization(modelSettings.regularization);
     const thetaInitializer = getThetaInitializer(modelSettings.thetaInitialization);
 
@@ -227,7 +248,11 @@ function createNeuralNetworkModel(
     return model;
 }
 
-function createOptimizer(optimizerConfig: OptimizerConfig, eventEmitter: EventEmitter) {
+function createOptimizer(
+    optimizerConfig: OptimizerConfig,
+    eventEmitter: EventEmitter,
+    trainingController: TrainingControl,
+): Optimizer {
     const { scheduler, schedulerConfig, maxIterations, tolerance } = optimizerConfig;
 
     const learningRate = getLearningRate(
@@ -240,6 +265,7 @@ function createOptimizer(optimizerConfig: OptimizerConfig, eventEmitter: EventEm
         maxIterations,
         tolerance,
         eventEmitter,
+        trainingController,
     };
 
     switch (optimizerConfig.type) {

@@ -71,26 +71,6 @@ export class PreprocessingModelDecorator<T extends ModelRepresentation> implemen
         this.model.dispose(withDependencies);
     }
 
-    stop(): void {
-        this.model.stop();
-        this.eventEmitter?.emit('state', 'stopped');
-    }
-
-    pause(): void {
-        this.model.pause();
-        this.eventEmitter?.emit('state', 'paused');
-    }
-
-    resume(): void {
-        this.model.resume();
-        this.eventEmitter?.emit('state', 'training');
-    }
-
-    step(): void {
-        this.model.step();
-        this.eventEmitter?.emit('state', 'stepped-forward');
-    }
-
     prepareFeatures(features: Tensor2D): Tensor2D {
         const options = this.featureTransform;
         const transformations = options?.transformations ?? [];

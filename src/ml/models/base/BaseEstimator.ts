@@ -45,22 +45,6 @@ export abstract class BaseEstimator implements Model<Tensor2D> {
         }
     }
 
-    stop(): void {
-        this.optimizer.stop();
-    }
-
-    pause(): void {
-        this.optimizer.pause();
-    }
-
-    step(): void {
-        this.optimizer.step();
-    }
-
-    resume(): void {
-        this.optimizer.resume();
-    }
-
     protected addBiasTerm(X: Tensor2D): Tensor2D {
         return tidy(() => concat([ones([X.shape[0], 1]), X], 1) as Tensor2D);
     }

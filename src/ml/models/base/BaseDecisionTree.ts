@@ -14,14 +14,16 @@ export type DecisionTreeOptions = {
     minSamplesSplit?: number;
     minSamplesLeaf?: number;
     eventEmitter?: TrainingEventEmitter;
+    trainingController?: TrainingControl;
 };
 
-export abstract class BaseDecisionTree implements TrainingControl, Model<EnsembleTree> {
+export abstract class BaseDecisionTree implements Model<EnsembleTree> {
     protected criterion: CriterionFunction;
     protected maxDepth?: number;
     protected minSamplesSplit: number;
     protected minSamplesLeaf: number;
     protected eventEmitter?: TrainingEventEmitter;
+    protected trainingController?: TrainingControl;
 
     protected treeBuilder: TreeBuilder;
     protected trees: EnsembleTree = [];
@@ -32,8 +34,9 @@ export abstract class BaseDecisionTree implements TrainingControl, Model<Ensembl
         this.minSamplesSplit = options.minSamplesSplit ?? 2;
         this.minSamplesLeaf = options.minSamplesLeaf ?? 1;
         this.eventEmitter = options.eventEmitter;
+        this.trainingController = options.trainingController;
 
-        this.treeBuilder = new TreeBuilder(options.eventEmitter);
+        this.treeBuilder = new TreeBuilder(options.eventEmitter, options.trainingController);
     }
 
     abstract train(X: Tensor2D, y: Tensor2D): Promise<EnsembleTree>;
@@ -41,22 +44,6 @@ export abstract class BaseDecisionTree implements TrainingControl, Model<Ensembl
     abstract predict(X: Tensor2D, trees?: EnsembleTree): Tensor2D;
 
     abstract evaluate(X: Tensor2D, y: Tensor2D, trees?: EnsembleTree): [Tensor2D, Tensor2D, Scalar];
-
-    stop(): void {
-        this.treeBuilder.stop();
-    }
-
-    pause(): void {
-        this.treeBuilder.pause();
-    }
-
-    resume(): void {
-        this.treeBuilder.resume();
-    }
-
-    step(): void {
-        this.treeBuilder.step();
-    }
 
     dispose(): void {
         this.trees = [];

@@ -1,5 +1,4 @@
 import type { TrainingControl, TrainingEventEmitter, TreeNode } from '../types';
-import { EVENT_LOOP_YIELD_MS, PAUSE_CHECK_INTERVAL_MS } from '../constants';
 import type { SplitStrategy, TreeBuilderOptions } from './types';
 import { gather, zeros } from './helpers';
 
@@ -33,32 +32,14 @@ const DEFAULT_CONTEXT = {
     threadId: 0,
 };
 
-export class TreeBuilder implements TrainingControl {
-    private isStopped = false;
-    private isPaused = false;
-    private stepRequested = false;
-
+export class TreeBuilder {
     private context: TreeBuilderContext | null = null;
     private eventEmitter?: TrainingEventEmitter;
+    private trainingController?: TrainingControl;
 
-    constructor(eventEmitter?: TrainingEventEmitter) {
+    constructor(eventEmitter?: TrainingEventEmitter, trainingController?: TrainingControl) {
         this.eventEmitter = eventEmitter;
-    }
-
-    stop(): void {
-        this.isStopped = true;
-    }
-
-    pause(): void {
-        this.isPaused = true;
-    }
-
-    resume(): void {
-        this.isPaused = false;
-    }
-
-    step(): void {
-        this.stepRequested = true;
+        this.trainingController = trainingController;
     }
 
     async buildTree(
@@ -98,6 +79,7 @@ export class TreeBuilder implements TrainingControl {
         y: number[][],
         context: TreeBuilderContext,
     ): AsyncGenerator<number, void, unknown> {
+        const isSyncBackend = true;
         // Create the root node data
         const indices = Array.from({ length: X.length }, (_, i) => i);
         const rootNodeData: NodeData = { features: X, targets: y, indices };
@@ -116,9 +98,9 @@ export class TreeBuilder implements TrainingControl {
 
         while (pendingNodes.length !== 0) {
             // Handle pause/step logic similar to BaseOptimizer
-            await this.handleControlFlow();
+            await this.trainingController?.handleControlFlow(isSyncBackend);
 
-            if (this.isStopped) {
+            if (this.trainingController?.isTrainingStopped) {
                 break;
             }
 
@@ -231,7 +213,7 @@ export class TreeBuilder implements TrainingControl {
             (maxDepth !== undefined && depth >= maxDepth) ||
             numSamples < 2 * minSamplesLeaf ||
             numSamples < minSamplesSplit ||
-            this.isStopped
+            !!this.trainingController?.isTrainingStopped
         );
     }
 
@@ -268,17 +250,5 @@ export class TreeBuilder implements TrainingControl {
             targets: childTargets,
             indices: Array.from({ length: indices.length }, (_, i) => i),
         };
-    }
-
-    private async handleControlFlow(): Promise<void> {
-        // Yield to event loop
-        await new Promise((resolve) => setTimeout(resolve, EVENT_LOOP_YIELD_MS));
-
-        // Handle pause state
-        while (this.isPaused && !this.stepRequested && !this.isStopped) {
-            await new Promise((resolve) => setTimeout(resolve, PAUSE_CHECK_INTERVAL_MS));
-        }
-
-        this.stepRequested = false; // Reset step request
     }
 }
