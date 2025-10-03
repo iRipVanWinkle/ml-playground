@@ -31,22 +31,26 @@ export default function TrainingSection() {
     return (
         <Card>
             <CardContent className="grid gap-4">
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div className="flex gap-4">
-                        <Controls />
+                <div className="grid gap-4 sticky top-0 z-10 bg-card/80 backdrop-blur-md pt-4 -mt-4">
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div className="flex gap-4">
+                            <Controls />
+                        </div>
+
+                        <div
+                            className="flex items-center justify-end"
+                            data-testid="training-progress"
+                        >
+                            {currentIteration.toFixed(0)}/{maxIterations}
+                        </div>
                     </div>
 
-                    <div className="flex items-center justify-end" data-testid="training-progress">
-                        {currentIteration.toFixed(0)}/{maxIterations}
-                    </div>
+                    <Progress
+                        value={currentIteration}
+                        max={maxIterations}
+                        className="w-full bg-gray-200 rounded-full h-0.25"
+                    />
                 </div>
-
-                <Progress
-                    value={currentIteration}
-                    max={maxIterations}
-                    className="w-full bg-gray-200 rounded-full h-0.25"
-                />
-
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                     {isClassification && (
                         <>
