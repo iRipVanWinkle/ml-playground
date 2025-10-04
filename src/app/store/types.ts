@@ -18,13 +18,6 @@ export type Regularization = 'none' | 'l1' | 'l2' | 'elasticnet';
 export type TrainingState = 'init' | 'preparing' | 'training' | 'paused';
 export type PendingAction = 'pause' | 'stop' | 'step' | 'resume' | null;
 
-export type TensorBackend = 'auto' | 'webgpu' | 'webgl' | 'cpu' | 'wasm';
-
-export type DataSettings = {
-    normalization: NormalizationFunction;
-    transformations: Array<{ type: TransformationFunction; degree: number }>;
-};
-
 // OPTIMIZATION
 
 type OptimizerBasicConfig = {
@@ -208,17 +201,10 @@ export type DataState = {
     categories?: string[];
 };
 
-export type SystemSettings = {
-    backend: TensorBackend;
-    randomSeed?: number;
-};
-
 export type State = {
     taskType: TaskType;
-    dataSettings: DataSettings;
     modelSettings: ModelSettings;
     data: DataState;
-    systemSettings: SystemSettings;
     trainingState: TrainingState;
     pendingAction: PendingAction;
     report: TrainingReport;

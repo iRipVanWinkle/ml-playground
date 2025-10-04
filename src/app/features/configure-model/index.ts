@@ -1,0 +1,1 @@
+export { SettingsRenderer } from './settings';

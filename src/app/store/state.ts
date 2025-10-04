@@ -3,10 +3,6 @@ import type { State } from './types';
 
 export const initState: State = {
     taskType: 'regression',
-    dataSettings: {
-        normalization: 'none',
-        transformations: [],
-    },
     modelSettings: {
         type: 'linear',
         lossFunction: { type: 'mse' },
@@ -37,10 +33,6 @@ export const initState: State = {
         predictionInputFeatures: undefined,
     },
     trainingState: 'init',
-    systemSettings: {
-        backend: 'auto',
-        randomSeed: 42,
-    },
     pendingAction: null,
     report: {
         trainLossHistory: [],

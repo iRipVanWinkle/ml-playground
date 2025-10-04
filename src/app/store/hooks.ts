@@ -4,8 +4,6 @@ export const useModelType = () => useAppState((state) => state.modelSettings.typ
 export const useTaskType = () => useAppState((state) => state.taskType);
 
 export const useModelSettings = () => useAppState((state) => state.modelSettings);
-export const useDataSettings = () => useAppState((state) => state.dataSettings);
-export const useSystemSettings = () => useAppState((state) => state.systemSettings);
 export const useClassificationType = () =>
     useAppState((state) =>
         state.modelSettings.type === 'logistic'

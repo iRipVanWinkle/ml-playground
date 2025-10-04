@@ -76,32 +76,10 @@ export class Randomizer {
         return randomNormal(shape, mean, stddev, dtype, Randomizer.mergeSeed(seed));
     }
 
-    static shuffle<T>(array: T[], seed?: number) {
-        const mergedSeed = Randomizer.mergeSeed(seed);
-        const rand = mulberry32(mergedSeed);
-
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(rand() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-
-        return array;
-    }
-
     private static mergeSeed(seed?: number): number | undefined {
         if (seed !== undefined && Randomizer.seed !== undefined) {
             return seed + Randomizer.seed;
         }
         return seed ?? Randomizer.seed;
     }
-}
-
-// Simple seeded PRNG (Mulberry32)
-function mulberry32(seed = Date.now()) {
-    return function () {
-        let t = (seed += 0x6d2b79f5);
-        t = Math.imul(t ^ (t >>> 15), t | 1);
-        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-    };
 }

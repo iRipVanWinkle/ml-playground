@@ -1,0 +1,23 @@
+import { useIsTraining, useNumTrainInputFeatures } from '@/app/store';
+import { Card } from '@/app/shared/ui';
+import { DataSection as DataSectionComponent } from '@/app/features/load-dataset';
+import { Normalization, Transformations } from '@/app/features/transform-data';
+
+export default function DataSection() {
+    const numFeatures = useNumTrainInputFeatures();
+    const isTraining = useIsTraining();
+
+    return (
+        <Card className="gap-5">
+            <Card.Header>
+                <Card.Title>Dataset</Card.Title>
+            </Card.Header>
+            <Card.Content className="grid gap-5">
+                <DataSectionComponent disabled={isTraining} />
+
+                <Normalization disabled={isTraining} />
+                <Transformations disabled={isTraining} numFeatures={numFeatures} />
+            </Card.Content>
+        </Card>
+    );
+}

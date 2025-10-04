@@ -1,6 +1,4 @@
-import { readCsv } from '@/app/lib/readCsv';
 import type {
-    NormalizationFunction,
     ModelType,
     State,
     TaskType,
@@ -19,7 +17,9 @@ import {
 } from './data/utils';
 import { initState, useAppState } from './state';
 import { modelSettingsDefaults } from './defaults';
-import { Randomizer } from '@/ml/random/Randomizer';
+import { readCsv } from '../shared/utils';
+import { shuffleArray } from './data/shuffle';
+import { useSystemSettings } from '../features/system-settings';
 
 export function setTaskType(taskType: TaskType) {
     const modelType = taskType === 'regression' ? 'linear' : 'logistic';
@@ -44,26 +44,6 @@ export function setModelType(modelType: ModelType) {
             modelSettings,
         };
     });
-}
-
-export function setNormalizationFunction(normalization: NormalizationFunction) {
-    useAppState.setState((state) => ({
-        ...state,
-        dataSettings: {
-            ...state.dataSettings,
-            normalization,
-        },
-    }));
-}
-
-export function setTransformation(transformations: State['dataSettings']['transformations']) {
-    useAppState.setState((state) => ({
-        ...state,
-        dataSettings: {
-            ...state.dataSettings,
-            transformations,
-        },
-    }));
 }
 
 function prefillClassificationSettings(newSettings: Partial<Omit<ModelSettings, 'type'>>) {
@@ -96,17 +76,7 @@ export function updateModelSettings(newSettings: Partial<Omit<ModelSettings, 'ty
     }));
 }
 
-export function updateSystemSettings(newSettings: Partial<State['systemSettings']>) {
-    useAppState.setState((state) => ({
-        ...state,
-        systemSettings: {
-            ...state.systemSettings,
-            ...newSettings,
-        },
-    }));
-}
-
-type ExtractFeaturesOptions = {
+export type ExtractFeaturesOptions = {
     file: File;
     shuffleData?: boolean;
     trainTestSplit?: number;
@@ -134,10 +104,9 @@ export async function extractFeatures({
 
     if (shuffleData) {
         // Shuffle the data randomly
-        const seed = useAppState.getState().systemSettings.randomSeed;
+        const seed = useSystemSettings.getState().randomSeed;
 
-        Randomizer.setSeed(seed);
-        Randomizer.shuffle(rawData);
+        shuffleArray(rawData, seed);
     }
 
     const splitIndex = Math.floor(((trainTestSplit || 1) / 100) * rawData.length);

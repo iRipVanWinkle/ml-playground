@@ -1,20 +1,41 @@
-import MLLayout from './MLLayout';
-import { ThemeProvider } from './components/theme';
-import { Toaster } from './components/ui/sonner';
-import { Footer } from './components/Footer';
-import { Header } from './components/Header';
+import { Toaster } from './shared/ui';
+import { ThemeProvider } from './features/change-theme';
+import { TaskSwitcher } from './widgets/task-switcher';
+import { Footer } from './widgets/footer';
+import { Header } from './widgets/header';
+import { DataSection } from './widgets/data-section';
+import { ModelSection } from './widgets/model-section';
+import { SystemSettings } from './widgets/settings-section';
+import { TrainingSection } from './features/train-model';
 
 import './App.css';
 
 function App() {
     return (
         <ThemeProvider>
-            <Header />
-            <main>
-                <MLLayout />
-            </main>
-            <Footer />
-            <Toaster position="top-right" expand richColors closeButton />
+            <div className="App">
+                <Header />
+                <main className="grid gap-3">
+                    <TaskSwitcher />
+
+                    <div className="grid gap-6 grid-cols-1 lg:grid-cols-3">
+                        <div className="lg:col-span-1 flex flex-col gap-6">
+                            <DataSection />
+
+                            <ModelSection />
+
+                            <SystemSettings />
+                        </div>
+
+                        <div className="lg:col-span-2">
+                            <TrainingSection />
+                        </div>
+                    </div>
+                </main>
+
+                <Footer />
+            </div>
+            <Toaster position="top-right" expand closeButton richColors />
         </ThemeProvider>
     );
 }
