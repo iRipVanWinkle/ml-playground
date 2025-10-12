@@ -1,3 +1,4 @@
+import type { DataState } from '@/app/features/load-dataset';
 import type { State, TaskType } from '@/app/store';
 
 export class LiveMetricsProps {
@@ -9,7 +10,7 @@ export class LiveMetricsProps {
         return this.taskType === 'classification';
     }
 
-    constructor(state: State) {
+    constructor(state: State & { data: DataState }) {
         const { modelSettings, taskType, data } = state;
 
         this.isOneVsRest =

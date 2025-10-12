@@ -12,6 +12,7 @@ import TrainingWorker from '../workers/trainingOrchestrator.worker.ts?worker';
 import { decode } from '../helpers';
 import { useSystemSettings } from '../../system-settings';
 import { useTransformationSettings } from '../../transform-data';
+import { useDataset } from '../../load-dataset';
 
 function forType<T>(type: string, callback: (payload: T) => void) {
     return (event: MessageEvent) => {
@@ -118,6 +119,7 @@ export const useModel = () => {
                 ...useAppState.getState(),
                 systemSettings: useSystemSettings.getState(),
                 dataSettings: useTransformationSettings.getState(),
+                data: useDataset.getState(),
             },
         });
 

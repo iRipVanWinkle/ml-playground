@@ -1,6 +1,7 @@
 import MNISTGrid from './MNISTGrid';
 import { useLogisticPlotData } from './hooks/useLogisticPlotData';
-import type { DataState, TrainingReport } from '@/app/store';
+import type { TrainingReport } from '@/app/store';
+import type { DataState } from '@/app/features/load-dataset';
 import Plot from 'react-plotly.js';
 
 type LogisticPlotsProps = {

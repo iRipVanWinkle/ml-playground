@@ -1,8 +1,9 @@
-import { useNumCategories, type ModelSettings, type TaskType } from '@/app/store';
+import { type ModelSettings, type TaskType } from '@/app/store';
 import LinearSettings from './LinearSettings';
 import LogisticSettings from './LogisticSettings';
 import NeuralSettings from './NeuralSettings';
 import TreeSettings from './TreeSettings';
+import { useNumCategories } from '../../load-dataset';
 
 type RendererProps = {
     taskType: TaskType;

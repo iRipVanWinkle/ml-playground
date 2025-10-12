@@ -1,4 +1,5 @@
-import { useHasData, usePendingAction, useTrainingState } from '@/app/store';
+import { usePendingAction, useTrainingState } from '@/app/store';
+import { useHasData } from '@/app/features/load-dataset';
 import { Loader, Pause, Play, Square, StepForward } from 'lucide-react';
 import { StartButton } from './StartButton';
 import { Button, DelayedLoader } from '@/app/shared/ui';

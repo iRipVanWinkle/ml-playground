@@ -1,15 +1,16 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { extractFeatures, resetTrainingReport, useTaskType } from '@/app/store';
+import { resetTrainingReport, useTaskType } from '@/app/store';
 import {
     DEFAULT_STATE,
-    PREPERED_CLASSIFICATION_DATASETS,
-    PREPERED_REGRESSION_DATASETS,
-} from './constants';
-import type { DataSectionProps, DataSectionState } from './types';
-import { createFileFromURL } from '@/app/shared/utils';
+    PREPARED_CLASSIFICATION_DATASETS,
+    PREPARED_REGRESSION_DATASETS,
+} from '../constants/datasets';
+import type { DataSectionProps, DataSectionState } from '../store/types';
+import { createFileFromURL } from '../libs/file-fetcher';
 import { Field, Input, Label, Select, Slider, Switch } from '@/app/shared/ui';
+import { extractFeatures } from '../store/actions';
 
-export default function DataSection({ disabled }: DataSectionProps) {
+export function DataLoader({ disabled }: DataSectionProps) {
     const taskType = useTaskType();
 
     const [state, setState] = useState<DataSectionState>(DEFAULT_STATE);
@@ -50,7 +51,7 @@ export default function DataSection({ disabled }: DataSectionProps) {
     };
 
     const datasets =
-        taskType === 'regression' ? PREPERED_REGRESSION_DATASETS : PREPERED_CLASSIFICATION_DATASETS;
+        taskType === 'regression' ? PREPARED_REGRESSION_DATASETS : PREPARED_CLASSIFICATION_DATASETS;
 
     return (
         <>

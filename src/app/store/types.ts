@@ -72,22 +72,9 @@ export type TrainingReport = {
     theta: number[][];
 };
 
-export type DataState = {
-    trainInputFeatures: number[][];
-    trainTargetLabels: number[][];
-    testInputFeatures: number[][];
-    testTargetLabels: number[][];
-    predictionInputFeatures?: number[][];
-    xMin: number[];
-    xMax: number[];
-    headers: string[];
-    categories?: string[];
-};
-
 export type State = {
     taskType: TaskType;
     modelSettings: ModelSettings;
-    data: DataState;
     trainingState: TrainingState;
     pendingAction: PendingAction;
     report: TrainingReport;

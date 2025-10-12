@@ -21,17 +21,6 @@ export const initState: State = {
             type: 'zeros',
         },
     },
-    data: {
-        trainInputFeatures: [],
-        trainTargetLabels: [],
-        testInputFeatures: [],
-        testTargetLabels: [],
-        xMin: [],
-        xMax: [],
-        headers: [],
-        categories: undefined,
-        predictionInputFeatures: undefined,
-    },
     trainingState: 'init',
     pendingAction: null,
     report: {

@@ -1,6 +1,7 @@
 import LinearPlots from './LinearPlots';
 import LogisticPlots from './LogisticPlots';
-import { useData, useModelSettings, useTaskType, useTrainingReport } from '@/app/store';
+import { useModelSettings, useTaskType, useTrainingReport } from '@/app/store';
+import { useData } from '@/app/features/load-dataset';
 import { Controls } from './Controls';
 import { LossHistoryPlot } from './LossHistoryPlot';
 import { arrayAvg } from './helpers/arrayAvg';

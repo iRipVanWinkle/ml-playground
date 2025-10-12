@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { generateCartesianProduct } from './utils';
+import { generateCartesianProduct } from './transforms';
 
 describe('generateCartesianProduct', () => {
     it('should generate Cartesian product for 1 column', () => {

@@ -1,5 +1,5 @@
 import { tensor2d, type Tensor2D } from '@tensorflow/tfjs';
-import type { DataState } from '@/app/store';
+import type { DataState } from '@/app/features/load-dataset';
 
 export class DatasetManager {
     private trainX: Tensor2D;

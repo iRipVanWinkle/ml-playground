@@ -21,8 +21,13 @@ import { accuracy } from '@/ml/metrics/accuracy';
 import { createModel, setRandomSeed } from '../../helpers';
 import type { SystemSettings } from '@/app/features/system-settings';
 import type { TransformationSettings } from '@/app/features/transform-data';
+import type { DataState } from '@/app/features/load-dataset/store/types';
 
-type Settings = State & { systemSettings: SystemSettings; dataSettings: TransformationSettings };
+type Settings = State & {
+    systemSettings: SystemSettings;
+    dataSettings: TransformationSettings;
+    data: DataState;
+};
 
 type TrainingCallbacks = {
     onReport: (report: Float32Array) => void;

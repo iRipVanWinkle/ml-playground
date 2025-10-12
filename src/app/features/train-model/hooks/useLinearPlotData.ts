@@ -1,4 +1,4 @@
-import type { DataState } from '@/app/store';
+import type { DataState } from '@/app/features/load-dataset';
 import { useMemo } from 'react';
 
 export function useLinearPlotData({

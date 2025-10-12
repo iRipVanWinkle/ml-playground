@@ -3,6 +3,7 @@ import { TrainingOrchestrator } from './training/training-orchestrator';
 import type { TrainingState } from '@/ml/types';
 import type { SystemSettings } from '../../system-settings';
 import type { TransformationSettings } from '../../transform-data';
+import type { DataState } from '@/app/features/load-dataset/store/types';
 
 interface WorkerMessage {
     type: string;
@@ -25,7 +26,11 @@ const callbacks = {
     onFinished: () => send('finished'),
 };
 
-type Settings = State & { systemSettings: SystemSettings; dataSettings: TransformationSettings };
+type Settings = State & {
+    systemSettings: SystemSettings;
+    dataSettings: TransformationSettings;
+    data: DataState;
+};
 
 let orchestrator: TrainingOrchestrator | null = null;
 

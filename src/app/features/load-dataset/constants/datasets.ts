@@ -1,4 +1,4 @@
-import type { DataSectionState } from './types';
+import type { DataSectionState } from '../store/types';
 
 export const DEFAULT_STATE: DataSectionState = {
     file: null,
@@ -6,7 +6,7 @@ export const DEFAULT_STATE: DataSectionState = {
     trainTestSplit: 80,
 };
 
-export const PREPERED_REGRESSION_DATASETS = [
+export const PREPARED_REGRESSION_DATASETS = [
     {
         value: './data/world-happiness-report-2017 1(in).csv',
         label: 'World happiness report 2017 (Happiness.Score, Economy..GDP.per.Capita.)',
@@ -33,7 +33,7 @@ export const PREPERED_REGRESSION_DATASETS = [
     },
 ];
 
-export const PREPERED_CLASSIFICATION_DATASETS = [
+export const PREPARED_CLASSIFICATION_DATASETS = [
     {
         value: './data/mnist-number-0-1.csv',
         label: 'MNIST numbers (0, 1)',
