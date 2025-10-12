@@ -1,4 +1,3 @@
-import type { ThetaInitializationConfig } from '@/app/store';
 import {
     constantInitializer,
     heNormalInitializer,
@@ -10,9 +9,10 @@ import {
     xavierUniformInitializer,
     zerosInitializer,
     type ThetaInitializer,
-} from '@/ml/utils/theta';
+} from '../../utils/theta';
+import type { ThetaInitializationConfig } from './types';
 
-export function getThetaInitializer(
+export function thetaInitializerFactory(
     thetaInitialization: ThetaInitializationConfig,
 ): ThetaInitializer {
     switch (thetaInitialization.type) {

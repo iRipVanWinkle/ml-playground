@@ -3,11 +3,11 @@ import {
     L1Regularization,
     L2Regularization,
     NoRegularization,
-} from '@/ml/regularization';
-import type { Regularization } from '@/ml/types';
-import type { RegularizationConfig } from '@/app/store';
+} from '../../regularization';
+import type { Regularization } from '../../types';
+import type { RegularizationConfig } from './types';
 
-export function getRegularization(regularization: RegularizationConfig): Regularization {
+export function regularizationFactory(regularization: RegularizationConfig): Regularization {
     switch (regularization.type) {
         case 'l2':
             return new L2Regularization(regularization.lambda);

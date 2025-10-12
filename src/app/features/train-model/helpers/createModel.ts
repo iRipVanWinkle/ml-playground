@@ -3,7 +3,6 @@ import type {
     LogisticSettings,
     ModelSettings,
     NeuralSettings,
-    OptimizerConfig,
     TaskType,
     TreeSettings,
 } from '@/app/store';
@@ -11,11 +10,9 @@ import type {
     EnsembleTree,
     Model,
     ModelRepresentation,
-    Optimizer,
     TrainingControl,
     TrainingEventEmitter,
 } from '@/ml/types';
-import { BatchGD, MomentumGD, StochasticGD } from '@/ml/optimizers';
 import {
     BaggingClassifier,
     BaggingRegressor,
@@ -33,18 +30,19 @@ import {
     SoftmaxLogisticRegressor,
 } from '@/ml/models';
 import { EventEmitter } from '@/ml/events/EventEmitter';
-import { getLossFunc } from './getLossFunc';
-import { getLearningRate } from './getLearningRate';
-import { getNormalizeFunc } from './getNormalizeFunc';
-import { getRegularization } from './getRegularization';
-import { getTransformations } from './getTransformations';
-import { getThetaInitializer } from './getThetaInitializer';
 import type { Tensor2D } from '@tensorflow/tfjs';
-import { getCriterionFunc } from './getCriterionFunction';
-import { AdamGD } from '@/ml/optimizers/adam';
 import { calculateOutputFeatures } from '@/ml/data-processing/transformation';
 import { TrainingController } from '@/ml/controllers/TrainingController';
 import type { TransformationSettings } from '../../transform-data';
+import {
+    criterionFactory,
+    lossFunctionFactory,
+    normalizeFunctionFactory,
+    regularizationFactory,
+    thetaInitializerFactory,
+    transformationsFactory,
+    optimizerFactory,
+} from '@/ml/factories';
 
 export function createModel(
     modelSettings: ModelSettings,
@@ -105,8 +103,8 @@ function createPreprocessingPipeline(
     dataSettings: TransformationSettings,
     eventEmitter: EventEmitter,
 ): PreprocessingModelDecorator<ModelRepresentation> {
-    const normalizeFunction = getNormalizeFunc(dataSettings.normalization);
-    const transformations = getTransformations(dataSettings.transformations, normalizeFunction);
+    const normalizeFunction = normalizeFunctionFactory(dataSettings.normalization);
+    const transformations = transformationsFactory(dataSettings.transformations, normalizeFunction);
 
     const featureTransform = {
         normalizeFunction,
@@ -134,7 +132,7 @@ function createTreeModel(
     } = modelSettings;
     const isRegression = taskType === 'regression';
 
-    const criterion = getCriterionFunc(criterionConfig);
+    const criterion = criterionFactory(criterionConfig);
     const commonParams = {
         criterion,
         maxDepth,
@@ -179,13 +177,13 @@ function createRegressionModel(
     eventEmitter: EventEmitter,
     trainingController: TrainingControl,
 ): Model<Tensor2D> {
-    const lossFunc = getLossFunc(modelSettings.lossFunction);
+    const lossFunc = lossFunctionFactory(modelSettings.lossFunction);
 
     const { type: modelType, optimizer: optimizerConfig } = modelSettings;
 
-    const optimizer = createOptimizer(optimizerConfig, eventEmitter, trainingController);
-    const regularization = getRegularization(modelSettings.regularization);
-    const thetaInitializer = getThetaInitializer(modelSettings.thetaInitialization);
+    const optimizer = optimizerFactory(optimizerConfig, eventEmitter, trainingController);
+    const regularization = regularizationFactory(modelSettings.regularization);
+    const thetaInitializer = thetaInitializerFactory(modelSettings.thetaInitialization);
 
     const commonModelParams = {
         lossFunc,
@@ -223,13 +221,13 @@ function createNeuralNetworkModel(
     eventEmitter: EventEmitter,
     trainingController: TrainingControl,
 ): Model<Tensor2D> {
-    const lossFunc = getLossFunc(modelSettings.lossFunction);
+    const lossFunc = lossFunctionFactory(modelSettings.lossFunction);
 
     const { optimizer: optimizerConfig } = modelSettings;
 
-    const optimizer = createOptimizer(optimizerConfig, eventEmitter, trainingController);
-    const regularization = getRegularization(modelSettings.regularization);
-    const thetaInitializer = getThetaInitializer(modelSettings.thetaInitialization);
+    const optimizer = optimizerFactory(optimizerConfig, eventEmitter, trainingController);
+    const regularization = regularizationFactory(modelSettings.regularization);
+    const thetaInitializer = thetaInitializerFactory(modelSettings.thetaInitialization);
 
     const { layers } = modelSettings;
     const unitsOfInputLayer = dataSettings.transformations.reduce((acc, { type, degree }) => {
@@ -246,45 +244,4 @@ function createNeuralNetworkModel(
     });
 
     return model;
-}
-
-function createOptimizer(
-    optimizerConfig: OptimizerConfig,
-    eventEmitter: EventEmitter,
-    trainingController: TrainingControl,
-): Optimizer {
-    const { scheduler, schedulerConfig, maxIterations, tolerance } = optimizerConfig;
-
-    const learningRate = getLearningRate(
-        optimizerConfig.learningRate,
-        scheduler ? schedulerConfig : undefined,
-    );
-
-    const baseConfig = {
-        learningRate,
-        maxIterations,
-        tolerance,
-        eventEmitter,
-        trainingController,
-    };
-
-    switch (optimizerConfig.type) {
-        case 'adam': {
-            const { beta1, beta2 } = optimizerConfig;
-            return new AdamGD({ ...baseConfig, beta1, beta2 });
-        }
-
-        case 'momentum': {
-            const { beta } = optimizerConfig;
-            return new MomentumGD({ ...baseConfig, beta });
-        }
-
-        case 'sgd': {
-            const { batchSize } = optimizerConfig;
-            return new StochasticGD({ ...baseConfig, batchSize });
-        }
-
-        case 'batch':
-            return new BatchGD(baseConfig);
-    }
 }

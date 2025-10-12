@@ -6,9 +6,8 @@ import type {
     TrainingState,
     PendingAction,
     ModelSettings,
-    LossFunction,
-    ThetaInitializationConfig,
 } from './types';
+import type { ThetaInitializationConfig, LossFunctionType } from '@/ml/factories';
 import {
     calculateMinMax,
     extractFeaturesAndLabels,
@@ -50,7 +49,7 @@ function prefillClassificationSettings(newSettings: Partial<Omit<ModelSettings, 
     // Only prefill if classificationType is being set and related fields are missing
     if ('classificationType' in newSettings) {
         const classificationType = newSettings.classificationType;
-        let lossType: LossFunction = 'binaryCrossentropy';
+        let lossType: LossFunctionType = 'binaryCrossentropy';
         let initType: ThetaInitializationConfig['type'] = 'zeros';
 
         if (classificationType === 'softmax') {

@@ -1,14 +1,14 @@
-import type { NormalizatorFn } from '@/ml/data-processing/normalization';
+import type { NormalizatorFn } from '../../data-processing/normalization';
 import {
     cosinusoidGenerator,
     fourierGenerator,
     fullPolynomialGenerator,
     sinusoidGenerator,
     type TransformationFn,
-} from '@/ml/data-processing/transformation';
-import type { TransformationFunction } from '@/app/store';
+} from '../../data-processing/transformation';
+import type { TransformationFunction } from './types';
 
-export function getTransformations(
+export function transformationsFactory(
     transformationsConfig: {
         type: TransformationFunction;
         degree: number;

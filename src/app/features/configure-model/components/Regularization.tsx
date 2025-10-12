@@ -1,5 +1,5 @@
 import { Field, Input, Select, Slider } from '@/app/shared/ui';
-import type { Regularization as RegularizationName, RegularizationConfig } from '@/app/store';
+import type { RegularizationType, RegularizationConfig } from '@/ml/factories';
 
 type RegularizationProps = {
     regularization: RegularizationConfig;
@@ -34,7 +34,7 @@ export default function Regularization({
     disabled,
     onChange,
 }: RegularizationProps) {
-    const handleFunctionChange = (type: RegularizationName) => {
+    const handleFunctionChange = (type: RegularizationType) => {
         let lambda = undefined;
         let alpha = undefined;
 
@@ -74,7 +74,7 @@ export default function Regularization({
                     <Select
                         disabled={disabled}
                         value={regularization.type as string}
-                        onValueChange={(value) => handleFunctionChange(value as RegularizationName)}
+                        onValueChange={(value) => handleFunctionChange(value as RegularizationType)}
                     >
                         <Select.Trigger
                             id="regularizationSelect"

@@ -3,10 +3,12 @@ import {
     logScaling,
     zScoreScaling,
     type NormalizatorFn,
-} from '@/ml/data-processing/normalization';
-import type { NormalizationFunction } from '@/app/store';
+} from '../../data-processing/normalization';
+import type { NormalizationFunction } from './types';
 
-export function getNormalizeFunc(normalization: NormalizationFunction): NormalizatorFn | undefined {
+export function normalizeFunctionFactory(
+    normalization: NormalizationFunction,
+): NormalizatorFn | undefined {
     switch (normalization) {
         case 'zscore':
             return zScoreScaling;

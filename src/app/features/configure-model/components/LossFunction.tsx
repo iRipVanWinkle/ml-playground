@@ -1,5 +1,6 @@
 import { Field, Input, Select } from '@/app/shared/ui';
-import type { LossFunction as LossFunctionName, LossFunctionConfig, TaskType } from '@/app/store';
+import type { LossFunctionType, LossFunctionConfig } from '@/ml/factories';
+import type { TaskType } from '@/app/store';
 
 type LossFunctionProps = {
     taskType: TaskType;
@@ -54,7 +55,7 @@ export default function LossFunction({
     disabled,
     onChange,
 }: LossFunctionProps) {
-    const handleFunctionChange = (type: LossFunctionName) => {
+    const handleFunctionChange = (type: LossFunctionType) => {
         if (type === 'huber') {
             onChange({ type: 'huber', delta: DEFAULT_HUBER_DELTA });
         } else {
@@ -78,7 +79,7 @@ export default function LossFunction({
                 <Select
                     disabled={disabled}
                     value={lossFunction.type as string}
-                    onValueChange={(value) => handleFunctionChange(value as LossFunctionName)}
+                    onValueChange={(value) => handleFunctionChange(value as LossFunctionType)}
                 >
                     <Select.Trigger
                         id="lossFunctionSelect"

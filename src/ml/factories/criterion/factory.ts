@@ -1,8 +1,8 @@
-import { Entropy, Gini, Huber, LogCosh, MeanAbsoluteError, MeanSquaredError } from '@/ml/criteria';
-import type { CriterionFunction } from '@/ml/types';
-import type { CriterionFunctionConfig } from '@/app/store';
+import { Entropy, Gini, Huber, LogCosh, MeanAbsoluteError, MeanSquaredError } from '../../criteria';
+import type { CriterionFunction } from '../../types';
+import type { CriterionConfig } from './types';
 
-export function getCriterionFunc(criterion: CriterionFunctionConfig): CriterionFunction {
+export function criterionFactory(criterion: CriterionConfig): CriterionFunction {
     switch (criterion.type) {
         case 'mae':
             return new MeanAbsoluteError();

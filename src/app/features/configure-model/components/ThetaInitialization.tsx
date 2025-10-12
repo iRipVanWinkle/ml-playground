@@ -1,5 +1,5 @@
 import { Field, Input, Select } from '@/app/shared/ui';
-import type { ThetaInitializationConfig } from '@/app/store/types';
+import type { ThetaInitializationConfig } from '@/ml/factories';
 
 type InitThetaProps = {
     thetaInitialization: ThetaInitializationConfig;

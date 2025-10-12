@@ -1,5 +1,5 @@
 import { Checkbox, Field, Input, Label, Select } from '@/app/shared/ui';
-import type { OptimizerConfig } from '@/app/store';
+import type { OptimizerConfig } from '@/ml/factories';
 
 type OptimizerProps = {
     optimizer: OptimizerConfig;

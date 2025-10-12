@@ -1,11 +1,12 @@
 import { Field, Input, Select } from '@/app/shared/ui';
-import type { CriterionFunction, TaskType, CriterionFunctionConfig } from '@/app/store';
+import type { CriterionType, CriterionConfig } from '@/ml/factories';
+import type { TaskType } from '@/app/store';
 
 type CriterionProps = {
     taskType: TaskType;
-    criterion: CriterionFunctionConfig;
+    criterion: CriterionConfig;
     disabled?: boolean;
-    onChange: (config: CriterionFunctionConfig) => void;
+    onChange: (config: CriterionConfig) => void;
 };
 
 const DEFAULT_HUBER_DELTA = 1;
@@ -41,7 +42,7 @@ const DEFAULT_LOGISTIC_CRITERION_FUNCTIONS = [
 ];
 
 export default function Criterion({ taskType, criterion, disabled, onChange }: CriterionProps) {
-    const handleFunctionChange = (type: CriterionFunction) => {
+    const handleFunctionChange = (type: CriterionType) => {
         if (type === 'huber') {
             onChange({ type: 'huber', delta: DEFAULT_HUBER_DELTA });
         } else {
@@ -65,7 +66,7 @@ export default function Criterion({ taskType, criterion, disabled, onChange }: C
                 <Select
                     disabled={disabled}
                     value={criterion.type as string}
-                    onValueChange={(value) => handleFunctionChange(value as CriterionFunction)}
+                    onValueChange={(value) => handleFunctionChange(value as CriterionType)}
                 >
                     <Select.Trigger className="w-full truncate">
                         <Select.Value placeholder="Select loss function" />

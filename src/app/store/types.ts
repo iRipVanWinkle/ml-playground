@@ -1,137 +1,20 @@
+import type {
+    CriterionConfig,
+    LossFunctionConfig,
+    OptimizerConfig,
+    RegularizationConfig,
+    ThetaInitializationConfig,
+} from '@/ml/factories';
+
 export type TaskType = 'regression' | 'classification';
 export type ClassificationType = 'binary' | 'softmax' | 'ovr';
-export type NormalizationFunction = 'none' | 'zscore' | 'linear' | 'log';
-export type TransformationFunction = 'sinusoid' | 'cosinusoid' | 'fourier' | 'polynomial';
-
-export type LossFunction =
-    | 'mse'
-    | 'mae'
-    | 'huber'
-    | 'logcosh'
-    | 'binaryCrossentropy'
-    | 'categoricalCrossentropy'
-    | 'logitsBasedBinaryCrossentropy'
-    | 'logitsBasedCategoricalCrossentropy';
-export type CriterionFunction = 'mse' | 'mae' | 'huber' | 'logcosh' | 'gini' | 'entropy';
-export type Regularization = 'none' | 'l1' | 'l2' | 'elasticnet';
 
 export type TrainingState = 'init' | 'preparing' | 'training' | 'paused';
 export type PendingAction = 'pause' | 'stop' | 'step' | 'resume' | null;
 
-// OPTIMIZATION
-
-type OptimizerBasicConfig = {
-    maxIterations: number;
-    tolerance: number;
-    learningRate: number;
-    scheduler: boolean;
-    schedulerConfig: { s0: number | undefined; p: number | undefined };
-};
-
-type OptimizerBatchConfig = OptimizerBasicConfig & {
-    type: 'batch';
-};
-
-type OptimizerSGDConfig = OptimizerBasicConfig & {
-    type: 'sgd';
-    batchSize: number;
-};
-
-type OptimizerMomentumConfig = OptimizerBasicConfig & {
-    type: 'momentum';
-    beta: number;
-};
-
-type OptimizerAdaConfig = OptimizerBasicConfig & {
-    type: 'adam';
-    beta1: number;
-    beta2: number;
-};
-
-export type OptimizerConfig =
-    | OptimizerBatchConfig
-    | OptimizerSGDConfig
-    | OptimizerMomentumConfig
-    | OptimizerAdaConfig;
-
-// LOSS FUNCTION
-
-type LossFunctionGeneralConfig = {
-    type: Exclude<LossFunction, 'huber'>;
-};
-
-type LossFunctionHuberConfig = {
-    type: 'huber';
-    delta: number;
-};
-
-export type LossFunctionConfig = LossFunctionGeneralConfig | LossFunctionHuberConfig;
-
-// REGULARIZATION
-
-type RegularizationNoneConfig = {
-    type: 'none';
-};
-
-type RegularizationLConfig = {
-    type: 'l1' | 'l2';
-    lambda: number;
-};
-
-type RegularizationElasticNetConfig = {
-    type: 'elasticnet';
-    lambda: number;
-    alpha: number;
-};
-
-export type RegularizationConfig =
-    | RegularizationNoneConfig
-    | RegularizationLConfig
-    | RegularizationElasticNetConfig;
-
-// THETA INITIALIZATION
-
-type ThetaInitializationBaseConfig = {
-    type: 'zeros' | 'ones' | 'xavierUniform' | 'xavierNormal' | 'heUniform' | 'heNormal';
-};
-
-type ThetaInitializationConstantConfig = {
-    type: 'constant';
-    value: number;
-};
-
-type ThetaInitializationUniformConfig = {
-    type: 'uniform';
-    min: number;
-    max: number;
-};
-
-type ThetaInitializationNormalConfig = {
-    type: 'normal';
-    mean: number;
-    stddev: number;
-};
-
-export type ThetaInitializationConfig =
-    | ThetaInitializationBaseConfig
-    | ThetaInitializationConstantConfig
-    | ThetaInitializationUniformConfig
-    | ThetaInitializationNormalConfig;
-
 // TREE
 
 export type TreeModelVariant = 'decision' | 'bagging' | 'forest' | 'extra';
-
-type CriterionFunctionGeneralConfig = {
-    type: Exclude<CriterionFunction, 'huber'>;
-};
-
-type CriterionFunctionHuberConfig = {
-    type: 'huber';
-    delta: number;
-};
-
-export type CriterionFunctionConfig = CriterionFunctionGeneralConfig | CriterionFunctionHuberConfig;
 
 // MODEL SETTINGS
 
@@ -164,7 +47,7 @@ export type NeuralSettings = {
 export type TreeSettings = {
     type: 'tree';
     modelVariant: TreeModelVariant;
-    criterion: CriterionFunctionConfig;
+    criterion: CriterionConfig;
     maxDepth?: number;
     minSamplesSplit?: number;
     minSamplesLeaf?: number;

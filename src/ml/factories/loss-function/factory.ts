@@ -7,11 +7,11 @@ import {
     CategoricalCrossentropyLogits,
     Huber,
     LogCosh,
-} from '@/ml/losses';
-import type { LossFunction } from '@/ml/types';
-import type { LossFunctionConfig } from '@/app/store';
+} from '../../losses';
+import type { LossFunction } from '../../types';
+import type { LossFunctionConfig } from './types';
 
-export function getLossFunc(lossFunction: LossFunctionConfig): LossFunction {
+export function lossFunctionFactory(lossFunction: LossFunctionConfig): LossFunction {
     switch (lossFunction.type) {
         case 'binaryCrossentropy':
             return new BinaryCrossentropy();
