@@ -1,5 +1,9 @@
-import { useTransformationSettings } from './store';
+import { initState, useTransformationSettings } from './store';
 import type { TransformationSettings } from './types';
+
+export function resetTransformations() {
+    useTransformationSettings.setState({ ...initState });
+}
 
 export function updateTransformations(transformations: TransformationSettings['transformations']) {
     useTransformationSettings.setState({ transformations });

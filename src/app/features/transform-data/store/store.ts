@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import type { TransformationSettings } from './types';
 
-const initState: TransformationSettings = {
+export const initState: TransformationSettings = {
     normalization: 'none',
     transformations: [],
 };

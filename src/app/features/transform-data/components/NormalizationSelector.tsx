@@ -1,18 +1,17 @@
 import { Field, Select } from '@/app/shared/ui';
-import type { NormalizationMethod } from '../model/types';
-import { NORMALIZATIONS } from '../model/constants';
-import { useNormalization } from '../model/hooks';
+import { NORMALIZATION_METHODS } from '../constants';
+import { useNormalization, type NormalizationMethod } from '../store';
+import { updateNormalization } from '../store/actions';
 
-export type NormalizationProps = {
+export type NormalizationSelectorProps = {
     disabled?: boolean;
 };
 
-export function Normalization({ disabled }: NormalizationProps) {
-    const [value, onChange] = useNormalization();
+export function NormalizationSelector({ disabled }: NormalizationSelectorProps) {
+    const value = useNormalization();
 
     const handleChange = (value: string) => {
-        const newValue = value;
-        onChange(newValue as NormalizationMethod);
+        updateNormalization(value as NormalizationMethod);
     };
 
     return (
@@ -26,7 +25,7 @@ export function Normalization({ disabled }: NormalizationProps) {
                     <Select.Value placeholder="Select normalization" />
                 </Select.Trigger>
                 <Select.Content>
-                    {NORMALIZATIONS.map((option) => (
+                    {NORMALIZATION_METHODS.map((option) => (
                         <Select.Item key={option.value} value={option.value}>
                             {option.label}
                         </Select.Item>

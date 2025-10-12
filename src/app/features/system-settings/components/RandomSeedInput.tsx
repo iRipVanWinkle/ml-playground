@@ -1,5 +1,6 @@
 import { Field, Input } from '@/app/shared/ui';
-import { updateRandomSeed, useRandomSeed } from '../store';
+import { useRandomSeed } from '../store';
+import { updateRandomSeed } from '../store/actions';
 
 type RandomSeedInputProps = {
     disabled: boolean;

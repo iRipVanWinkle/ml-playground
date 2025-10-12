@@ -1,4 +1,3 @@
-export * from './store';
-export * from './actions';
+export { useSystemSettings } from './store';
 export * from './hooks';
 export * from './types';

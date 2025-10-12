@@ -1,7 +1,8 @@
 import { Field, Select } from '@/app/shared/ui';
 import { AVAILABLE_BACKENDS, BACKEND_LABELS } from '../constants';
-import { useBackendDetection } from '../services';
-import { useBackend, type TensorBackend, updateBackend } from '../store';
+import { useBackendDetection } from '../libs';
+import { useBackend, type TensorBackend } from '../store';
+import { updateBackend } from '../store/actions';
 
 export type BackendSelectorProps = {
     disabled: boolean;
