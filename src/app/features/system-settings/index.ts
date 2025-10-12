@@ -1,6 +1,5 @@
-export { Backend } from './ui/Backend';
-export { RandomSeed } from './ui/RandomSeed';
+export { BackendSelector, RandomSeedInput } from './components';
 
-export { useSystemSettings } from './model/store';
+export { useSystemSettings, useBackend, useRandomSeed } from './store';
 
-export type { SystemSettings } from './model/types';
+export type { SystemSettings, TensorBackend } from './store';

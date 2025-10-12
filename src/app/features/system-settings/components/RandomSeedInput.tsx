@@ -1,15 +1,15 @@
 import { Field, Input } from '@/app/shared/ui';
-import { useRandomSeed } from '../model/hooks';
+import { updateRandomSeed, useRandomSeed } from '../store';
 
-type RandomSeedProps = {
+type RandomSeedInputProps = {
     disabled: boolean;
 };
 
-export function RandomSeed({ disabled }: RandomSeedProps) {
-    const [value, onChange] = useRandomSeed();
+export function RandomSeedInput({ disabled }: RandomSeedInputProps) {
+    const value = useRandomSeed();
 
     const handleChange = (newValue?: string) => {
-        onChange(newValue ? Number(newValue) : undefined);
+        updateRandomSeed(newValue ? Number(newValue) : undefined);
     };
 
     return (

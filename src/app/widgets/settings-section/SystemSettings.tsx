@@ -1,6 +1,6 @@
 import { useIsTraining } from '@/app/store';
 import { Card } from '@/app/shared/ui';
-import { Backend, RandomSeed } from '@/app/features/system-settings';
+import { BackendSelector, RandomSeedInput } from '@/app/features/system-settings';
 
 export default function SystemSettings() {
     const isTraining = useIsTraining();
@@ -11,9 +11,9 @@ export default function SystemSettings() {
                 <Card.Title>System Settings</Card.Title>
             </Card.Header>
             <Card.Content className="grid gap-5">
-                <Backend disabled={isTraining} />
+                <BackendSelector disabled={isTraining} />
 
-                <RandomSeed disabled={isTraining} />
+                <RandomSeedInput disabled={isTraining} />
             </Card.Content>
         </Card>
     );
