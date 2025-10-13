@@ -1,4 +1,5 @@
-import type { NeuralSettings as NeuralSettingsType, TaskType } from '@/app/store';
+import type { NeuralSettings as NeuralSettingsType } from '../store';
+import type { TaskType } from '@/app/shared/types';
 import {
     Layers,
     LossFunction,

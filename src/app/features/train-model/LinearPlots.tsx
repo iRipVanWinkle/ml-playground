@@ -1,4 +1,4 @@
-import { type TrainingReport } from '@/app/store';
+import type { TrainingReport } from './store';
 import type { DataState } from '@/app/features/load-dataset';
 import Plot from 'react-plotly.js';
 import { useLinearPlotData } from './hooks/useLinearPlotData';

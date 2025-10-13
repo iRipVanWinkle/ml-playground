@@ -1,6 +1,6 @@
 import { Field, Input, Select } from '@/app/shared/ui';
 import type { LossFunctionType, LossFunctionConfig } from '@/ml/factories';
-import type { TaskType } from '@/app/store';
+import type { TaskType } from '@/app/shared/types';
 
 type LossFunctionProps = {
     taskType: TaskType;

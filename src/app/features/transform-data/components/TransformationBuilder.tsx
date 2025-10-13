@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Field } from '@/app/shared/ui';
-import { updateTransformations } from '../store/actions';
-import { useTransformations, type TransformationType } from '../store';
+import { type TransformationType, useTransformations } from '../store';
+import { resetTransformations, updateTransformations } from '../store/actions';
 import {
     createEmptyTransformation,
     updateTransformationType,
@@ -9,15 +9,25 @@ import {
     removeTransformation,
 } from '../libs';
 import { TransformationItem } from './TransformationItem';
+import type { TaskType } from '@/app/shared/types';
 
-export type TransformationBuilderProps = {
-    numFeatures: number;
+type TransformationBuilderProps = {
     disabled?: boolean;
+    numFeatures: number;
+    taskType: TaskType;
 };
 
-export function TransformationBuilder({ numFeatures, disabled }: TransformationBuilderProps) {
+export function TransformationBuilder({
+    disabled,
+    numFeatures,
+    taskType,
+}: TransformationBuilderProps) {
     const transformations = useTransformations();
     const [localTransformations, setLocalTransformations] = useState(transformations);
+
+    useEffect(() => {
+        resetTransformations();
+    }, [taskType]);
 
     const handleNewTransformation = () => {
         const updatedTransformations = [...localTransformations, createEmptyTransformation()];

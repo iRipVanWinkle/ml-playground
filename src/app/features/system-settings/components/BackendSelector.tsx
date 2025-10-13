@@ -1,16 +1,18 @@
 import { Field, Select } from '@/app/shared/ui';
 import { AVAILABLE_BACKENDS, BACKEND_LABELS } from '../constants';
 import { useBackendDetection } from '../libs';
-import { useBackend, type TensorBackend } from '../store';
+import { type TensorBackend, useSystemStore } from '../store';
 import { updateBackend } from '../store/actions';
 
 export type BackendSelectorProps = {
     disabled: boolean;
 };
 
+const useBackend = () => useSystemStore((state) => state.backend);
+
 export function BackendSelector({ disabled }: BackendSelectorProps) {
     const { supported = [], current } = useBackendDetection();
-    const value = useBackend();
+    const backend = useBackend();
 
     const availableBackendOptions = [
         {
@@ -23,7 +25,7 @@ export function BackendSelector({ disabled }: BackendSelectorProps) {
     return (
         <Field label="TensorFlow Backend" htmlFor="tensorflowBackendSelect">
             <Select
-                value={value}
+                value={backend}
                 disabled={disabled}
                 onValueChange={(value) => updateBackend(value as TensorBackend)}
             >

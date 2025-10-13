@@ -11,7 +11,7 @@ import type {
     TrainingState,
 } from '@/ml/types';
 import type { PreprocessingModelDecorator } from '@/ml/models';
-import type { State } from '@/app/store';
+import type { TaskType } from '@/app/shared/types';
 import { DatasetManager } from './dataset-manager';
 import { TrainingSession } from './training-session';
 import { LiveMetricsProps } from './live-metrics-props';
@@ -22,11 +22,14 @@ import { createModel, setRandomSeed } from '../../helpers';
 import type { SystemSettings } from '@/app/features/system-settings';
 import type { TransformationSettings } from '@/app/features/transform-data';
 import type { DataState } from '@/app/features/load-dataset/store/types';
+import type { ModelSettings } from '@/app/features/configure-model';
 
-type Settings = State & {
+type Settings = {
+    taskType: TaskType;
     systemSettings: SystemSettings;
     dataSettings: TransformationSettings;
     data: DataState;
+    modelSettings: ModelSettings;
 };
 
 type TrainingCallbacks = {

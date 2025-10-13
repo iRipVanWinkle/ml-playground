@@ -6,4 +6,4 @@ export const initState: TransformationSettings = {
     transformations: [],
 };
 
-export const useTransformationSettings = create(() => initState);
+export const useTransformationStore = create(() => initState);

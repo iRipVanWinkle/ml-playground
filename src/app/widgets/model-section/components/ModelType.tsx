@@ -1,5 +1,6 @@
 import { Field, Select } from '@/app/shared/ui';
-import type { ModelType, TaskType } from '@/app/store';
+import type { ModelType } from '@/app/features/configure-model';
+import type { TaskType } from '@/app/shared/types';
 
 const DEFAULT_REGRESSION_MODEL_TYPES = [
     {

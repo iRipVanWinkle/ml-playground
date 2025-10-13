@@ -1,5 +1,6 @@
-import type { LinearSettings as LinearSettingsType, TaskType } from '@/app/store';
+import type { LinearSettings as LinearSettingsType } from '../store';
 import { LossFunction, Optimizer, Regularization, ThetaInitialization } from '../components';
+import type { TaskType } from '@/app/shared/types';
 
 type LinearSettingsProps = {
     taskType: TaskType;

@@ -1,4 +1,4 @@
-import { useSystemSettings } from './store';
+import { useSystemStore } from './store';
 
-export const useBackend = () => useSystemSettings((state) => state.backend);
-export const useRandomSeed = () => useSystemSettings((state) => state.randomSeed);
+export const useBackend = () => useSystemStore((store) => store.backend);
+export const useRandomSeed = () => useSystemStore((store) => store.randomSeed);

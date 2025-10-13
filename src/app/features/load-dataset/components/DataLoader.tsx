@@ -1,19 +1,28 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { resetTrainingReport, useTaskType } from '@/app/store';
+import { Field, Input, Label, Select, Slider, Switch } from '@/app/shared/ui';
+import type { TaskType } from '@/app/shared/types';
 import {
     DEFAULT_STATE,
     PREPARED_CLASSIFICATION_DATASETS,
     PREPARED_REGRESSION_DATASETS,
 } from '../constants/datasets';
-import type { DataSectionProps, DataSectionState } from '../store/types';
+import { type DataSectionState } from '../store';
+import { setDataset, reset } from '../store/actions';
 import { createFileFromURL } from '../libs/file-fetcher';
-import { Field, Input, Label, Select, Slider, Switch } from '@/app/shared/ui';
-import { extractFeatures } from '../store/actions';
+import { extractFeatures } from '../libs/extract-features';
 
-export function DataLoader({ disabled }: DataSectionProps) {
-    const taskType = useTaskType();
+type DataLoaderProps = {
+    disabled: boolean;
+    taskType: TaskType;
+    randomSeed?: number;
+};
 
+export function DataLoader({ disabled, taskType, randomSeed }: DataLoaderProps) {
     const [state, setState] = useState<DataSectionState>(DEFAULT_STATE);
+
+    useEffect(() => {
+        reset();
+    }, [taskType]);
 
     const taskTypeRef = useRef(taskType);
     useLayoutEffect(() => {
@@ -26,16 +35,20 @@ export function DataLoader({ disabled }: DataSectionProps) {
     }, [taskType]);
 
     useEffect(() => {
-        if (state.file) {
-            resetTrainingReport();
-            extractFeatures({
-                file: state.file!,
-                shuffleData: state.shuffleData,
-                trainTestSplit: state.trainTestSplit,
-                taskType: taskTypeRef.current,
-            });
-        }
-    }, [state]);
+        (async () => {
+            if (state.file) {
+                const data = await extractFeatures({
+                    file: state.file!,
+                    shuffleData: state.shuffleData,
+                    trainTestSplit: state.trainTestSplit,
+                    taskType: taskTypeRef.current,
+                    seed: randomSeed,
+                });
+
+                setDataset(data);
+            }
+        })();
+    }, [randomSeed, state]);
 
     const handleChange = (data: Partial<DataSectionState>) => {
         setState((prev) => ({ ...prev, ...data }));

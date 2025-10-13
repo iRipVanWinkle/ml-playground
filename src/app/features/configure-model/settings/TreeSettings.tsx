@@ -1,9 +1,5 @@
-import type {
-    TaskType,
-    TreeModelVariant,
-    TreeSettings,
-    TreeSettings as TreeSettingsType,
-} from '@/app/store';
+import type { TaskType } from '@/app/shared/types';
+import type { TreeSettings as TreeSettingsType, TreeModelVariant } from '../store';
 import { Criterion } from '../components';
 import { Field, Input, Label, RadioGroup } from '@/app/shared/ui';
 

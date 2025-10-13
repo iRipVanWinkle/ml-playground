@@ -1,7 +1,7 @@
 import type { Transformation, TransformationType } from '../store/types';
 
 export function createEmptyTransformation(): Transformation {
-    return { type: 'sinusoid', degree: 1 };
+    return { type: '', degree: 1 } as unknown as Transformation;
 }
 
 export function updateTransformationType(

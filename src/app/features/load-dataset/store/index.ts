@@ -1,4 +1,4 @@
-export { useDataset } from './store';
-export { resetData } from './actions';
-export * from './hooks';
+export { useDatasetStore } from './store';
+export { reset } from './actions';
 export * from './types';
+export * from './hooks';

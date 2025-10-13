@@ -1,4 +1,4 @@
-import { useIsTraining } from '@/app/store';
+import { useIsTraining } from '@/app/features/train-model';
 import { Card } from '@/app/shared/ui';
 import { BackendSelector, RandomSeedInput } from '@/app/features/system-settings';
 

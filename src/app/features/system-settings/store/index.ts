@@ -1,3 +1,3 @@
-export { useSystemSettings } from './store';
-export * from './hooks';
+export { useSystemStore } from './store';
 export * from './types';
+export * from './hooks';

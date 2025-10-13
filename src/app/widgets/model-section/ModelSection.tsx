@@ -1,18 +1,26 @@
+import { useEffect } from 'react';
+import { Card } from '@/app/shared/ui';
+import { useTaskType } from '@/app/features/task-switcher';
+import { useIsTraining } from '@/app/features/train-model';
 import {
+    SettingsRenderer,
+    useModelSettingsStore,
     setModelType,
     updateModelSettings,
-    useIsTraining,
-    useModelSettings,
-    useTaskType,
-} from '@/app/store';
-import { Card } from '@/app/shared/ui';
+} from '@/app/features/configure-model';
+import { useNumCategories } from '@/app/features/load-dataset';
 import { ModelType } from './components/ModelType';
-import { SettingsRenderer } from '@/app/features/configure-model';
 
 export default function ModelSection() {
-    const data = useModelSettings();
+    const data = useModelSettingsStore();
     const taskType = useTaskType();
     const isTraining = useIsTraining();
+    const numCategories = useNumCategories();
+
+    useEffect(() => {
+        const modelType = taskType === 'regression' ? 'linear' : 'logistic';
+        setModelType(modelType, taskType);
+    }, [taskType]);
 
     return (
         <Card className="gap-5">
@@ -23,7 +31,7 @@ export default function ModelSection() {
                 <ModelType
                     taskType={taskType}
                     value={data.type}
-                    onChange={(value) => setModelType(value)}
+                    onChange={(value) => setModelType(value, taskType)}
                     disabled={isTraining}
                 />
 
@@ -31,6 +39,7 @@ export default function ModelSection() {
                     taskType={taskType}
                     value={data}
                     disabled={isTraining}
+                    numCategories={numCategories}
                     onChange={(settings) => updateModelSettings(settings)}
                 />
             </Card.Content>

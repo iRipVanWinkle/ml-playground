@@ -1,10 +1,10 @@
-import { useSystemSettings } from './store';
+import { useSystemStore } from './store';
 import type { SystemSettings } from './types';
 
 export function updateBackend(backend: SystemSettings['backend']) {
-    useSystemSettings.setState({ backend });
+    useSystemStore.setState({ backend });
 }
 
 export function updateRandomSeed(randomSeed: SystemSettings['randomSeed']) {
-    useSystemSettings.setState({ randomSeed });
+    useSystemStore.setState({ randomSeed });
 }

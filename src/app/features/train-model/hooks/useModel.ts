@@ -1,18 +1,14 @@
 import { useEffect, useRef } from 'react';
 import { toast } from 'sonner';
-import {
-    resetTrainingReport,
-    setPendingAction,
-    setTrainingReport,
-    setTrainingStatus,
-    useAppState,
-    type TrainingReport,
-} from '@/app/store';
 import TrainingWorker from '../workers/trainingOrchestrator.worker.ts?worker';
 import { decode } from '../helpers';
-import { useSystemSettings } from '../../system-settings';
-import { useTransformationSettings } from '../../transform-data';
-import { useDataset } from '../../load-dataset';
+import { useSystemStore } from '../../system-settings';
+import { useTransformationStore } from '../../transform-data';
+import { useDatasetStore } from '../../load-dataset';
+import { useModelSettingsStore } from '../../configure-model';
+import { reset, setPendingAction, setTrainingReport, setTrainingStatus } from '../store/actions';
+import type { TrainingReport } from '../store';
+import { useTaskType } from '@/app/features/task-switcher';
 
 function forType<T>(type: string, callback: (payload: T) => void) {
     return (event: MessageEvent) => {
@@ -23,6 +19,7 @@ function forType<T>(type: string, callback: (payload: T) => void) {
 }
 
 export const useModel = () => {
+    const taskType = useTaskType();
     const workerRef = useRef<Worker | null>(null);
 
     const terminateWorker = () => {
@@ -35,7 +32,7 @@ export const useModel = () => {
     }, []);
 
     const train = async ({ byStep = false }: { byStep?: boolean } = {}) => {
-        resetTrainingReport();
+        reset();
 
         if (workerRef.current) return;
 
@@ -116,10 +113,11 @@ export const useModel = () => {
         worker.postMessage({
             type: byStep ? 'train-step' : 'train',
             payload: {
-                ...useAppState.getState(),
-                systemSettings: useSystemSettings.getState(),
-                dataSettings: useTransformationSettings.getState(),
-                data: useDataset.getState(),
+                taskType,
+                systemSettings: useSystemStore.getState(),
+                dataSettings: useTransformationStore.getState(),
+                data: useDatasetStore.getState(),
+                modelSettings: useModelSettingsStore.getState(),
             },
         });
 

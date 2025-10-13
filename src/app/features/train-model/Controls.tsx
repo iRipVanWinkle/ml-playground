@@ -1,9 +1,9 @@
-import { usePendingAction, useTrainingState } from '@/app/store';
-import { useHasData } from '@/app/features/load-dataset';
 import { Loader, Pause, Play, Square, StepForward } from 'lucide-react';
 import { StartButton } from './StartButton';
 import { Button, DelayedLoader } from '@/app/shared/ui';
 import { useModel } from './hooks/useModel';
+import { useHasData } from '@/app/features/load-dataset';
+import { useTrainingState, usePendingAction } from './store';
 
 export function Controls() {
     const state = useTrainingState();

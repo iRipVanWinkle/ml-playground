@@ -1,4 +1,5 @@
-import type { LogisticSettings as LogisticSettingsType, TaskType } from '@/app/store';
+import type { LogisticSettings as LogisticSettingsType } from '../store';
+import type { TaskType } from '@/app/shared/types';
 import {
     ClassificationType,
     LossFunction,

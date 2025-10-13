@@ -6,4 +6,4 @@ const initState: SystemSettings = {
     randomSeed: 42,
 };
 
-export const useSystemSettings = create(() => initState);
+export const useSystemStore = create(() => initState);

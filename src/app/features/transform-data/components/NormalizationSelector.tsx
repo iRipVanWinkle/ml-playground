@@ -1,14 +1,21 @@
+import { useEffect } from 'react';
 import { Field, Select } from '@/app/shared/ui';
+import type { TaskType } from '@/app/shared/types';
 import { NORMALIZATION_METHODS } from '../constants';
-import { useNormalization, type NormalizationMethod } from '../store';
-import { updateNormalization } from '../store/actions';
+import { type NormalizationMethod, useNormalization } from '../store';
+import { resetNormalization, updateNormalization } from '../store/actions';
 
 export type NormalizationSelectorProps = {
     disabled?: boolean;
+    taskType: TaskType;
 };
 
-export function NormalizationSelector({ disabled }: NormalizationSelectorProps) {
-    const value = useNormalization();
+export function NormalizationSelector({ disabled, taskType }: NormalizationSelectorProps) {
+    const normalization = useNormalization();
+
+    useEffect(() => {
+        resetNormalization();
+    }, [taskType]);
 
     const handleChange = (value: string) => {
         updateNormalization(value as NormalizationMethod);
@@ -16,7 +23,7 @@ export function NormalizationSelector({ disabled }: NormalizationSelectorProps) 
 
     return (
         <Field label="Normalization" htmlFor="normalizationSelect">
-            <Select disabled={disabled} value={value} onValueChange={handleChange}>
+            <Select disabled={disabled} value={normalization} onValueChange={handleChange}>
                 <Select.Trigger
                     id="normalizationSelect"
                     className="w-50"

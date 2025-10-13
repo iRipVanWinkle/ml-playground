@@ -1,9 +1,14 @@
-import { setTaskType, useIsTraining, useTaskType, type TaskType } from '@/app/store';
 import { EnhancedTabs } from '@/app/shared/ui';
-import { TASK_TYPES } from './constants';
+import type { TaskType } from '@/app/shared/types';
+import { TASK_TYPES } from '../constants';
+import { useTaskType } from '../store/hooks';
+import { setTaskType } from '../store/actions';
 
-export function TaskSwitcher() {
-    const isTraining = useIsTraining();
+type TaskSwitcherProps = {
+    disabled?: boolean;
+};
+
+export function TaskSwitcher({ disabled }: TaskSwitcherProps) {
     const taskType = useTaskType();
 
     const handleTaskTypeChange = (taskType: string) => {
@@ -21,7 +26,7 @@ export function TaskSwitcher() {
                     <EnhancedTabs.Trigger
                         key={tt.value}
                         value={tt.value}
-                        disabled={isTraining}
+                        disabled={disabled}
                         icon={tt.icon}
                     >
                         {tt.label}

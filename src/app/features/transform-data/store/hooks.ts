@@ -1,5 +1,4 @@
-import { useTransformationSettings } from './store';
+import { useTransformationStore } from './store';
 
-export const useTransformations = () => useTransformationSettings((state) => state.transformations);
-
-export const useNormalization = () => useTransformationSettings((state) => state.normalization);
+export const useTransformations = () => useTransformationStore((state) => state.transformations);
+export const useNormalization = () => useTransformationStore((state) => state.normalization);

@@ -1,10 +1,12 @@
 import { Field, Input } from '@/app/shared/ui';
-import { useRandomSeed } from '../store';
+import { useSystemStore } from '../store';
 import { updateRandomSeed } from '../store/actions';
 
 type RandomSeedInputProps = {
     disabled: boolean;
 };
+
+const useRandomSeed = () => useSystemStore((state) => state.randomSeed);
 
 export function RandomSeedInput({ disabled }: RandomSeedInputProps) {
     const value = useRandomSeed();

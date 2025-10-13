@@ -3,9 +3,9 @@ import type {
     LogisticSettings,
     ModelSettings,
     NeuralSettings,
-    TaskType,
     TreeSettings,
-} from '@/app/store';
+} from '@/app/features/configure-model';
+import type { TaskType } from '@/app/shared/types';
 import type {
     EnsembleTree,
     Model,

@@ -1,4 +1,5 @@
-import type { ModelSettings, ModelType, TaskType } from './types';
+import type { TaskType } from '@/app/shared/types';
+import type { ModelSettings, ModelType } from './store';
 
 const DEFAULT_OPTIMIZER = {
     type: 'batch',

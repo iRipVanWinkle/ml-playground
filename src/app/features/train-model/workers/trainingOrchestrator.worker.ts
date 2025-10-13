@@ -1,9 +1,10 @@
-import type { State } from '@/app/store';
 import { TrainingOrchestrator } from './training/training-orchestrator';
 import type { TrainingState } from '@/ml/types';
 import type { SystemSettings } from '../../system-settings';
 import type { TransformationSettings } from '../../transform-data';
 import type { DataState } from '@/app/features/load-dataset/store/types';
+import type { ModelSettings } from '../../configure-model';
+import type { TaskType } from '@/app/shared/types';
 
 interface WorkerMessage {
     type: string;
@@ -26,10 +27,12 @@ const callbacks = {
     onFinished: () => send('finished'),
 };
 
-type Settings = State & {
+type Settings = {
+    taskType: TaskType;
     systemSettings: SystemSettings;
     dataSettings: TransformationSettings;
     data: DataState;
+    modelSettings: ModelSettings;
 };
 
 let orchestrator: TrainingOrchestrator | null = null;

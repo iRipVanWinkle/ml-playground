@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import type { ClassificationType as ClassificationTypeName } from '@/app/store';
+import type { ClassificationType as ClassificationTypeName } from '../store';
 import { Field, Label, RadioGroup, TooltipWrapper } from '@/app/shared/ui';
 
 type ClassificationTypeProps = {

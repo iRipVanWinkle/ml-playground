@@ -1,20 +1,25 @@
-import { type ModelSettings, type TaskType } from '@/app/store';
+import { type ModelSettings } from '../store';
+import type { TaskType } from '@/app/shared/types';
 import LinearSettings from './LinearSettings';
 import LogisticSettings from './LogisticSettings';
 import NeuralSettings from './NeuralSettings';
 import TreeSettings from './TreeSettings';
-import { useNumCategories } from '../../load-dataset';
 
 type RendererProps = {
     taskType: TaskType;
     value: ModelSettings;
     disabled: boolean;
+    numCategories: number;
     onChange: (settings: ModelSettings) => void;
 };
 
-export default function Renderer({ taskType, value, disabled, onChange }: RendererProps) {
-    const numCategories = useNumCategories() ?? 0;
-
+export default function Renderer({
+    taskType,
+    value,
+    disabled,
+    numCategories,
+    onChange,
+}: RendererProps) {
     switch (value.type) {
         case 'linear':
             return (

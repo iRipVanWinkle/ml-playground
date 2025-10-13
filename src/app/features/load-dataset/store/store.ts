@@ -13,4 +13,4 @@ export const initState: DataState = {
     predictionInputFeatures: undefined,
 };
 
-export const useDataset = create(() => initState);
+export const useDatasetStore = create(() => initState);

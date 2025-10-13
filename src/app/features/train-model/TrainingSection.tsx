@@ -1,18 +1,26 @@
 import LinearPlots from './LinearPlots';
 import LogisticPlots from './LogisticPlots';
-import { useModelSettings, useTaskType, useTrainingReport } from '@/app/store';
-import { useData } from '@/app/features/load-dataset';
+import { useTaskType } from '@/app/features/task-switcher';
+import { useModelSettingsStore } from '@/app/features/configure-model';
+import { useDatasetStore } from '@/app/features/load-dataset';
 import { Controls } from './Controls';
 import { LossHistoryPlot } from './LossHistoryPlot';
 import { arrayAvg } from './helpers/arrayAvg';
 import { Card, Progress } from '@/app/shared/ui';
+import { useTrainingStore } from './store';
+import { reset } from './store/actions';
+import { useEffect } from 'react';
 
 export default function TrainingSection() {
-    const modelSettings = useModelSettings();
-    const data = useData();
-    const { trainInputFeatures, categories } = useData();
+    const modelSettings = useModelSettingsStore();
+    const data = useDatasetStore();
+    const { trainInputFeatures, categories } = data;
     const taskType = useTaskType();
-    const report = useTrainingReport();
+    const { trainingReport: report } = useTrainingStore();
+
+    useEffect(() => {
+        reset();
+    }, [data]);
 
     const isRegression = taskType === 'regression';
     const isClassification = taskType === 'classification';

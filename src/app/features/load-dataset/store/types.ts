@@ -1,4 +1,4 @@
-import type { TaskType } from '@/app/store';
+import type { TaskType } from '@/app/shared/types';
 
 export type DataSectionState = {
     file: File | null;
@@ -7,15 +7,12 @@ export type DataSectionState = {
     trainTestSplit: number;
 };
 
-export type DataSectionProps = {
-    disabled?: boolean;
-};
-
 export type ExtractFeaturesOptions = {
     file: File;
     shuffleData?: boolean;
     trainTestSplit?: number;
     taskType?: TaskType;
+    seed?: number;
 };
 
 export type DataState = {
