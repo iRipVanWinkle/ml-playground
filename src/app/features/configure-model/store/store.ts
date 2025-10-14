@@ -1,7 +1,7 @@
 import { create } from 'zustand';
-import type { ModelSettings } from './types';
-import { modelSettingsDefaults } from '../defaults';
+import type { ModelSettings } from '@/app/models/types';
+import { linearModelDefinition } from '@/app/models/linear/ui.definition';
 
-export const initState: ModelSettings = modelSettingsDefaults['linear']('regression');
+export const initState: ModelSettings = linearModelDefinition.defaultSettings();
 
-export const useModelSettingsStore = create(() => initState);
+export const useModelSettingsStore = create<ModelSettings>(() => initState);

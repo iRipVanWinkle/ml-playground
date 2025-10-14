@@ -3,7 +3,7 @@ import type { TrainingState } from '@/ml/types';
 import type { SystemSettings } from '../../system-settings';
 import type { TransformationSettings } from '../../transform-data';
 import type { DataState } from '@/app/features/load-dataset/store/types';
-import type { ModelSettings } from '../../configure-model';
+import type { ModelSettings } from '@/app/models/types';
 import type { TaskType } from '@/app/shared/types';
 
 interface WorkerMessage {

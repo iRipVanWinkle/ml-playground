@@ -10,7 +10,7 @@ import type {
     TrainingEventEmitter,
     TrainingState,
 } from '@/ml/types';
-import type { PreprocessingModelDecorator } from '@/ml/models';
+import { PreprocessingModelDecorator } from '@/ml/models';
 import type { TaskType } from '@/app/shared/types';
 import { DatasetManager } from './dataset-manager';
 import { TrainingSession } from './training-session';
@@ -18,11 +18,15 @@ import { LiveMetricsProps } from './live-metrics-props';
 import { LiveMetrics } from './live-metrics';
 import { TrainingReportGenerator } from './training-report-generator';
 import { accuracy } from '@/ml/metrics/accuracy';
-import { createModel, setRandomSeed } from '../../helpers';
+import { setRandomSeed, createPreprocessingPipeline } from '../../helpers';
 import type { SystemSettings } from '@/app/features/system-settings';
 import type { TransformationSettings } from '@/app/features/transform-data';
 import type { DataState } from '@/app/features/load-dataset/store/types';
-import type { ModelSettings } from '@/app/features/configure-model';
+import type { ModelSettings } from '@/app/models/types';
+import { getWorkerRegistry } from '@/app/models/worker-registry';
+import type { TrainingSettings } from '@/app/models/types';
+import { EventEmitter } from '@/ml/events/EventEmitter';
+import { TrainingController } from '@/ml/controllers/TrainingController';
 
 type Settings = {
     taskType: TaskType;
@@ -42,6 +46,8 @@ type TrainingCallbacks = {
 
 type TrainedModel = PreprocessingModelDecorator<ModelRepresentation>;
 
+const workerRegistry = getWorkerRegistry();
+
 export class TrainingOrchestrator {
     private model: TrainedModel;
     private datasetManager: DatasetManager;
@@ -57,17 +63,12 @@ export class TrainingOrchestrator {
     private byStep = false;
     private isClassificationTask = false;
 
-    constructor(settings: Settings, callbacks: TrainingCallbacks) {
-        const { modelSettings, dataSettings, systemSettings, data, taskType } = settings;
+    constructor(settings: TrainingSettings, callbacks: TrainingCallbacks) {
+        const { systemSettings, data } = settings;
 
         const datasetManager = new DatasetManager(data);
-        const numFeatures = datasetManager.getTrainingData().X.shape[1];
-        const [model, eventEmitter, trainingController] = createModel(
-            modelSettings,
-            dataSettings,
-            taskType,
-            numFeatures,
-        );
+
+        const [model, eventEmitter, trainingController] = this.createModel(settings);
 
         this.model = model;
         this.callbacks = callbacks;
@@ -261,5 +262,27 @@ export class TrainingOrchestrator {
     private handleTrainingError(error: Error): void {
         console.error('Training failed:', error);
         this.callbacks.onError(`Training failed: ${error.message}`);
+    }
+
+    private createModel(
+        settings: TrainingSettings,
+    ): [PreprocessingModelDecorator<ModelRepresentation>, TrainingEventEmitter, TrainingControl] {
+        try {
+            const worker = workerRegistry.get(settings.modelSettings.type);
+            const eventEmitter = new EventEmitter();
+            const trainingController = new TrainingController(eventEmitter);
+            const model = worker.modelFactory(settings, eventEmitter, trainingController);
+            const pipeline = createPreprocessingPipeline(
+                model,
+                settings.dataSettings,
+                eventEmitter,
+            );
+
+            return [pipeline, eventEmitter, trainingController];
+        } catch (error) {
+            throw new Error(
+                `Failed to create model of type ${settings.modelSettings.type}: ${error instanceof Error ? error.message : 'Unknown error'}`,
+            );
+        }
     }
 }

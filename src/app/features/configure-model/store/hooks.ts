@@ -1,6 +1,3 @@
 import { useModelSettingsStore } from './store';
 
-export const useClassificationType = () =>
-    useModelSettingsStore((state) =>
-        state.type === 'logistic' ? state.classificationType : undefined,
-    );
+export const useModelType = () => useModelSettingsStore((state) => state.type);

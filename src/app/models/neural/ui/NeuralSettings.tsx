@@ -1,26 +1,30 @@
-import type { LinearSettings as LinearSettingsType } from '../store';
-import { LossFunction, Optimizer, Regularization, ThetaInitialization } from '../components';
-import type { TaskType } from '@/app/shared/types';
+import type { NeuralSettings as NeuralSettingsType } from '../types';
+import {
+    LossFunction,
+    Optimizer,
+    Regularization,
+    ThetaInitialization,
+} from '@/app/shared/model-settings';
+import type { ModelSettingsComponentProps } from '@/app/shared/registry';
+import Layers from './Layers';
 
-type LinearSettingsProps = {
-    taskType: TaskType;
-    settings: LinearSettingsType;
-    disabled?: boolean;
-    onChange: (config: LinearSettingsType) => void;
-};
-
-export default function LinearSettings({
+export function NeuralSettings({
     taskType,
     settings,
     disabled,
     onChange,
-}: LinearSettingsProps) {
-    const handleChange = (newSettings: Partial<LinearSettingsType>) => {
+}: ModelSettingsComponentProps<NeuralSettingsType>) {
+    const handleChange = (newSettings: Partial<NeuralSettingsType>) => {
         onChange({ ...settings, ...newSettings });
     };
 
     return (
         <>
+            <Layers
+                layers={settings.layers}
+                disabled={disabled}
+                onChange={(layers) => handleChange({ layers })}
+            />
             <LossFunction
                 taskType={taskType}
                 lossFunction={settings.lossFunction}

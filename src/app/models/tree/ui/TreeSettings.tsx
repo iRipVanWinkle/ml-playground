@@ -1,14 +1,7 @@
-import type { TaskType } from '@/app/shared/types';
-import type { TreeSettings as TreeSettingsType, TreeModelVariant } from '../store';
-import { Criterion } from '../components';
+import type { TreeSettings as TreeSettingsType, TreeModelVariant } from '../types';
 import { Field, Input, Label, RadioGroup } from '@/app/shared/ui';
-
-type TreeSettingsProps = {
-    taskType: TaskType;
-    settings: TreeSettingsType;
-    disabled?: boolean;
-    onChange: (config: TreeSettingsType) => void;
-};
+import Criterion from './Criterion';
+import type { ModelSettingsComponentProps } from '@/app/shared/registry';
 
 const DEFAULT_MODEL_VARIANTS = [
     {
@@ -29,12 +22,12 @@ const DEFAULT_MODEL_VARIANTS = [
     },
 ];
 
-export default function TreeSettings({
+export function TreeSettings({
     taskType,
     settings,
     disabled,
     onChange,
-}: TreeSettingsProps) {
+}: ModelSettingsComponentProps<TreeSettingsType>) {
     const {
         criterion,
         modelVariant,

@@ -1,3 +1,3 @@
 export * from './setRandomSeed';
-export * from './createModel';
+export * from './preprocessing-pipeline';
 export * from './float32Array';

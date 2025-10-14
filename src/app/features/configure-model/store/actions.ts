@@ -1,12 +1,11 @@
-import type { ModelSettings, ModelType } from './types';
-import { useModelSettingsStore, initState } from './store';
+import type { ModelSettings, ModelType } from '@/app/models/types';
+import { useModelSettingsStore } from './store';
 import type { LossFunctionType, ThetaInitializationConfig } from '@/ml/factories';
 import type { TaskType } from '@/app/shared/types';
-import { modelSettingsDefaults } from '../defaults';
+import { getModelRegistry } from '@/app/models/ui-registry';
 
 function prefillClassificationSettings(newSettings: Partial<Omit<ModelSettings, 'type'>>) {
     // Only prefill if classificationType is being set and related fields are missing
-    console.info('classificationType' in newSettings);
     if ('classificationType' in newSettings) {
         const classificationType = newSettings.classificationType;
         let lossType: LossFunctionType = 'binaryCrossentropy';
@@ -27,15 +26,14 @@ function prefillClassificationSettings(newSettings: Partial<Omit<ModelSettings, 
     return newSettings;
 }
 
-export function reset() {
-    useModelSettingsStore.setState(initState, true);
-}
-
 export function updateModelSettings(newSettings: Partial<Omit<ModelSettings, 'type'>>) {
     const updatedSettings = prefillClassificationSettings(newSettings);
     useModelSettingsStore.setState(updatedSettings);
 }
 
+const registry = getModelRegistry();
+
 export function setModelType(modelType: ModelType, taskType: TaskType) {
-    useModelSettingsStore.setState(modelSettingsDefaults[modelType](taskType), true);
+    const modelDefinition = registry.get(modelType);
+    useModelSettingsStore.setState(modelDefinition.defaultSettings(taskType), true);
 }

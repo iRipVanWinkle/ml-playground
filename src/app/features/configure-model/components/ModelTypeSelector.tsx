@@ -1,0 +1,55 @@
+import { useEffect, useMemo } from 'react';
+import { Field, Select } from '@/app/shared/ui';
+import type { ModelType } from '@/app/models/types';
+import type { TaskType } from '@/app/shared/types';
+import { getModelRegistry } from '@/app/models/ui-registry';
+import { useModelType } from '../store';
+import { setModelType } from '../store/actions';
+
+type ModelTypeProps = {
+    taskType: TaskType;
+    disabled?: boolean;
+};
+
+const modelRegistry = getModelRegistry();
+
+export function ModelTypeSelector({ taskType, disabled }: ModelTypeProps) {
+    const modelType = useModelType();
+
+    const modelTypes = useMemo(() => modelRegistry.getForTask(taskType), [taskType]);
+
+    useEffect(() => {
+        const modelType = modelTypes[0].key;
+        setModelType(modelType, taskType);
+    }, [taskType, modelTypes]);
+
+    const handleChange = (value: string) => {
+        const modelType = value as ModelType;
+        setModelType(modelType, taskType);
+    };
+
+    return (
+        <Field label="Model Type" htmlFor="modelType">
+            <Select
+                disabled={disabled}
+                value={modelType}
+                onValueChange={(value) => handleChange(value)}
+            >
+                <Select.Trigger
+                    className="w-full truncate"
+                    id="modelType"
+                    data-testid="model-type-select"
+                >
+                    <Select.Value placeholder="Select Model Type" />
+                </Select.Trigger>
+                <Select.Content>
+                    {modelTypes.map((model) => (
+                        <Select.Item key={model.key} value={model.key}>
+                            {model.label}
+                        </Select.Item>
+                    ))}
+                </Select.Content>
+            </Select>
+        </Field>
+    );
+}

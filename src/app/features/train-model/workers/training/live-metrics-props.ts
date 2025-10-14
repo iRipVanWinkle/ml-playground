@@ -1,4 +1,4 @@
-import type { ModelSettings } from '@/app/features/configure-model';
+import type { ModelSettings } from '@/app/models/types';
 import type { DataState } from '@/app/features/load-dataset';
 import type { TaskType } from '@/app/shared/types';
 

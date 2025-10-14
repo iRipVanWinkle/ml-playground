@@ -1,40 +1,24 @@
-import type { LogisticSettings as LogisticSettingsType } from '../store';
-import type { TaskType } from '@/app/shared/types';
+import type { ModelSettingsComponentProps } from '@/app/shared/registry/types/model-definition';
+import type { LinearSettings as LinearSettingsType } from '../types';
 import {
-    ClassificationType,
     LossFunction,
     Optimizer,
     Regularization,
     ThetaInitialization,
-} from '../components';
+} from '@/app/shared/model-settings';
 
-type LogisticSettingsProps = {
-    taskType: TaskType;
-    numCategories: number;
-    settings: LogisticSettingsType;
-    disabled?: boolean;
-    onChange: (config: LogisticSettingsType) => void;
-};
-
-export default function LogisticSettings({
+export function LinearSettings({
     taskType,
-    numCategories,
     settings,
     disabled,
     onChange,
-}: LogisticSettingsProps) {
-    const handleChange = (newSettings: Partial<LogisticSettingsType>) => {
+}: ModelSettingsComponentProps<LinearSettingsType>) {
+    const handleChange = (newSettings: Partial<LinearSettingsType>) => {
         onChange({ ...settings, ...newSettings });
     };
 
     return (
         <>
-            <ClassificationType
-                classificationType={settings.classificationType}
-                disabled={disabled}
-                isMulticlass={numCategories > 2}
-                onChange={(classificationType) => handleChange({ classificationType })}
-            />
             <LossFunction
                 taskType={taskType}
                 lossFunction={settings.lossFunction}

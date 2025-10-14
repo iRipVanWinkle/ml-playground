@@ -1,36 +1,33 @@
-import type { NeuralSettings as NeuralSettingsType } from '../store';
-import type { TaskType } from '@/app/shared/types';
+import type { LogisticSettings as LogisticSettingsType } from '../types';
 import {
-    Layers,
     LossFunction,
     Optimizer,
     Regularization,
     ThetaInitialization,
-} from '../components';
+} from '@/app/shared/model-settings';
+import type { ModelSettingsComponentProps } from '@/app/shared/registry';
+import ClassificationType from './ClassificationType';
 
-type NeuralSettingsProps = {
-    taskType: TaskType;
-    settings: NeuralSettingsType;
-    disabled?: boolean;
-    onChange: (config: NeuralSettingsType) => void;
-};
-
-export default function NeuralSettings({
+export function LogisticSettings({
     taskType,
     settings,
     disabled,
     onChange,
-}: NeuralSettingsProps) {
-    const handleChange = (newSettings: Partial<NeuralSettingsType>) => {
+    additionalParams,
+}: ModelSettingsComponentProps<LogisticSettingsType>) {
+    const handleChange = (newSettings: Partial<LogisticSettingsType>) => {
         onChange({ ...settings, ...newSettings });
     };
 
+    const numCategories = additionalParams?.numCategories ?? 0;
+
     return (
         <>
-            <Layers
-                layers={settings.layers}
+            <ClassificationType
+                classificationType={settings.classificationType}
                 disabled={disabled}
-                onChange={(layers) => handleChange({ layers })}
+                isMulticlass={numCategories > 2}
+                onChange={(classificationType) => handleChange({ classificationType })}
             />
             <LossFunction
                 taskType={taskType}
