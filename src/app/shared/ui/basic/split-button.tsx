@@ -3,7 +3,7 @@ import { ChevronDown } from 'lucide-react';
 import { type VariantProps } from 'class-variance-authority';
 import { DropdownMenu } from './dropdown-menu';
 import { Button } from './button';
-import { cn } from '../../utils';
+import { cn } from '../utils';
 
 export type MenuItemsType = {
     key?: string | number;

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Label } from './label';
-import { cn } from '../../utils';
+import { cn } from '../utils';
 import { InfoTooltip } from './info-tooltip';
 
 type FieldProps = React.ComponentProps<'div'> & {
