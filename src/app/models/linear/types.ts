@@ -24,3 +24,15 @@ export type LinearCallbackParameters = {
     type: 'linear';
     callbackParameters: OptimizerCallbackParameters;
 };
+
+export type LinearTrainingReport = {
+    type: 'linear';
+    taskType: 'regression';
+    trainLossHistory: number[][];
+    iterations: number[];
+    testLoss: number;
+    trainPredictedLabels: number[][];
+    testPredictedLabels: number[][];
+    predictionPredictedLabels?: number[][];
+    theta: number[][];
+};

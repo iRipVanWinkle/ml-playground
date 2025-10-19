@@ -9,18 +9,12 @@ import { useModelSettingsStore } from '../../configure-model';
 import { reset, setPendingAction, setTrainingReport, setTrainingStatus } from '../store/actions';
 import type { TrainingReport } from '../store';
 import { useTaskType } from '@/app/features/task-switcher';
-
-function forType<T>(type: string, callback: (payload: T) => void) {
-    return (event: MessageEvent) => {
-        if (event.data.type === type) {
-            callback(event.data.payload);
-        }
-    };
-}
+import type { TrainingWorkerManager, UIToWorkerMessage } from '../workers/types';
+import { WorkerManager } from '@/app/shared/workers';
 
 export const useModel = () => {
     const taskType = useTaskType();
-    const workerRef = useRef<Worker | null>(null);
+    const workerRef = useRef<TrainingWorkerManager | null>(null);
 
     const terminateWorker = () => {
         workerRef.current?.terminate();
@@ -36,82 +30,63 @@ export const useModel = () => {
 
         if (workerRef.current) return;
 
-        const worker = new TrainingWorker();
+        const workerManager: TrainingWorkerManager = new WorkerManager<
+            UIToWorkerMessage,
+            TrainingReport
+        >(() => new TrainingWorker());
+
+        workerManager.on('report', (report: ArrayBufferLike) => {
+            latest = report;
+            if (!animationFrame) {
+                animationFrame = requestAnimationFrame(() => {
+                    setTrainingReport(decode<TrainingReport>(new Float32Array(latest!)));
+                    animationFrame = null;
+                });
+            }
+        });
+
+        workerManager.on('state', (state: string) => {
+            setPendingAction(null);
+            switch (state) {
+                case 'transforming':
+                    setTrainingStatus('preparing');
+                    break;
+                case 'training':
+                    setTrainingStatus('training');
+                    break;
+                case 'stopped':
+                    setTrainingStatus('init');
+                    break;
+                case 'stepped-forward':
+                case 'paused':
+                    setTrainingStatus('paused');
+                    break;
+            }
+        });
+
+        workerManager.on('error', (error: Error) => {
+            setTrainingStatus('init');
+            console.error(error);
+            toast.error(error.message);
+            terminateWorker();
+        });
+
+        workerManager.on('info', (info: string) => {
+            console.info(info);
+            toast.info(info);
+        });
+
+        workerManager.on('finished', () => {
+            setTrainingStatus('init');
+            terminateWorker();
+            toast.success('Training finished');
+        });
 
         let latest: ArrayBufferLike | null = null;
         let animationFrame: number | null = null;
 
-        worker.addEventListener(
-            'message',
-            forType('report', (report: ArrayBufferLike) => {
-                latest = report;
-                if (!animationFrame) {
-                    animationFrame = requestAnimationFrame(() => {
-                        setTrainingReport(decode<TrainingReport>(new Float32Array(latest!)));
-                        animationFrame = null;
-                    });
-                }
-            }),
-        );
-
-        worker.addEventListener(
-            'message',
-            forType('state', (state) => {
-                setPendingAction(null);
-                switch (state) {
-                    case 'transforming':
-                        setTrainingStatus('preparing');
-                        break;
-                    case 'training':
-                        setTrainingStatus('training');
-                        break;
-                    case 'stopped':
-                        setTrainingStatus('init');
-                        break;
-                    case 'stepped-forward':
-                    case 'paused':
-                        setTrainingStatus('paused');
-                        break;
-                }
-            }),
-        );
-
-        worker.addEventListener(
-            'message',
-            forType('error', (msg) => {
-                setTrainingStatus('init');
-                console.error(msg);
-                toast.error(msg as string);
-                terminateWorker();
-            }),
-        );
-
-        worker.addEventListener(
-            'message',
-            forType('info', (msg) => {
-                console.info(msg);
-                toast.info(msg as string);
-            }),
-        );
-
-        worker.addEventListener(
-            'message',
-            forType('finished', () => {
-                setTrainingStatus('init');
-                terminateWorker();
-                toast.success('Training finished');
-            }),
-        );
-
-        worker.addEventListener('error', (e) => {
-            setTrainingStatus('init');
-            console.error(e);
-            toast.error(e.message);
-            terminateWorker();
-        });
-
-        worker.postMessage({
-            type: byStep ? 'train-step' : 'train',
+        workerManager.postMessage({
+            type: byStep ? 'train-by-step' : 'train',
             payload: {
                 taskType,
                 systemSettings: useSystemStore.getState(),
@@ -121,7 +96,7 @@ export const useModel = () => {
             },
         });
 
-        workerRef.current = worker;
+        workerRef.current = workerManager;
     };
 
     const stop = () => {
@@ -141,7 +116,7 @@ export const useModel = () => {
     const step = () => {
         setPendingAction('step');
         workerRef.current?.postMessage({
-            type: 'step',
+            type: 'step-forward',
         });
     };
 

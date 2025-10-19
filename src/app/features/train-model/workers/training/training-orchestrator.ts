@@ -5,6 +5,7 @@ import { setWasmPaths } from '@tensorflow/tfjs-backend-wasm';
 
 import type {
     CallbackParameters,
+    Model,
     ModelRepresentation,
     TrainingControl,
     TrainingEventEmitter,
@@ -12,21 +13,19 @@ import type {
 } from '@/ml/types';
 import { PreprocessingModelDecorator } from '@/ml/models';
 import type { TaskType } from '@/app/shared/types';
-import { DatasetManager } from './dataset-manager';
-import { TrainingSession } from './training-session';
-import { LiveMetricsProps } from './live-metrics-props';
-import { LiveMetrics } from './live-metrics';
+import { DatasetManager } from '../../../../shared/workers/DatasetManager';
 import { TrainingReportGenerator } from './training-report-generator';
-import { accuracy } from '@/ml/metrics/accuracy';
-import { setRandomSeed, createPreprocessingPipeline } from '../../helpers';
+import { createPreprocessingPipeline } from '../../helpers';
 import type { SystemSettings } from '@/app/features/system-settings';
 import type { TransformationSettings } from '@/app/features/transform-data';
 import type { DataState } from '@/app/features/load-dataset/store/types';
-import type { ModelSettings } from '@/app/models/types';
+import type { ModelSettings, TrainingReport } from '@/app/models/types';
 import { getWorkerRegistry } from '@/app/models/worker-registry';
 import type { TrainingSettings } from '@/app/models/types';
 import { EventEmitter } from '@/ml/events/EventEmitter';
 import { TrainingController } from '@/ml/controllers/TrainingController';
+import type { LiveMetrics } from '@/app/shared/workers';
+import { Randomizer } from '@/ml/random/Randomizer';
 
 type Settings = {
     taskType: TaskType;
@@ -54,14 +53,11 @@ export class TrainingOrchestrator {
     private eventEmitter: TrainingEventEmitter;
     private trainingController: TrainingControl;
     private callbacks: TrainingCallbacks;
-    private liveMetrics: LiveMetrics;
-    private liveMetricsProps: LiveMetricsProps;
+    private liveMetrics: LiveMetrics<CallbackParameters, TrainingReport>;
     private reportGenerator: TrainingReportGenerator;
 
-    private trainingSession: TrainingSession | null = null;
     private isTraining = false;
     private byStep = false;
-    private isClassificationTask = false;
 
     constructor(settings: TrainingSettings, callbacks: TrainingCallbacks) {
         const { systemSettings, data } = settings;
@@ -75,12 +71,10 @@ export class TrainingOrchestrator {
         this.eventEmitter = eventEmitter;
         this.trainingController = trainingController;
         this.datasetManager = datasetManager;
-        this.liveMetricsProps = new LiveMetricsProps(settings);
-        this.liveMetrics = new LiveMetrics(model, datasetManager);
+        this.liveMetrics = this.createLiveMetrics(settings, model, datasetManager);
         this.reportGenerator = new TrainingReportGenerator();
-        this.isClassificationTask = settings.taskType === 'classification';
 
-        setRandomSeed(systemSettings.randomSeed);
+        Randomizer.setSeed(systemSettings.randomSeed);
         // Set up event handling
         this.setupEventHandlers();
     }
@@ -146,7 +140,7 @@ export class TrainingOrchestrator {
     }
 
     private async executeTraining(byStep: boolean): Promise<void> {
-        this.trainingSession = new TrainingSession(this.liveMetricsProps);
+        // this.trainingSession = new TrainingSession(this.liveMetricsProps);
         this.byStep = byStep;
 
         const model = this.model;
@@ -213,15 +207,12 @@ export class TrainingOrchestrator {
     }
 
     private async handleTrainingIteration(params: CallbackParameters): Promise<void> {
-        if (!this.trainingSession) return;
-
         // Update training session state
-        this.trainingSession.updateIteration(params);
+        this.liveMetrics.updateIteration(params);
 
-        const metrics = this.isClassificationTask ? [accuracy] : [];
-        const liveResults = await this.liveMetrics.calculate(this.trainingSession, metrics);
+        const metrics = await this.liveMetrics.calculateMetrics();
 
-        const report = this.reportGenerator.generateReport(liveResults, this.trainingSession);
+        const report = this.reportGenerator.generateReport(metrics);
 
         this.callbacks.onReport(report);
 
@@ -256,7 +247,7 @@ export class TrainingOrchestrator {
         this.model.dispose(true);
         this.eventEmitter.clear();
         this.datasetManager.dispose();
-        this.trainingSession?.dispose();
+        this.liveMetrics.dispose?.();
     }
 
     private handleTrainingError(error: Error): void {
@@ -284,5 +275,15 @@ export class TrainingOrchestrator {
                 `Failed to create model of type ${settings.modelSettings.type}: ${error instanceof Error ? error.message : 'Unknown error'}`,
             );
         }
+    }
+
+    private createLiveMetrics(
+        settings: TrainingSettings,
+        model: Model<ModelRepresentation>,
+        datasetManager: DatasetManager,
+    ) {
+        const worker = workerRegistry.get(settings.modelSettings.type);
+
+        return worker.liveMetricsFactory(model, datasetManager, settings.taskType);
     }
 }

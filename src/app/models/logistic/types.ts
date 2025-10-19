@@ -27,3 +27,16 @@ export type LogisticCallbackParameters = {
     type: 'logistic';
     callbackParameters: OptimizerCallbackParameters;
 };
+
+export type LogisticTrainingReport = {
+    type: 'logistic';
+    taskType: 'classification';
+    trainLossHistory: number[][];
+    iterations: number[];
+    testAccuracy: number;
+    trainAccuracy: number;
+    trainPredictedLabels: number[][];
+    testPredictedLabels: number[][];
+    predictionPredictedLabels?: number[][];
+    theta: number[][];
+};

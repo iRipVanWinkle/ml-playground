@@ -27,3 +27,28 @@ export type TreeCallbackParameters = {
     type: 'tree';
     callbackParameters: TreeCallbackParametersType;
 };
+
+export type TreeClassificationTrainingReport = {
+    type: 'tree';
+    taskType: 'classification';
+    trainLossHistory: number[][];
+    iterations: number[];
+    testAccuracy: number;
+    trainAccuracy: number;
+    trainPredictedLabels: number[][];
+    testPredictedLabels: number[][];
+    predictionPredictedLabels?: number[][];
+    // tree: EnsembleTree;
+};
+
+export type TreeRegressionTrainingReport = {
+    type: 'tree';
+    taskType: 'regression';
+    trainLossHistory: number[][];
+    iterations: number[];
+    testLoss: number;
+    trainPredictedLabels: number[][];
+    testPredictedLabels: number[][];
+    predictionPredictedLabels?: number[][];
+    // tree: EnsembleTree;
+};

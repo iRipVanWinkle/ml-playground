@@ -11,7 +11,8 @@ export type BackendSelectorProps = {
 const useBackend = () => useSystemStore((state) => state.backend);
 
 export function BackendSelector({ disabled }: BackendSelectorProps) {
-    const { supported = [], current } = useBackendDetection();
+    const { backendInfo } = useBackendDetection();
+    const { supported = [], current } = backendInfo;
     const backend = useBackend();
 
     const availableBackendOptions = [

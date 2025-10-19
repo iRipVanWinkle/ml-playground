@@ -1,32 +1,16 @@
 import { encode } from '../../helpers/float32Array';
-import type { LiveResults } from './live-metrics';
-import type { TrainingSession } from './training-session';
-
-export interface TrainerReport {
-    trainLossHistory: number[][];
-    trainAccuracy: number;
-    testAccuracy: number;
-    testLoss: number;
-    iterations: number[];
-    trainPredictedLabels: number[][];
-    testPredictedLabels: number[][];
-    predictionPredictedLabels: number[][];
-    theta: number[][];
-}
 
 export class TrainingReportGenerator {
-    generateReport(liveResults: LiveResults, session: TrainingSession): Float32Array {
-        const report = {
-            trainLossHistory: session.getFormattedLossHistory(),
-            iterations: session.getIterations(),
-            trainAccuracy: liveResults.trainAccuracy!,
-            testAccuracy: liveResults.testAccuracy!,
-            testLoss: liveResults.testLoss!,
-            trainPredictedLabels: liveResults.trainPredictedLabels ?? [],
-            testPredictedLabels: liveResults.testPredictedLabels ?? [],
-            predictionPredictedLabels: liveResults.predictionPredictedLabels ?? [],
-            theta: liveResults.thetaArray ?? [],
-        };
+    generateReport(
+        liveResults: Record<string, number | number[] | number[][] | string | undefined>,
+    ): Float32Array {
+        const report = Object.entries(liveResults).reduce(
+            (acc, [key, value]) => ({
+                ...acc,
+                ...(typeof value !== 'string' ? { [key]: value } : {}),
+            }),
+            {},
+        );
 
         return encode(report);
     }

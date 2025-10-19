@@ -1,4 +1,9 @@
-import type { CallbackParameters, ModelRepresentation, ModelSettings } from '@/app/models/types';
+import type {
+    CallbackParameters,
+    ModelRepresentation,
+    ModelSettings,
+    TrainingReport,
+} from '@/app/models/types';
 
 type ModelSettingsMap = {
     [M in ModelSettings as M['type']]: M;
@@ -17,3 +22,9 @@ type CallbackParametersMap = {
 };
 
 export type CallbackParametersOf<K extends keyof CallbackParametersMap> = CallbackParametersMap[K];
+
+type TrainingReportMap = {
+    [M in TrainingReport as M['type']]: M;
+};
+
+export type TrainingReportOf<K extends keyof TrainingReportMap> = TrainingReportMap[K];

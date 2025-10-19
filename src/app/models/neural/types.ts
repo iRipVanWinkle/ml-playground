@@ -25,3 +25,28 @@ export type NeuralCallbackParameters = {
     type: 'neural';
     callbackParameters: OptimizerCallbackParameters;
 };
+
+export type NeuralClassificationTrainingReport = {
+    type: 'neural';
+    taskType: 'classification';
+    trainLossHistory: number[][];
+    iterations: number[];
+    testAccuracy: number;
+    trainAccuracy: number;
+    trainPredictedLabels: number[][];
+    testPredictedLabels: number[][];
+    predictionPredictedLabels?: number[][];
+    theta: number[][];
+};
+
+export type NeuralRegressionTrainingReport = {
+    type: 'neural';
+    taskType: 'regression';
+    trainLossHistory: number[][];
+    iterations: number[];
+    testLoss: number;
+    trainPredictedLabels: number[][];
+    testPredictedLabels: number[][];
+    predictionPredictedLabels?: number[][];
+    theta: number[][];
+};
