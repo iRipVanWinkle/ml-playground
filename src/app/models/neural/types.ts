@@ -30,7 +30,7 @@ export type NeuralClassificationTrainingReport = {
     type: 'neural';
     taskType: 'classification';
     trainLossHistory: number[][];
-    iterations: number[];
+    iteration: number;
     testAccuracy: number;
     trainAccuracy: number;
     trainPredictedLabels: number[][];
@@ -43,7 +43,8 @@ export type NeuralRegressionTrainingReport = {
     type: 'neural';
     taskType: 'regression';
     trainLossHistory: number[][];
-    iterations: number[];
+    iteration: number;
+    trainLoss: number;
     testLoss: number;
     trainPredictedLabels: number[][];
     testPredictedLabels: number[][];

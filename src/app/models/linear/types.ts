@@ -29,7 +29,8 @@ export type LinearTrainingReport = {
     type: 'linear';
     taskType: 'regression';
     trainLossHistory: number[][];
-    iterations: number[];
+    iteration: number;
+    trainLoss: number;
     testLoss: number;
     trainPredictedLabels: number[][];
     testPredictedLabels: number[][];

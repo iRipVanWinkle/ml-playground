@@ -1,8 +1,8 @@
-import { useIsTraining } from '@/app/features/train-model';
+import { useIsTraining } from '@/app/features/control-training';
 import { Card } from '@/app/shared/ui';
-import { BackendSelector, RandomSeedInput } from '@/app/features/system-settings';
+import { BackendSelector, RandomSeedInput } from '@/app/features/configure-system';
 
-export default function SystemSettings() {
+export function SystemSettings() {
     const isTraining = useIsTraining();
 
     return (

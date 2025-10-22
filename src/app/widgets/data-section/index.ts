@@ -1,1 +1,1 @@
-export { default as DataSection } from './DataSection';
+export { DataSection } from './DataSection';

@@ -1,4 +1,4 @@
-import type { TaskType } from '@/app/shared/types';
+import type { Dataset, TaskType } from '@/app/shared/types';
 
 export type DataSectionState = {
     file: File | null;
@@ -16,13 +16,5 @@ export type ExtractFeaturesOptions = {
 };
 
 export type DataState = {
-    trainInputFeatures: number[][];
-    trainTargetLabels: number[][];
-    testInputFeatures: number[][];
-    testTargetLabels: number[][];
-    predictionInputFeatures?: number[][];
-    xMin: number[];
-    xMax: number[];
-    headers: string[];
-    categories?: string[];
+    dataset: Dataset;
 };

@@ -1,6 +1,8 @@
 import type { ModelDefinition } from '@/app/shared/registry/types';
 import type { TaskType } from '@/app/shared/types';
 import { TreeSettings } from './ui/TreeSettings';
+import { TreeMainMetrics } from './ui/TreeMainMetrics';
+import { TreeModelDataPlots } from './ui/TreeModelDataPlots';
 
 export const treeModelDefinition: ModelDefinition<'tree'> = {
     key: 'tree',
@@ -18,4 +20,18 @@ export const treeModelDefinition: ModelDefinition<'tree'> = {
         numRandomThresholds: 1,
     }),
     settingsComponent: TreeSettings,
+
+    visualization: {
+        metricsGridComponent: TreeMainMetrics,
+        modelDataPlotComponent: TreeModelDataPlots,
+    },
+
+    progress: {
+        getProgressInfo: () => {
+            return {
+                type: 'indeterminate',
+                label: '',
+            };
+        },
+    },
 };

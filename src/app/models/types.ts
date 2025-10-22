@@ -1,7 +1,6 @@
-import type { TaskType } from '@/app/shared/types';
-import type { SystemSettings } from '@/app/features/system-settings';
+import type { Dataset, TaskType } from '@/app/shared/types';
+import type { SystemSettings } from '@/app/features/configure-system';
 import type { TransformationSettings } from '@/app/features/transform-data';
-import type { DataState } from '@/app/features/load-dataset';
 import type {
     LinearCallbackParameters,
     LinearSettings,
@@ -58,5 +57,5 @@ export type TrainingSettings<TModelSettings extends ModelSettings = ModelSetting
     modelSettings: TModelSettings;
     systemSettings: SystemSettings;
     dataSettings: TransformationSettings;
-    data: DataState;
+    data: Dataset;
 };

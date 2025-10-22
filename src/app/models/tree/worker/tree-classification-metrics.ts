@@ -4,11 +4,6 @@ import type { DatasetManager, LiveMetrics } from '@/app/shared/workers';
 import type { TreeClassificationTrainingReport } from '../types';
 import { accuracy } from '@/ml/metrics';
 
-function fixLength(matrix: number[][]): number[][] {
-    const minLength = Math.min(...matrix.map((m) => m.length));
-    return matrix.map((m) => m.slice(0, minLength));
-}
-
 function getTensorArray(
     tensor?: Tensor2D,
     defaultValue?: number[][],
@@ -32,7 +27,6 @@ async function getTensorData(tensor?: Scalar, defaultValue?: number): Promise<nu
 export class TreeClassificationLiveMetrics
     implements LiveMetrics<TreeCallbackParameters, TreeClassificationTrainingReport>
 {
-    private lossHistory: number[][] = [];
     private iterationCounts: number[] = [];
     private thetaArray: Tensor2D[] = [];
 
@@ -65,10 +59,6 @@ export class TreeClassificationLiveMetrics
 
     getModelRepresentation(): EnsembleTree {
         return this.trees;
-    }
-
-    getFormattedLossHistory(): number[][] {
-        return fixLength(this.lossHistory);
     }
 
     async calculateMetrics(): Promise<TreeClassificationTrainingReport> {
@@ -136,7 +126,6 @@ export class TreeClassificationLiveMetrics
         return {
             type: 'tree',
             taskType: 'classification',
-            trainLossHistory: this.getFormattedLossHistory(),
             iterations: this.getIterations(),
             testAccuracy: testAccuracyValue!,
             trainAccuracy: trainAccuracyValue!,

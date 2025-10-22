@@ -1,6 +1,13 @@
 import type { ModelDefinition } from '@/app/shared/registry/types';
 import { DEFAULT_OPTIMIZER } from '../defaults';
 import { LogisticSettings } from './ui/LogisticSettings';
+import { LogisticMainMetrics } from './ui/LogisticMainMetrics';
+import { LossHistoryPlot, LogisticPlots } from '@/app/shared/visualization';
+
+function arrayAvg(arr: number[]): number {
+    if (arr.length === 0) return 0;
+    return arr.reduce((acc, val) => acc + val, 0) / arr.length;
+}
 
 export const logisticModelDefinition: ModelDefinition<'logistic'> = {
     key: 'logistic',
@@ -15,4 +22,23 @@ export const logisticModelDefinition: ModelDefinition<'logistic'> = {
         thetaInitialization: { type: 'zeros' },
     }),
     settingsComponent: LogisticSettings,
+
+    visualization: {
+        metricsGridComponent: LogisticMainMetrics,
+        modelDataPlotComponent: LogisticPlots,
+        plots: [{ title: 'Loss History', component: LossHistoryPlot }],
+    },
+
+    progress: {
+        getProgressInfo: (report, settings) => {
+            const current = Math.round(arrayAvg(report?.iterations ?? []));
+            const max = settings.optimizer.maxIterations;
+            return {
+                type: 'determinate',
+                label: `${current}/${max}`,
+                current,
+                max,
+            };
+        },
+    },
 };

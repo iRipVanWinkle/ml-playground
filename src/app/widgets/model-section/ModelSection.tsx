@@ -1,10 +1,10 @@
 import { Card } from '@/app/shared/ui';
-import { useTaskType } from '@/app/features/task-switcher';
-import { useIsTraining } from '@/app/features/train-model';
+import { useTaskType } from '@/app/features/switch-task';
+import { useIsTraining } from '@/app/features/control-training';
 import { SettingsRenderer, ModelTypeSelector } from '@/app/features/configure-model';
 import { useNumCategories } from '@/app/features/load-dataset';
 
-export default function ModelSection() {
+export function ModelSection() {
     const taskType = useTaskType();
     const isTraining = useIsTraining();
     const numCategories = useNumCategories();

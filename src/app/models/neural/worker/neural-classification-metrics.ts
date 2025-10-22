@@ -121,7 +121,7 @@ export class NeuralClassificationLiveMetrics
             type: 'neural',
             taskType: 'classification',
             trainLossHistory: [this.lossHistory],
-            iterations: [this.iterationCount],
+            iteration: this.iterationCount,
             testAccuracy: testAccuracyValue!,
             trainAccuracy: trainAccuracyValue!,
             trainPredictedLabels: trainPredictedLabels!,

@@ -1,10 +1,10 @@
-import type { DataState } from './types';
+import type { Dataset } from '@/app/shared/types';
 import { useDatasetStore, initState } from './store';
 
 export function reset() {
     useDatasetStore.setState(initState, true);
 }
 
-export function setDataset(data: DataState) {
-    useDatasetStore.setState(data);
+export function setDataset(dataset: Dataset) {
+    useDatasetStore.setState({ dataset });
 }

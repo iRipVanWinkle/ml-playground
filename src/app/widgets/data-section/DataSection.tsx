@@ -1,11 +1,11 @@
-import { useIsTraining } from '@/app/features/train-model';
+import { useIsTraining } from '@/app/features/control-training';
 import { Card } from '@/app/shared/ui';
 import { DataLoader, useNumTrainInputFeatures } from '@/app/features/load-dataset';
 import { NormalizationSelector, TransformationBuilder } from '@/app/features/transform-data';
-import { useRandomSeed } from '@/app/features/system-settings';
-import { useTaskType } from '@/app/features/task-switcher';
+import { useRandomSeed } from '@/app/features/configure-system';
+import { useTaskType } from '@/app/features/switch-task';
 
-export default function DataSection() {
+export function DataSection() {
     const isTraining = useIsTraining();
     const taskType = useTaskType();
     const randomSeed = useRandomSeed();

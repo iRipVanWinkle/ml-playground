@@ -1,5 +1,5 @@
 import { tensor2d, type Tensor2D } from '@tensorflow/tfjs';
-import type { DataState } from '@/app/features/load-dataset';
+import type { Dataset } from '../types';
 
 export class DatasetManager {
     private trainX: Tensor2D;
@@ -8,7 +8,7 @@ export class DatasetManager {
     private testY?: Tensor2D;
     private predictionX?: Tensor2D;
 
-    constructor(data: DataState) {
+    constructor(data: Dataset) {
         this.trainX = tensor2d(data.trainInputFeatures);
         this.trainY = tensor2d(data.trainTargetLabels);
 

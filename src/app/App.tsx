@@ -1,12 +1,13 @@
 import { Toaster } from './shared/ui';
 import { ThemeProvider } from './features/change-theme';
-import { TaskSwitcher } from './features/task-switcher';
+import { TaskSwitcher } from './features/switch-task';
 import { Footer } from './widgets/footer';
 import { Header } from './widgets/header';
 import { DataSection } from './widgets/data-section';
 import { ModelSection } from './widgets/model-section';
 import { SystemSettings } from './widgets/settings-section';
-import { TrainingSection, useIsTraining } from './features/train-model';
+import { TrainingSection } from './widgets/training-section';
+import { useIsTraining } from './features/control-training';
 
 import './App.css';
 

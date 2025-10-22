@@ -1,1 +1,1 @@
-export { default as ModelSection } from './ModelSection';
+export { ModelSection } from './ModelSection';

@@ -1,6 +1,9 @@
 import { useDatasetStore } from './store';
 
+export const useDataset = () => useDatasetStore(({ dataset }) => dataset);
 export const useNumTrainInputFeatures = () =>
-    useDatasetStore((data) => data.trainInputFeatures[0]?.length ?? 0);
-export const useNumCategories = () => useDatasetStore((data) => data.categories?.length ?? 0);
-export const useHasData = () => useDatasetStore((data) => data.trainInputFeatures.length > 0);
+    useDatasetStore(({ dataset }) => dataset.trainInputFeatures[0]?.length ?? 0);
+export const useNumCategories = () =>
+    useDatasetStore(({ dataset }) => dataset.categories?.length ?? 0);
+export const useHasData = () =>
+    useDatasetStore(({ dataset }) => dataset.trainInputFeatures.length > 0);
