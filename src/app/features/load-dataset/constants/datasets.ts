@@ -1,12 +1,18 @@
 import type { DataSectionState } from '../store/types';
 
+type DatasetOption = {
+    value: string;
+    label: string;
+    isImage?: boolean;
+};
+
 export const DEFAULT_STATE: DataSectionState = {
     file: null,
     shuffleData: true,
     trainTestSplit: 80,
 };
 
-export const PREPARED_REGRESSION_DATASETS = [
+export const PREPARED_REGRESSION_DATASETS: DatasetOption[] = [
     {
         value: './data/world-happiness-report-2017 1(in).csv',
         label: 'World happiness report 2017 (Happiness.Score, Economy..GDP.per.Capita.)',
@@ -33,10 +39,11 @@ export const PREPARED_REGRESSION_DATASETS = [
     },
 ];
 
-export const PREPARED_CLASSIFICATION_DATASETS = [
+export const PREPARED_CLASSIFICATION_DATASETS: DatasetOption[] = [
     {
         value: './data/mnist-number-0-1.csv',
         label: 'MNIST numbers (0, 1)',
+        isImage: true,
     },
     {
         value: './data/microchips-tests.csv',
@@ -66,9 +73,11 @@ export const PREPARED_CLASSIFICATION_DATASETS = [
     {
         value: './data/mnist-number.csv',
         label: 'MNIST numbers',
+        isImage: true,
     },
     {
         value: './data/mnist-fashion.csv',
         label: 'MNIST fashion',
+        isImage: true,
     },
 ];

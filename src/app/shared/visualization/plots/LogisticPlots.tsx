@@ -22,7 +22,7 @@ export function LogisticPlots({ dataset, report }: LogisticPlotsProps) {
     const featureLength = trainInputFeatures[0]?.length || 0;
 
     const is2DPlot = featureLength === 2;
-    const isMNISTPlot = featureLength >= 400; // MNIST has 28x28 or 20x20 pixels flattened to 784 features
+    const isMNISTPlot = dataset.isImage;
 
     const { groupedData, groupedPredictions } = useLogisticPlotData(dataset);
 

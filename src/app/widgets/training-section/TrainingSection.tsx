@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Card } from '@/app/shared/ui';
 import { useTaskType } from '@/app/features/switch-task';
 import { useModelSettingsStore } from '@/app/features/configure-model';
@@ -11,21 +11,24 @@ import {
     TrainingProgress,
     useResetTrainingReport,
 } from '@/app/features/visualize-training';
+import type { ModelType } from '@/app/models/types';
 
 export function TrainingSection() {
     const hasData = useHasData();
-
     const modelSettings = useModelSettingsStore();
     const data = useDataset();
     const taskType = useTaskType();
+
+    const modelTypeRef = useRef<ModelType>(modelSettings.type);
+    modelTypeRef.current = modelSettings.type;
 
     const resetControls = useResetTrainingControls();
     const resetReport = useResetTrainingReport();
 
     useEffect(() => {
         resetControls();
-        resetReport();
-    }, [data, resetControls, resetReport]);
+        resetReport(taskType, modelTypeRef.current);
+    }, [data, resetControls, resetReport, taskType]);
 
     return (
         <Card>

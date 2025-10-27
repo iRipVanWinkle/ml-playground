@@ -31,6 +31,7 @@ export function DataLoader({ disabled, taskType, randomSeed }: DataLoaderProps) 
             ...prev,
             file: null,
             datasetPath: '',
+            isImage: false,
         }));
     }, [taskType]);
 
@@ -45,7 +46,10 @@ export function DataLoader({ disabled, taskType, randomSeed }: DataLoaderProps) 
                     seed: randomSeed,
                 });
 
-                setDataset(data);
+                setDataset({
+                    ...data,
+                    isImage: state.isImageDataset,
+                });
             }
         })();
     }, [randomSeed, state]);
@@ -59,7 +63,12 @@ export function DataLoader({ disabled, taskType, randomSeed }: DataLoaderProps) 
             setState((prev) => ({ ...prev, file: null, datasetPath: 'custom' }));
         } else {
             const file = await createFileFromURL(value, 'dataset.csv');
-            setState((prev) => ({ ...prev, file, datasetPath: value }));
+            setState((prev) => ({
+                ...prev,
+                file,
+                datasetPath: value,
+                isImageDataset: datasets.find((dataset) => dataset.value === value)?.isImage,
+            }));
         }
     };
 

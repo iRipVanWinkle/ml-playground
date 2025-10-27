@@ -10,6 +10,7 @@ export type Dataset = {
     xMax: number[];
     headers: string[];
     categories?: string[];
+    isImage?: boolean;
 };
 
 export type TypedArray = Float32Array | Uint32Array | Int32Array;

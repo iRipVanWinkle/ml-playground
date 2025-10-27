@@ -17,6 +17,18 @@ export const linearModelDefinition: ModelDefinition<'linear'> = {
     }),
     settingsComponent: LinearSettings,
 
+    defaultReport: () => ({
+        type: 'linear',
+        taskType: 'regression',
+        trainLossHistory: [],
+        iteration: 0,
+        trainLoss: 0,
+        testLoss: 0,
+        trainPredictedLabels: [],
+        testPredictedLabels: [],
+        predictionPredictedLabels: [],
+        theta: [],
+    }),
     visualization: {
         metricsGridComponent: LinearMainMetrics,
         modelDataPlotComponent: LinearPlots,

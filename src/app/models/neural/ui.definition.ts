@@ -20,6 +20,38 @@ export const neuralModelDefinition: ModelDefinition<'neural'> = {
     }),
     settingsComponent: NeuralSettings,
 
+    defaultReport: (taskType: TaskType) => {
+        switch (taskType) {
+            case 'classification':
+                return {
+                    type: 'neural',
+                    taskType: 'classification',
+                    trainLossHistory: [],
+                    iteration: 0,
+                    testAccuracy: 0,
+                    trainAccuracy: 0,
+                    trainPredictedLabels: [],
+                    testPredictedLabels: [],
+                    predictionPredictedLabels: [],
+                    theta: [],
+                };
+            case 'regression':
+                return {
+                    type: 'neural',
+                    taskType: 'regression',
+                    trainLossHistory: [],
+                    iteration: 0,
+                    trainLoss: 0,
+                    testLoss: 0,
+                    trainPredictedLabels: [],
+                    testPredictedLabels: [],
+                    predictionPredictedLabels: [],
+                    theta: [],
+                };
+            default:
+                throw new Error(`Unsupported task type: ${taskType}`);
+        }
+    },
     visualization: {
         metricsGridComponent: NeuralMainMetrics,
         modelDataPlotComponent: NeuralModelDataPlots,

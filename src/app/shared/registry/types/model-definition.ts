@@ -8,9 +8,10 @@ export interface ModelDefinition<TKey extends ModelType = ModelType> {
     label: string;
     taskTypes: TaskType[];
 
-    defaultSettings: (taskType?: TaskType) => SettingsOf<TKey>;
+    defaultSettings: (taskType: TaskType) => SettingsOf<TKey>;
     settingsComponent: ComponentType<ModelSettingsComponentProps<SettingsOf<TKey>>>;
 
+    defaultReport: (taskType: TaskType) => TrainingReportOf<TKey>;
     visualization: {
         metricsGridComponent: ComponentType<MainMetricsProps<TrainingReportOf<TKey>>>;
         modelDataPlotComponent: ComponentType<ModelDataPlotProps<TrainingReportOf<TKey>>>;

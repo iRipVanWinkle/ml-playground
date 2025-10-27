@@ -5,6 +5,7 @@ export type DataSectionState = {
     datasetPath?: string;
     shuffleData: boolean;
     trainTestSplit: number;
+    isImageDataset?: boolean;
 };
 
 export type ExtractFeaturesOptions = {

@@ -23,6 +23,18 @@ export const logisticModelDefinition: ModelDefinition<'logistic'> = {
     }),
     settingsComponent: LogisticSettings,
 
+    defaultReport: () => ({
+        type: 'logistic',
+        taskType: 'classification',
+        trainLossHistory: [],
+        iterations: [],
+        testAccuracy: 0,
+        trainAccuracy: 0,
+        trainPredictedLabels: [],
+        testPredictedLabels: [],
+        predictionPredictedLabels: [],
+        theta: [],
+    }),
     visualization: {
         metricsGridComponent: LogisticMainMetrics,
         modelDataPlotComponent: LogisticPlots,

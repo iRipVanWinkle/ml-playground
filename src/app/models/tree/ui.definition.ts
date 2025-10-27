@@ -21,6 +21,33 @@ export const treeModelDefinition: ModelDefinition<'tree'> = {
     }),
     settingsComponent: TreeSettings,
 
+    defaultReport: (taskType: TaskType) => {
+        switch (taskType) {
+            case 'classification':
+                return {
+                    type: 'tree',
+                    taskType: 'classification',
+                    iterations: [],
+                    testAccuracy: 0,
+                    trainAccuracy: 0,
+                    trainPredictedLabels: [],
+                    testPredictedLabels: [],
+                    predictionPredictedLabels: [],
+                };
+            case 'regression':
+                return {
+                    type: 'tree',
+                    taskType: 'regression',
+                    iterations: [],
+                    testLoss: 0,
+                    trainPredictedLabels: [],
+                    testPredictedLabels: [],
+                    predictionPredictedLabels: [],
+                };
+            default:
+                throw new Error(`Unsupported task type: ${taskType}`);
+        }
+    },
     visualization: {
         metricsGridComponent: TreeMainMetrics,
         modelDataPlotComponent: TreeModelDataPlots,
