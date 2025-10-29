@@ -13,9 +13,9 @@ export function DelayedLoader({ flag, children }: DelayedLoaderProps) {
         if (flag) {
             timer = setTimeout(() => setShowLoader(true), 100);
         } else {
-            setShowLoader(false);
+            timer = setTimeout(() => setShowLoader(false), 0);
         }
-        return () => timer && clearTimeout(timer);
+        return () => clearTimeout(timer);
     }, [flag]);
     return <>{flag && showLoader ? <Loader className="animate-spin" /> : children}</>;
 }

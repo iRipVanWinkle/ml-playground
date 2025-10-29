@@ -27,12 +27,15 @@ export function DataLoader({ disabled, taskType, randomSeed }: DataLoaderProps) 
     const taskTypeRef = useRef(taskType);
     useLayoutEffect(() => {
         taskTypeRef.current = taskType;
-        setState((prev) => ({
-            ...prev,
-            file: null,
-            datasetPath: '',
-            isImage: false,
-        }));
+        // Use setTimeout to avoid synchronous setState in effect
+        setTimeout(() => {
+            setState((prev) => ({
+                ...prev,
+                file: null,
+                datasetPath: '',
+                isImage: false,
+            }));
+        }, 0);
     }, [taskType]);
 
     useEffect(() => {

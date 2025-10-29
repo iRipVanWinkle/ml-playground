@@ -20,7 +20,11 @@ export function TrainingSection() {
     const taskType = useTaskType();
 
     const modelTypeRef = useRef<ModelType>(modelSettings.type);
-    modelTypeRef.current = modelSettings.type;
+
+    // Update ref in useEffect to avoid updating during render
+    useEffect(() => {
+        modelTypeRef.current = modelSettings.type;
+    }, [modelSettings.type]);
 
     const resetControls = useResetTrainingControls();
     const resetReport = useResetTrainingReport();
