@@ -10,13 +10,13 @@ export class NeuralNetworkPage extends LinearRegressionPage {
 
     async navigateToRegressionPage(): Promise<void> {
         await this.page.goto('/');
-        await this.page.getByRole('tab', { name: 'Regression' }).click();
+        await this.navigateToTab('Regression');
         await expect(this.page).toHaveTitle('Machine Learning Playground');
     }
 
     async navigateToClassificationPage(): Promise<void> {
         await this.page.goto('/');
-        await this.page.getByRole('tab', { name: 'Classification' }).click();
+        await this.navigateToTab('Classification');
         await expect(this.page).toHaveTitle('Machine Learning Playground');
     }
 

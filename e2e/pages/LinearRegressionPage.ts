@@ -34,6 +34,10 @@ export class LinearRegressionPage {
         await expect(this.page).toHaveTitle('Machine Learning Playground');
     }
 
+    async navigateToTab(tab: 'Regression' | 'Classification'): Promise<void> {
+        await this.page.getByTestId('task-switcher-list').getByRole('tab', { name: tab }).click();
+    }
+
     async setBasicConfiguration(): Promise<void> {
         await this.page.getByTestId('tensorflow-backend-select').click();
         await this.page.getByRole('option', { name: 'CPU', exact: true }).click();

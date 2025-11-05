@@ -14,7 +14,7 @@ export function ModelDataPlot({ modelType, dataset }: ModelDataPlotProps) {
     const ModelDataPlotComponent = modelDefinition.visualization.modelDataPlotComponent;
 
     return (
-        <div className="min-h-120 bg-muted rounded-lg flex items-center justify-center posotion-relative">
+        <div className="min-h-120 bg-muted rounded-lg grid place-items-center">
             <ModelDataPlotComponent dataset={dataset} report={report} />
         </div>
     );

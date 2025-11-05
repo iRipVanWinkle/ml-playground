@@ -1,17 +1,14 @@
-import { useEffect, useRef } from 'react';
-import { Card } from '@/app/shared/ui';
+import { Card, Separator } from '@/app/shared/ui';
 import { useTaskType } from '@/app/features/switch-task';
 import { useModelSettingsStore } from '@/app/features/configure-model';
 import { useDataset, useHasData } from '@/app/features/load-dataset';
-import { Controls, useResetTrainingControls } from '@/app/features/control-training';
+import { Controls } from '@/app/features/control-training';
 import {
     ModelDataPlot,
     TabbedVisualizations,
     TrainingMetricsGrid,
     TrainingProgress,
-    useResetTrainingReport,
 } from '@/app/features/visualize-training';
-import type { ModelType } from '@/app/models/types';
 
 export function TrainingSection() {
     const hasData = useHasData();
@@ -19,36 +16,25 @@ export function TrainingSection() {
     const data = useDataset();
     const taskType = useTaskType();
 
-    const modelTypeRef = useRef<ModelType>(modelSettings.type);
-
-    // Update ref in useEffect to avoid updating during render
-    useEffect(() => {
-        modelTypeRef.current = modelSettings.type;
-    }, [modelSettings.type]);
-
-    const resetControls = useResetTrainingControls();
-    const resetReport = useResetTrainingReport();
-
-    useEffect(() => {
-        resetControls();
-        resetReport(taskType, modelTypeRef.current);
-    }, [data, resetControls, resetReport, taskType]);
+    const modelType = modelSettings.type;
 
     return (
-        <Card>
-            <Card.Content className="grid gap-4">
+        <Card key={modelType}>
+            <Card.Content className="flex flex-col gap-4">
                 <TrainingProgress
                     controlsComponent={<Controls hasData={hasData} taskType={taskType} />}
-                    modelType={modelSettings.type}
+                    modelType={modelType}
                     modelSettings={modelSettings}
                 />
 
-                <TrainingMetricsGrid modelType={modelSettings.type} />
+                <TrainingMetricsGrid modelType={modelType} />
 
                 <div className="flex flex-col gap-4">
-                    <ModelDataPlot modelType={modelSettings.type} dataset={data} />
+                    <ModelDataPlot modelType={modelType} dataset={data} />
 
-                    <TabbedVisualizations dataset={data} modelType={modelSettings.type} />
+                    <Separator />
+
+                    <TabbedVisualizations dataset={data} modelType={modelType} />
                 </div>
             </Card.Content>
         </Card>

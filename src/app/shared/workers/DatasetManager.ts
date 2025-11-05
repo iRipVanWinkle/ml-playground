@@ -8,6 +8,8 @@ export class DatasetManager {
     private testY?: Tensor2D;
     private predictionX?: Tensor2D;
 
+    private numClasses: number;
+
     constructor(data: Dataset) {
         this.trainX = tensor2d(data.trainInputFeatures);
         this.trainY = tensor2d(data.trainTargetLabels);
@@ -20,6 +22,8 @@ export class DatasetManager {
         if (data.predictionInputFeatures?.length) {
             this.predictionX = tensor2d(data.predictionInputFeatures);
         }
+
+        this.numClasses = data.categories?.length ?? 0;
     }
 
     getTrainingData(): { X: Tensor2D; y: Tensor2D } {
@@ -35,6 +39,10 @@ export class DatasetManager {
 
     getPredictionData(): Tensor2D | undefined {
         return this.predictionX;
+    }
+
+    getNumClasses(): number {
+        return this.numClasses;
     }
 
     dispose(): void {

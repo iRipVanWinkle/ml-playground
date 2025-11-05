@@ -4,8 +4,13 @@ import { DataLoader, useNumTrainInputFeatures } from '@/app/features/load-datase
 import { NormalizationSelector, TransformationBuilder } from '@/app/features/transform-data';
 import { useRandomSeed } from '@/app/features/configure-system';
 import { useTaskType } from '@/app/features/switch-task';
+import type { Dataset } from '@/app/shared/types';
 
-export function DataSection() {
+type DataSectionProps = {
+    onChange: (data: Dataset) => void;
+};
+
+export function DataSection({ onChange }: DataSectionProps) {
     const isTraining = useIsTraining();
     const taskType = useTaskType();
     const randomSeed = useRandomSeed();
@@ -17,7 +22,12 @@ export function DataSection() {
                 <Card.Title>Dataset</Card.Title>
             </Card.Header>
             <Card.Content className="grid gap-5">
-                <DataLoader disabled={isTraining} taskType={taskType} randomSeed={randomSeed} />
+                <DataLoader
+                    disabled={isTraining}
+                    taskType={taskType}
+                    randomSeed={randomSeed}
+                    onChange={onChange}
+                />
 
                 <NormalizationSelector disabled={isTraining} taskType={taskType} />
                 <TransformationBuilder

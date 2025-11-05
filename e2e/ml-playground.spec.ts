@@ -87,11 +87,12 @@ test.describe('ML Playground', () => {
 
         // Check for basic interactive elements using first() to handle multiple elements
         await expect(page.getByRole('combobox').first()).toBeVisible();
-        await expect(page.getByRole('tablist')).toBeVisible();
+        const tabList = page.getByTestId('task-switcher-list');
+        await expect(tabList).toBeVisible();
 
         // Verify tabs are clickable
-        const regressionTab = page.getByRole('tab', { name: 'Regression' });
-        const classificationTab = page.getByRole('tab', { name: 'Classification' });
+        const regressionTab = tabList.getByRole('tab', { name: 'Regression' });
+        const classificationTab = tabList.getByRole('tab', { name: 'Classification' });
 
         await expect(regressionTab).toBeVisible();
         await expect(classificationTab).toBeVisible();

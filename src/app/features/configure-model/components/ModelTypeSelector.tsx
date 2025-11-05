@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { Field, Select } from '@/app/shared/ui';
 import type { ModelType } from '@/app/models/types';
 import type { TaskType } from '@/app/shared/types';
@@ -17,11 +17,6 @@ export function ModelTypeSelector({ taskType, disabled }: ModelTypeProps) {
     const modelType = useModelType();
 
     const modelTypes = useMemo(() => modelRegistry.getForTask(taskType), [taskType]);
-
-    useEffect(() => {
-        const modelType = modelTypes[0].key;
-        setModelType(modelType, taskType);
-    }, [taskType, modelTypes]);
 
     const handleChange = (value: string) => {
         const modelType = value as ModelType;

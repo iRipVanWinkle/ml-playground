@@ -6,13 +6,15 @@ import { setTaskType } from '../store/actions';
 
 type TaskSwitcherProps = {
     disabled?: boolean;
+    onChange: (taskType: TaskType) => void;
 };
 
-export function TaskSwitcher({ disabled }: TaskSwitcherProps) {
+export function TaskSwitcher({ disabled, onChange }: TaskSwitcherProps) {
     const taskType = useTaskType();
 
     const handleTaskTypeChange = (taskType: string) => {
         setTaskType(taskType as TaskType);
+        onChange(taskType as TaskType);
     };
 
     return (
@@ -21,7 +23,7 @@ export function TaskSwitcher({ disabled }: TaskSwitcherProps) {
             className="w-full"
             onValueChange={handleTaskTypeChange}
         >
-            <EnhancedTabs.List variant="underline">
+            <EnhancedTabs.List variant="underline" data-testid="task-switcher-list">
                 {TASK_TYPES.map((tt) => (
                     <EnhancedTabs.Trigger
                         key={tt.value}
