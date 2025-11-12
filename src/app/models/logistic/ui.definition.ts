@@ -2,7 +2,7 @@ import type { ModelDefinition } from '@/app/shared/registry/types';
 import { DEFAULT_OPTIMIZER } from '../defaults';
 import { LogisticSettings } from './ui/LogisticSettings';
 import { LogisticMainMetrics } from './ui/LogisticMainMetrics';
-import { LossHistoryPlot, LogisticPlots } from '@/app/shared/visualization';
+import { LossHistoryPlot, LogisticPlots, ConfusionMatrix } from '@/app/shared/visualization';
 
 function arrayAvg(arr: number[]): number {
     if (arr.length === 0) return 0;
@@ -34,11 +34,26 @@ export const logisticModelDefinition: ModelDefinition<'logistic'> = {
         testPredictedLabels: [],
         predictionPredictedLabels: [],
         theta: [],
+        trainConfusionMatrix: {
+            matrix: [],
+            metrics: {
+                type: 'binary',
+                accuracy: 0,
+                mcc: 0,
+                cohensKappa: 0,
+                precision: 0,
+                recall: 0,
+                f1: 0,
+            },
+        },
     }),
     visualization: {
         metricsGridComponent: LogisticMainMetrics,
         modelDataPlotComponent: LogisticPlots,
-        plots: [{ title: 'Loss History', component: LossHistoryPlot }],
+        plots: [
+            { title: 'Loss History', component: LossHistoryPlot },
+            { title: 'Confusion Matrix', component: ConfusionMatrix },
+        ],
     },
 
     progress: {

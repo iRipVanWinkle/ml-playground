@@ -2,7 +2,8 @@ import { concat, type Scalar, type Tensor2D } from '@tensorflow/tfjs';
 import type { Model, OptimizerCallbackParameters } from '@/ml/types';
 import type { DatasetManager, LiveMetrics } from '@/app/shared/workers';
 import type { LogisticTrainingReport } from '../types';
-import { accuracy } from '@/ml/metrics';
+import { accuracy, confusionMatrix } from '@/ml/metrics';
+import { confusionMatrixData } from '@/app/shared/visualization/metrics/confusion-matrix/calculations';
 
 function fixLength(matrix: number[][]): number[][] {
     const minLength = Math.min(...matrix.map((m) => m.length)) ?? 0;
@@ -88,6 +89,7 @@ export class LogisticLiveMetrics
         let yTestingProbability: Tensor2D | undefined;
         let testLoss: Scalar | undefined;
         let testAccuracy: Scalar | undefined;
+        let testConfusionMatrix: Tensor2D | undefined;
 
         if (predictionData) {
             yPredictions = this.model.predict(predictionData, modelRepresentation);
@@ -99,6 +101,11 @@ export class LogisticLiveMetrics
             modelRepresentation,
         );
         const trainAccuracy = accuracy(trainingData.y, yTraining!);
+        const trainConfusionMatrix = confusionMatrix(
+            trainingData.y,
+            yTraining,
+            this.datasetManager.getNumClasses(),
+        );
 
         if (testData) {
             [yTesting, yTestingProbability, testLoss] = this.model.evaluate(
@@ -108,6 +115,11 @@ export class LogisticLiveMetrics
             );
 
             testAccuracy = accuracy(testData.y, yTesting!);
+            testConfusionMatrix = confusionMatrix(
+                testData.y,
+                yTesting!,
+                this.datasetManager.getNumClasses(),
+            );
         }
 
         const [
@@ -116,18 +128,22 @@ export class LogisticLiveMetrics
             // train
             trainPredictedLabels,
             trainAccuracyValue,
+            trainConfusionMatrixValue,
             // test
             testPredictedLabels,
             testAccuracyValue,
+            testConfusionMatrixValue,
         ] = await Promise.all([
             getTensorArray(modelRepresentation),
             getTensorArray(yPredictions),
             // train
             getTensorArray(yTraining),
             getTensorData(trainAccuracy),
+            getTensorArray(trainConfusionMatrix),
             // test
             getTensorArray(yTesting),
             getTensorData(testAccuracy),
+            getTensorArray(testConfusionMatrix),
         ]);
 
         // Dispose of all tensors to free up memory
@@ -138,6 +154,8 @@ export class LogisticLiveMetrics
         yTrainingProbability?.dispose();
         trainLoss?.dispose();
         testLoss?.dispose();
+        trainConfusionMatrix?.dispose();
+        testConfusionMatrix?.dispose();
         // modelRepresentation.dispose();
 
         return {
@@ -151,6 +169,13 @@ export class LogisticLiveMetrics
             testPredictedLabels: testPredictedLabels!,
             predictionPredictedLabels: predictionPredictedLabels,
             theta: thetaArray!,
+            trainConfusionMatrix: confusionMatrixData(
+                trainConfusionMatrixValue!,
+                this.datasetManager.getNumClasses(),
+            ),
+            testConfusionMatrix: testConfusionMatrixValue
+                ? confusionMatrixData(testConfusionMatrixValue, this.datasetManager.getNumClasses())
+                : undefined,
         };
     }
 

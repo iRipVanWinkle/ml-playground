@@ -2,7 +2,8 @@ import { type Scalar, type Tensor2D } from '@tensorflow/tfjs';
 import type { Model, OptimizerCallbackParameters } from '@/ml/types';
 import type { DatasetManager, LiveMetrics } from '@/app/shared/workers';
 import type { NeuralClassificationTrainingReport } from '../types';
-import { accuracy } from '@/ml/metrics';
+import { accuracy, confusionMatrix } from '@/ml/metrics';
+import { confusionMatrixData } from '@/app/shared/visualization/metrics/confusion-matrix/calculations';
 
 function getTensorArray(
     tensor?: Tensor2D,
@@ -66,6 +67,7 @@ export class NeuralClassificationLiveMetrics
         let yTestingProbability: Tensor2D | undefined;
         let testLoss: Scalar | undefined;
         let testAccuracy: Scalar | undefined;
+        let testConfusionMatrix: Tensor2D | undefined;
 
         if (predictionData) {
             yPredictions = this.model.predict(predictionData, theta);
@@ -77,6 +79,11 @@ export class NeuralClassificationLiveMetrics
             theta,
         );
         const trainAccuracy = accuracy(trainingData.y, yTraining!);
+        const trainConfusionMatrix = confusionMatrix(
+            trainingData.y,
+            yTraining,
+            this.datasetManager.getNumClasses(),
+        );
         trainAccuracy.print();
         if (testData) {
             [yTesting, yTestingProbability, testLoss] = this.model.evaluate(
@@ -86,6 +93,11 @@ export class NeuralClassificationLiveMetrics
             );
 
             testAccuracy = accuracy(testData.y, yTesting!);
+            testConfusionMatrix = confusionMatrix(
+                testData.y,
+                yTesting!,
+                this.datasetManager.getNumClasses(),
+            );
         }
 
         const [
@@ -94,18 +106,22 @@ export class NeuralClassificationLiveMetrics
             // train
             trainPredictedLabels,
             trainAccuracyValue,
+            trainConfusionMatrixValue,
             // test
             testPredictedLabels,
             testAccuracyValue,
+            testConfusionMatrixValue,
         ] = await Promise.all([
             getTensorArray(theta),
             getTensorArray(yPredictions),
             // train
             getTensorArray(yTraining),
             getTensorData(trainAccuracy),
+            getTensorArray(trainConfusionMatrix),
             // test
             getTensorArray(yTesting),
             getTensorData(testAccuracy),
+            getTensorArray(testConfusionMatrix),
         ]);
 
         // Dispose of all tensors to free up memory
@@ -128,6 +144,13 @@ export class NeuralClassificationLiveMetrics
             testPredictedLabels: testPredictedLabels!,
             predictionPredictedLabels: predictionPredictedLabels,
             theta: thetaArray!,
+            trainConfusionMatrix: confusionMatrixData(
+                trainConfusionMatrixValue!,
+                this.datasetManager.getNumClasses(),
+            ),
+            testConfusionMatrix: testConfusionMatrixValue
+                ? confusionMatrixData(testConfusionMatrixValue, this.datasetManager.getNumClasses())
+                : undefined,
         };
     }
 

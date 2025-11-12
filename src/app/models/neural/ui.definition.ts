@@ -3,7 +3,7 @@ import type { TaskType } from '@/app/shared/types';
 import { NeuralSettings } from './ui/NeuralSettings';
 import { DEFAULT_OPTIMIZER } from '../defaults';
 import { NeuralMainMetrics } from './ui/NeuralMainMetrics';
-import { LossHistoryPlot } from '@/app/shared/visualization';
+import { ConfusionMatrix, LossHistoryPlot } from '@/app/shared/visualization';
 import { NeuralModelDataPlots } from './ui/NeuralModelDataPlots';
 
 export const neuralModelDefinition: ModelDefinition<'neural'> = {
@@ -34,6 +34,18 @@ export const neuralModelDefinition: ModelDefinition<'neural'> = {
                     testPredictedLabels: [],
                     predictionPredictedLabels: [],
                     theta: [],
+                    trainConfusionMatrix: {
+                        matrix: [],
+                        metrics: {
+                            type: 'binary',
+                            accuracy: 0,
+                            mcc: 0,
+                            cohensKappa: 0,
+                            precision: 0,
+                            recall: 0,
+                            f1: 0,
+                        },
+                    },
                 };
             case 'regression':
                 return {
@@ -55,7 +67,10 @@ export const neuralModelDefinition: ModelDefinition<'neural'> = {
     visualization: {
         metricsGridComponent: NeuralMainMetrics,
         modelDataPlotComponent: NeuralModelDataPlots,
-        plots: [{ title: 'Loss History', component: LossHistoryPlot }],
+        plots: [
+            { title: 'Loss History', component: LossHistoryPlot },
+            { title: 'Confusion Matrix', component: ConfusionMatrix },
+        ],
     },
 
     progress: {

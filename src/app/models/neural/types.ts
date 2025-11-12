@@ -6,6 +6,7 @@ import type {
 } from '@/ml/factories';
 import type { Tensor2D } from '@tensorflow/tfjs';
 import type { OptimizerCallbackParameters } from '@/ml/types';
+import type { ConfusionMatrixData } from '@/app/shared/visualization';
 
 export type NeuralSettings = {
     type: 'neural';
@@ -37,6 +38,9 @@ export type NeuralClassificationTrainingReport = {
     testPredictedLabels: number[][];
     predictionPredictedLabels?: number[][];
     theta: number[][];
+
+    trainConfusionMatrix: ConfusionMatrixData;
+    testConfusionMatrix?: ConfusionMatrixData;
 };
 
 export type NeuralRegressionTrainingReport = {

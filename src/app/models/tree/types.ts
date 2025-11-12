@@ -1,3 +1,4 @@
+import type { ConfusionMatrixData } from '@/app/shared/visualization';
 import type { CriterionConfig } from '@/ml/factories';
 import type {
     EnsembleTree,
@@ -37,6 +38,9 @@ export type TreeClassificationTrainingReport = {
     trainPredictedLabels: number[][];
     testPredictedLabels: number[][];
     predictionPredictedLabels?: number[][];
+
+    trainConfusionMatrix: ConfusionMatrixData;
+    testConfusionMatrix?: ConfusionMatrixData;
 };
 
 export type TreeRegressionTrainingReport = {

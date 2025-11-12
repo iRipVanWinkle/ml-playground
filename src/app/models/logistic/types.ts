@@ -1,11 +1,12 @@
+import type { Tensor2D } from '@tensorflow/tfjs';
+import type { OptimizerCallbackParameters } from '@/ml/types';
 import type {
     LossFunctionConfig,
     OptimizerConfig,
     RegularizationConfig,
     ThetaInitializationConfig,
 } from '@/ml/factories';
-import type { OptimizerCallbackParameters } from '@/ml/types';
-import type { Tensor2D } from '@tensorflow/tfjs';
+import type { ConfusionMatrixData } from '@/app/shared/visualization';
 
 export type ClassificationType = 'binary' | 'softmax' | 'ovr';
 
@@ -39,4 +40,7 @@ export type LogisticTrainingReport = {
     testPredictedLabels: number[][];
     predictionPredictedLabels?: number[][];
     theta: number[][];
+
+    trainConfusionMatrix: ConfusionMatrixData;
+    testConfusionMatrix?: ConfusionMatrixData;
 };

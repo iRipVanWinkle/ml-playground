@@ -3,6 +3,7 @@ import type { TaskType } from '@/app/shared/types';
 import { TreeSettings } from './ui/TreeSettings';
 import { TreeMainMetrics } from './ui/TreeMainMetrics';
 import { TreeModelDataPlots } from './ui/TreeModelDataPlots';
+import { ConfusionMatrix } from '@/app/shared/visualization';
 
 export const treeModelDefinition: ModelDefinition<'tree'> = {
     key: 'tree',
@@ -33,6 +34,18 @@ export const treeModelDefinition: ModelDefinition<'tree'> = {
                     trainPredictedLabels: [],
                     testPredictedLabels: [],
                     predictionPredictedLabels: [],
+                    trainConfusionMatrix: {
+                        matrix: [],
+                        metrics: {
+                            type: 'binary',
+                            accuracy: 0,
+                            mcc: 0,
+                            cohensKappa: 0,
+                            precision: 0,
+                            recall: 0,
+                            f1: 0,
+                        },
+                    },
                 };
             case 'regression':
                 return {
@@ -51,6 +64,7 @@ export const treeModelDefinition: ModelDefinition<'tree'> = {
     visualization: {
         metricsGridComponent: TreeMainMetrics,
         modelDataPlotComponent: TreeModelDataPlots,
+        plots: [{ title: 'Confusion Matrix', component: ConfusionMatrix }],
     },
 
     progress: {

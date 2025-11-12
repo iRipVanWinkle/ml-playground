@@ -2,7 +2,8 @@ import { type Scalar, type Tensor2D } from '@tensorflow/tfjs';
 import type { Model, TreeCallbackParameters, EnsembleTree, TreeNode } from '@/ml/types';
 import type { DatasetManager, LiveMetrics } from '@/app/shared/workers';
 import type { TreeClassificationTrainingReport } from '../types';
-import { accuracy } from '@/ml/metrics';
+import { accuracy, confusionMatrix } from '@/ml/metrics';
+import { confusionMatrixData } from '@/app/shared/visualization/metrics/confusion-matrix/calculations';
 
 function getTensorArray(
     tensor?: Tensor2D,
@@ -73,6 +74,7 @@ export class TreeClassificationLiveMetrics
         let yTestingProbability: Tensor2D | undefined;
         let testLoss: Scalar | undefined;
         let testAccuracy: Scalar | undefined;
+        let testConfusionMatrix: Tensor2D | undefined;
 
         if (predictionData) {
             yPredictions = this.model.predict(predictionData, modelRepresentation);
@@ -84,6 +86,11 @@ export class TreeClassificationLiveMetrics
             modelRepresentation,
         );
         const trainAccuracy = accuracy(trainingData.y, yTraining!);
+        const trainConfusionMatrix = confusionMatrix(
+            trainingData.y,
+            yTraining,
+            this.datasetManager.getNumClasses(),
+        );
 
         if (testData) {
             [yTesting, yTestingProbability, testLoss] = this.model.evaluate(
@@ -93,6 +100,11 @@ export class TreeClassificationLiveMetrics
             );
 
             testAccuracy = accuracy(testData.y, yTesting!);
+            testConfusionMatrix = confusionMatrix(
+                testData.y,
+                yTesting!,
+                this.datasetManager.getNumClasses(),
+            );
         }
 
         const [
@@ -100,17 +112,21 @@ export class TreeClassificationLiveMetrics
             // train
             trainPredictedLabels,
             trainAccuracyValue,
+            trainConfusionMatrixValue,
             // test
             testPredictedLabels,
             testAccuracyValue,
+            testConfusionMatrixValue,
         ] = await Promise.all([
             getTensorArray(yPredictions),
             // train
             getTensorArray(yTraining),
             getTensorData(trainAccuracy),
+            getTensorArray(trainConfusionMatrix),
             // test
             getTensorArray(yTesting),
             getTensorData(testAccuracy),
+            getTensorArray(testConfusionMatrix),
         ]);
 
         // Dispose of all tensors to free up memory
@@ -132,6 +148,13 @@ export class TreeClassificationLiveMetrics
             trainPredictedLabels: trainPredictedLabels!,
             testPredictedLabels: testPredictedLabels!,
             predictionPredictedLabels: predictionPredictedLabels,
+            trainConfusionMatrix: confusionMatrixData(
+                trainConfusionMatrixValue!,
+                this.datasetManager.getNumClasses(),
+            ),
+            testConfusionMatrix: testConfusionMatrixValue
+                ? confusionMatrixData(testConfusionMatrixValue, this.datasetManager.getNumClasses())
+                : undefined,
         };
     }
 
