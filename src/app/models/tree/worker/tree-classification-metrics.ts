@@ -4,6 +4,7 @@ import type { DatasetManager, LiveMetrics } from '@/app/shared/workers';
 import type { TreeClassificationTrainingReport } from '../types';
 import { accuracy, confusionMatrix } from '@/ml/metrics';
 import { confusionMatrixData } from '@/app/shared/visualization/metrics/confusion-matrix/calculations';
+import { getMatrixFromTensor } from '@/ml/matrix';
 
 function getTensorArray(
     tensor?: Tensor2D,
@@ -118,13 +119,13 @@ export class TreeClassificationLiveMetrics
             testAccuracyValue,
             testConfusionMatrixValue,
         ] = await Promise.all([
-            getTensorArray(yPredictions),
+            getMatrixFromTensor(yPredictions),
             // train
-            getTensorArray(yTraining),
+            getMatrixFromTensor(yTraining),
             getTensorData(trainAccuracy),
             getTensorArray(trainConfusionMatrix),
             // test
-            getTensorArray(yTesting),
+            getMatrixFromTensor(yTesting),
             getTensorData(testAccuracy),
             getTensorArray(testConfusionMatrix),
         ]);

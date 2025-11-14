@@ -1,7 +1,10 @@
 import { concat, ones, tidy, type Scalar, type Tensor2D } from '@tensorflow/tfjs';
 import type { LossFunction, Optimizer, Model, Regularization } from '../../types';
 import { NoRegularization } from '../../regularization';
-import { zerosInitializer, type ThetaInitializer } from '../../utils/theta';
+import {
+    zerosInitializer,
+    type ThetaInitializer,
+} from '../../factories/theta-initialization/initializers';
 
 export type ModelOptions = {
     lossFunc: LossFunction;

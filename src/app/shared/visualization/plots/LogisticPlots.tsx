@@ -33,19 +33,19 @@ export function LogisticPlots({ dataset, report }: LogisticPlotsProps) {
     if (groupedPredictions && predictionPredictedLabels) {
         const predictionsNum = 150;
 
-        const classes = Array.from(new Set(predictionPredictedLabels.flat()));
+        const classes = Array.from(new Set(predictionPredictedLabels.array));
 
         for (const cls of classes) {
             const z: number[][] = [];
-            for (const index in predictionPredictedLabels) {
-                const label = predictionPredictedLabels[index];
+            for (const index in predictionPredictedLabels.array) {
+                const label = predictionPredictedLabels.array[index];
                 const xIndex = Math.floor(Number(index) / predictionsNum);
                 const yIndex = Number(index) % predictionsNum;
                 if (!z[xIndex]) {
                     z[xIndex] = [];
                 }
 
-                z[xIndex][yIndex] = label[0] === cls ? 1 : 0;
+                z[xIndex][yIndex] = label === cls ? 1 : 0;
             }
             predictions.push({
                 x: groupedPredictions.predictionX,
@@ -125,10 +125,10 @@ export function LogisticPlots({ dataset, report }: LogisticPlotsProps) {
         ];
 
         const predictionsPlot =
-            report.trainPredictedLabels && report.trainPredictedLabels.length
+            report.trainPredictedLabels && report.trainPredictedLabels.array.length
                 ? [
-                      ...report.trainPredictedLabels.slice(0, numbersToDisplay).flat(),
-                      ...report.testPredictedLabels.slice(0, numbersToDisplay).flat(),
+                      ...report.trainPredictedLabels.array.slice(0, numbersToDisplay),
+                      ...report.testPredictedLabels.array.slice(0, numbersToDisplay),
                   ]
                 : undefined;
 

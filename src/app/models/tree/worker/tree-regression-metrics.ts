@@ -2,17 +2,7 @@ import { type Scalar, type Tensor2D } from '@tensorflow/tfjs';
 import type { Model, TreeCallbackParameters, EnsembleTree, TreeNode } from '@/ml/types';
 import type { DatasetManager, LiveMetrics } from '@/app/shared/workers';
 import type { TreeRegressionTrainingReport } from '../types';
-
-function getTensorArray(
-    tensor?: Tensor2D,
-    defaultValue?: number[][],
-): Promise<number[][] | undefined> {
-    if (tensor) {
-        return tensor.array();
-    }
-
-    return Promise.resolve(defaultValue);
-}
+import { getMatrixFromTensor } from '@/ml/matrix';
 
 async function getTensorData(tensor?: Scalar, defaultValue?: number): Promise<number | undefined> {
     if (tensor) {
@@ -98,11 +88,11 @@ export class TreeRegressionLiveMetrics
             testPredictedLabels,
             testLossValue,
         ] = await Promise.all([
-            getTensorArray(yPredictions),
+            getMatrixFromTensor(yPredictions),
             // train
-            getTensorArray(yTraining),
+            getMatrixFromTensor(yTraining),
             // test
-            getTensorArray(yTesting),
+            getMatrixFromTensor(yTesting),
             getTensorData(testLoss),
         ]);
 

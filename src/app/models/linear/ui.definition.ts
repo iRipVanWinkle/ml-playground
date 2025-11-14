@@ -3,6 +3,7 @@ import { DEFAULT_OPTIMIZER } from '../defaults';
 import { LinearSettings } from './ui/LinearSettings';
 import { LinearMainMetrics } from './ui/LinearMainMetrics';
 import { LossHistoryPlot, LinearPlots } from '@/app/shared/visualization';
+import { EMPTY_MATRIX_LIKE } from '@/ml/matrix';
 
 export const linearModelDefinition: ModelDefinition<'linear'> = {
     key: 'linear',
@@ -24,10 +25,10 @@ export const linearModelDefinition: ModelDefinition<'linear'> = {
         iteration: 0,
         trainLoss: 0,
         testLoss: 0,
-        trainPredictedLabels: [],
-        testPredictedLabels: [],
-        predictionPredictedLabels: [],
-        theta: [],
+        trainPredictedLabels: EMPTY_MATRIX_LIKE,
+        testPredictedLabels: EMPTY_MATRIX_LIKE,
+        predictionPredictedLabels: EMPTY_MATRIX_LIKE,
+        theta: EMPTY_MATRIX_LIKE,
     }),
     visualization: {
         metricsGridComponent: LinearMainMetrics,

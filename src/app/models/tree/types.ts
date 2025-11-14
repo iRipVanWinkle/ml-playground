@@ -1,5 +1,6 @@
 import type { ConfusionMatrixData } from '@/app/shared/visualization';
 import type { CriterionConfig } from '@/ml/factories';
+import type { MatrixLike } from '@/ml/matrix';
 import type {
     EnsembleTree,
     TreeCallbackParameters as TreeCallbackParametersType,
@@ -35,9 +36,9 @@ export type TreeClassificationTrainingReport = {
     iterations: number[];
     testAccuracy: number;
     trainAccuracy: number;
-    trainPredictedLabels: number[][];
-    testPredictedLabels: number[][];
-    predictionPredictedLabels?: number[][];
+    trainPredictedLabels: MatrixLike;
+    testPredictedLabels: MatrixLike;
+    predictionPredictedLabels?: MatrixLike;
 
     trainConfusionMatrix: ConfusionMatrixData;
     testConfusionMatrix?: ConfusionMatrixData;
@@ -48,7 +49,7 @@ export type TreeRegressionTrainingReport = {
     taskType: 'regression';
     iterations: number[];
     testLoss: number;
-    trainPredictedLabels: number[][];
-    testPredictedLabels: number[][];
-    predictionPredictedLabels?: number[][];
+    trainPredictedLabels: MatrixLike;
+    testPredictedLabels: MatrixLike;
+    predictionPredictedLabels?: MatrixLike;
 };

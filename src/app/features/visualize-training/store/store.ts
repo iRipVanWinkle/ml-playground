@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import type { TrainingStore } from './types';
+import { EMPTY_MATRIX_LIKE } from '@/ml/matrix';
 
 export const initState: TrainingStore = {
     trainingReport: {
@@ -9,9 +10,9 @@ export const initState: TrainingStore = {
         iteration: 0,
         trainLoss: 0,
         testLoss: 0,
-        trainPredictedLabels: [],
-        testPredictedLabels: [],
-        theta: [],
+        trainPredictedLabels: EMPTY_MATRIX_LIKE,
+        testPredictedLabels: EMPTY_MATRIX_LIKE,
+        theta: EMPTY_MATRIX_LIKE,
     },
 };
 

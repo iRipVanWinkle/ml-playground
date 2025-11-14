@@ -1,5 +1,5 @@
 import { zeros, ones, type Tensor2D, fill, concat, tidy, Rank } from '@tensorflow/tfjs';
-import { Randomizer } from '../random/Randomizer';
+import { Randomizer } from '../../random/Randomizer';
 
 export type ThetaInitializer = (shape: [number, number], withBias?: boolean) => Tensor2D;
 

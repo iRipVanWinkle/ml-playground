@@ -2,17 +2,7 @@ import { type Scalar, type Tensor2D } from '@tensorflow/tfjs';
 import type { Model, ModelRepresentation, OptimizerCallbackParameters } from '@/ml/types';
 import type { DatasetManager, LiveMetrics } from '@/app/shared/workers';
 import type { LinearTrainingReport } from '../types';
-
-function getTensorArray(
-    tensor?: Tensor2D,
-    defaultValue?: number[][],
-): Promise<number[][] | undefined> {
-    if (tensor) {
-        return tensor.array();
-    }
-
-    return Promise.resolve(defaultValue);
-}
+import { getMatrixFromTensor } from '@/ml/matrix';
 
 async function getTensorData(tensor?: Scalar, defaultValue?: number): Promise<number | undefined> {
     if (tensor) {
@@ -94,12 +84,12 @@ export class LinearLiveMetrics
             testPredictedLabels,
             testLossValue,
         ] = await Promise.all([
-            getTensorArray(theta),
-            getTensorArray(yPredictions),
+            getMatrixFromTensor(theta),
+            getMatrixFromTensor(yPredictions),
             // train
-            getTensorArray(yTraining),
+            getMatrixFromTensor(yTraining),
             // test
-            getTensorArray(yTesting),
+            getMatrixFromTensor(yTesting),
             getTensorData(testLoss),
         ]);
 

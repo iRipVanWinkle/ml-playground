@@ -9,7 +9,7 @@ import {
     xavierUniformInitializer,
     zerosInitializer,
     type ThetaInitializer,
-} from '../../utils/theta';
+} from './initializers';
 import type { ThetaInitializationConfig } from './types';
 
 export function thetaInitializerFactory(

@@ -4,6 +4,7 @@ import type { DatasetManager, LiveMetrics } from '@/app/shared/workers';
 import type { LogisticTrainingReport } from '../types';
 import { accuracy, confusionMatrix } from '@/ml/metrics';
 import { confusionMatrixData } from '@/app/shared/visualization/metrics/confusion-matrix/calculations';
+import { getMatrixFromTensor } from '@/ml/matrix';
 
 function fixLength(matrix: number[][]): number[][] {
     const minLength = Math.min(...matrix.map((m) => m.length)) ?? 0;
@@ -134,14 +135,14 @@ export class LogisticLiveMetrics
             testAccuracyValue,
             testConfusionMatrixValue,
         ] = await Promise.all([
-            getTensorArray(modelRepresentation),
-            getTensorArray(yPredictions),
+            getMatrixFromTensor(modelRepresentation),
+            getMatrixFromTensor(yPredictions),
             // train
-            getTensorArray(yTraining),
+            getMatrixFromTensor(yTraining),
             getTensorData(trainAccuracy),
             getTensorArray(trainConfusionMatrix),
             // test
-            getTensorArray(yTesting),
+            getMatrixFromTensor(yTesting),
             getTensorData(testAccuracy),
             getTensorArray(testConfusionMatrix),
         ]);

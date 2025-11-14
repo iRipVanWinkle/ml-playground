@@ -46,8 +46,7 @@ self.onmessage = (event: MessageEvent<UIToWorkerMessage>) => {
 
 function createCallbacks(requestId?: string) {
     return {
-        onReport: (report: TrainingReport) =>
-            send('report', requestId, report, extractTransferable(report)),
+        onReport: (report: TrainingReport) => send('report', requestId, report),
         onState: (state: TrainingState) => send('state', requestId, state),
         onInfo: (message: string) => send('info', requestId, message),
         onError: (message: string) => send('error', requestId, message),
@@ -66,20 +65,4 @@ function send(
     } else {
         self.postMessage({ type, payload, requestId });
     }
-}
-
-function extractTransferable(object: object) {
-    return Object.values(object).reduce((acc, value) => {
-        if (
-            value instanceof Float32Array ||
-            value instanceof Uint32Array ||
-            value instanceof Int32Array
-        ) {
-            acc.push(value.buffer);
-        }
-        if (value instanceof Object && 'array' in value && 'shape' in value) {
-            acc.push(value.array.buffer, value.shape.buffer);
-        }
-        return acc;
-    }, [] as Transferable[]);
 }

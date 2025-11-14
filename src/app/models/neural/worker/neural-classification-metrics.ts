@@ -4,6 +4,7 @@ import type { DatasetManager, LiveMetrics } from '@/app/shared/workers';
 import type { NeuralClassificationTrainingReport } from '../types';
 import { accuracy, confusionMatrix } from '@/ml/metrics';
 import { confusionMatrixData } from '@/app/shared/visualization/metrics/confusion-matrix/calculations';
+import { getMatrixFromTensor } from '@/ml/matrix';
 
 function getTensorArray(
     tensor?: Tensor2D,
@@ -112,14 +113,14 @@ export class NeuralClassificationLiveMetrics
             testAccuracyValue,
             testConfusionMatrixValue,
         ] = await Promise.all([
-            getTensorArray(theta),
-            getTensorArray(yPredictions),
+            getMatrixFromTensor(theta),
+            getMatrixFromTensor(yPredictions),
             // train
-            getTensorArray(yTraining),
+            getMatrixFromTensor(yTraining),
             getTensorData(trainAccuracy),
             getTensorArray(trainConfusionMatrix),
             // test
-            getTensorArray(yTesting),
+            getMatrixFromTensor(yTesting),
             getTensorData(testAccuracy),
             getTensorArray(testConfusionMatrix),
         ]);

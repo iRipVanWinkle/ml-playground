@@ -4,6 +4,7 @@ import type {
     RegularizationConfig,
     ThetaInitializationConfig,
 } from '@/ml/factories';
+import type { MatrixLike } from '@/ml/matrix';
 import type { OptimizerCallbackParameters } from '@/ml/types';
 import type { Tensor2D } from '@tensorflow/tfjs';
 
@@ -32,8 +33,8 @@ export type LinearTrainingReport = {
     iteration: number;
     trainLoss: number;
     testLoss: number;
-    trainPredictedLabels: number[][];
-    testPredictedLabels: number[][];
-    predictionPredictedLabels?: number[][];
-    theta: number[][];
+    trainPredictedLabels: MatrixLike;
+    testPredictedLabels: MatrixLike;
+    predictionPredictedLabels?: MatrixLike;
+    theta: MatrixLike;
 };

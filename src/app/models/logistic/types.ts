@@ -1,5 +1,6 @@
 import type { Tensor2D } from '@tensorflow/tfjs';
 import type { OptimizerCallbackParameters } from '@/ml/types';
+import type { MatrixLike } from '@/ml/matrix';
 import type {
     LossFunctionConfig,
     OptimizerConfig,
@@ -36,10 +37,10 @@ export type LogisticTrainingReport = {
     iterations: number[];
     testAccuracy: number;
     trainAccuracy: number;
-    trainPredictedLabels: number[][];
-    testPredictedLabels: number[][];
-    predictionPredictedLabels?: number[][];
-    theta: number[][];
+    trainPredictedLabels: MatrixLike;
+    testPredictedLabels: MatrixLike;
+    predictionPredictedLabels?: MatrixLike;
+    theta: MatrixLike;
 
     trainConfusionMatrix: ConfusionMatrixData;
     testConfusionMatrix?: ConfusionMatrixData;

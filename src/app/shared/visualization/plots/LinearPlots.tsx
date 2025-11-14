@@ -42,7 +42,7 @@ export function LinearPlots({ dataset, report }: LinerPlotsProps) {
                         ? [
                               {
                                   x: predictionX,
-                                  y: predictionPredictedLabels?.flat(),
+                                  y: predictionPredictedLabels.array,
                                   mode: 'lines' as const,
                                   name: 'Prediction',
                                   line: { color: 'red' },
@@ -94,7 +94,7 @@ export function LinearPlots({ dataset, report }: LinerPlotsProps) {
                               {
                                   x: predictionX,
                                   y: predictionY,
-                                  z: predictionPredictedLabels?.flat(),
+                                  z: predictionPredictedLabels.array,
                                   mode: 'lines' as const,
                                   name: 'Prediction',
                                   line: { color: 'red' },

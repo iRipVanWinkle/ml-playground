@@ -1,11 +1,12 @@
+import type { Tensor2D } from '@tensorflow/tfjs';
+import type { OptimizerCallbackParameters } from '@/ml/types';
 import type {
     LossFunctionConfig,
     OptimizerConfig,
     RegularizationConfig,
     ThetaInitializationConfig,
 } from '@/ml/factories';
-import type { Tensor2D } from '@tensorflow/tfjs';
-import type { OptimizerCallbackParameters } from '@/ml/types';
+import type { MatrixLike } from '@/ml/matrix';
 import type { ConfusionMatrixData } from '@/app/shared/visualization';
 
 export type NeuralSettings = {
@@ -34,10 +35,10 @@ export type NeuralClassificationTrainingReport = {
     iteration: number;
     testAccuracy: number;
     trainAccuracy: number;
-    trainPredictedLabels: number[][];
-    testPredictedLabels: number[][];
-    predictionPredictedLabels?: number[][];
-    theta: number[][];
+    trainPredictedLabels: MatrixLike;
+    testPredictedLabels: MatrixLike;
+    predictionPredictedLabels?: MatrixLike;
+    theta: MatrixLike;
 
     trainConfusionMatrix: ConfusionMatrixData;
     testConfusionMatrix?: ConfusionMatrixData;
@@ -50,8 +51,8 @@ export type NeuralRegressionTrainingReport = {
     iteration: number;
     trainLoss: number;
     testLoss: number;
-    trainPredictedLabels: number[][];
-    testPredictedLabels: number[][];
-    predictionPredictedLabels?: number[][];
-    theta: number[][];
+    trainPredictedLabels: MatrixLike;
+    testPredictedLabels: MatrixLike;
+    predictionPredictedLabels?: MatrixLike;
+    theta: MatrixLike;
 };

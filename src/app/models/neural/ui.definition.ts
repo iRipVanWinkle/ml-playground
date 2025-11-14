@@ -5,6 +5,7 @@ import { DEFAULT_OPTIMIZER } from '../defaults';
 import { NeuralMainMetrics } from './ui/NeuralMainMetrics';
 import { ConfusionMatrix, LossHistoryPlot } from '@/app/shared/visualization';
 import { NeuralModelDataPlots } from './ui/NeuralModelDataPlots';
+import { EMPTY_MATRIX_LIKE } from '@/ml/matrix';
 
 export const neuralModelDefinition: ModelDefinition<'neural'> = {
     key: 'neural',
@@ -30,10 +31,10 @@ export const neuralModelDefinition: ModelDefinition<'neural'> = {
                     iteration: 0,
                     testAccuracy: 0,
                     trainAccuracy: 0,
-                    trainPredictedLabels: [],
-                    testPredictedLabels: [],
-                    predictionPredictedLabels: [],
-                    theta: [],
+                    trainPredictedLabels: EMPTY_MATRIX_LIKE,
+                    testPredictedLabels: EMPTY_MATRIX_LIKE,
+                    predictionPredictedLabels: EMPTY_MATRIX_LIKE,
+                    theta: EMPTY_MATRIX_LIKE,
                     trainConfusionMatrix: {
                         matrix: [],
                         metrics: {
@@ -55,10 +56,10 @@ export const neuralModelDefinition: ModelDefinition<'neural'> = {
                     iteration: 0,
                     trainLoss: 0,
                     testLoss: 0,
-                    trainPredictedLabels: [],
-                    testPredictedLabels: [],
-                    predictionPredictedLabels: [],
-                    theta: [],
+                    trainPredictedLabels: EMPTY_MATRIX_LIKE,
+                    testPredictedLabels: EMPTY_MATRIX_LIKE,
+                    predictionPredictedLabels: EMPTY_MATRIX_LIKE,
+                    theta: EMPTY_MATRIX_LIKE,
                 };
             default:
                 throw new Error(`Unsupported task type: ${taskType}`);

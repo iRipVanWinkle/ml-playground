@@ -3,6 +3,7 @@ import { DEFAULT_OPTIMIZER } from '../defaults';
 import { LogisticSettings } from './ui/LogisticSettings';
 import { LogisticMainMetrics } from './ui/LogisticMainMetrics';
 import { LossHistoryPlot, LogisticPlots, ConfusionMatrix } from '@/app/shared/visualization';
+import { EMPTY_MATRIX_LIKE } from '@/ml/matrix';
 
 function arrayAvg(arr: number[]): number {
     if (arr.length === 0) return 0;
@@ -30,10 +31,10 @@ export const logisticModelDefinition: ModelDefinition<'logistic'> = {
         iterations: [],
         testAccuracy: 0,
         trainAccuracy: 0,
-        trainPredictedLabels: [],
-        testPredictedLabels: [],
-        predictionPredictedLabels: [],
-        theta: [],
+        trainPredictedLabels: EMPTY_MATRIX_LIKE,
+        testPredictedLabels: EMPTY_MATRIX_LIKE,
+        predictionPredictedLabels: EMPTY_MATRIX_LIKE,
+        theta: EMPTY_MATRIX_LIKE,
         trainConfusionMatrix: {
             matrix: [],
             metrics: {

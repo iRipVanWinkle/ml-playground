@@ -4,6 +4,7 @@ import { TreeSettings } from './ui/TreeSettings';
 import { TreeMainMetrics } from './ui/TreeMainMetrics';
 import { TreeModelDataPlots } from './ui/TreeModelDataPlots';
 import { ConfusionMatrix } from '@/app/shared/visualization';
+import { EMPTY_MATRIX_LIKE } from '@/ml/matrix';
 
 export const treeModelDefinition: ModelDefinition<'tree'> = {
     key: 'tree',
@@ -31,9 +32,9 @@ export const treeModelDefinition: ModelDefinition<'tree'> = {
                     iterations: [],
                     testAccuracy: 0,
                     trainAccuracy: 0,
-                    trainPredictedLabels: [],
-                    testPredictedLabels: [],
-                    predictionPredictedLabels: [],
+                    trainPredictedLabels: EMPTY_MATRIX_LIKE,
+                    testPredictedLabels: EMPTY_MATRIX_LIKE,
+                    predictionPredictedLabels: EMPTY_MATRIX_LIKE,
                     trainConfusionMatrix: {
                         matrix: [],
                         metrics: {
@@ -53,9 +54,9 @@ export const treeModelDefinition: ModelDefinition<'tree'> = {
                     taskType: 'regression',
                     iterations: [],
                     testLoss: 0,
-                    trainPredictedLabels: [],
-                    testPredictedLabels: [],
-                    predictionPredictedLabels: [],
+                    trainPredictedLabels: EMPTY_MATRIX_LIKE,
+                    testPredictedLabels: EMPTY_MATRIX_LIKE,
+                    predictionPredictedLabels: EMPTY_MATRIX_LIKE,
                 };
             default:
                 throw new Error(`Unsupported task type: ${taskType}`);
