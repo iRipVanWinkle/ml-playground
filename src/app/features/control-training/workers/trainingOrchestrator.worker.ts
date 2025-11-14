@@ -49,7 +49,7 @@ function createCallbacks(requestId?: string) {
         onReport: (report: TrainingReport) => send('report', requestId, report),
         onState: (state: TrainingState) => send('state', requestId, state),
         onInfo: (message: string) => send('info', requestId, message),
-        onError: (message: string) => send('error', requestId, message),
+        onError: (message: string) => send('error', requestId, new Error(message)),
         onFinished: () => send('finished', requestId),
     };
 }
@@ -57,7 +57,7 @@ function createCallbacks(requestId?: string) {
 function send(
     type: string,
     requestId?: string,
-    payload?: string | object,
+    payload?: string | object | Error,
     transfer?: Transferable[],
 ) {
     if (transfer) {

@@ -15,6 +15,7 @@ import { TrainingSection } from './widgets/training-section';
 import { useIsTraining, useResetTrainingControls } from './features/control-training';
 
 import './App.css';
+import { useResetDataset } from './features/load-dataset';
 
 const modelRegistry = getModelRegistry();
 
@@ -24,6 +25,7 @@ function App() {
     const setModelType = useSetModelType();
     const resetControls = useResetTrainingControls();
     const resetReport = useResetTrainingReport();
+    const resetDataset = useResetDataset();
 
     const handleTaskChange = useCallback(
         (taskType: TaskType) => {
@@ -33,8 +35,9 @@ function App() {
             setModelType(modelType, taskType);
             resetReport(modelType, taskType);
             resetControls();
+            resetDataset();
         },
-        [setModelType, resetReport, resetControls],
+        [resetDataset, setModelType, resetReport, resetControls],
     );
 
     const handleDatasetChange = useCallback(() => {

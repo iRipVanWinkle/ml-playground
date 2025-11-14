@@ -23,7 +23,6 @@ export function LogisticPlots({ dataset, report }: LogisticPlotsProps) {
 
     const is2DPlot = featureLength === 2;
     const isMNISTPlot = dataset.isImage;
-
     const { groupedData, groupedPredictions } = useLogisticPlotData(dataset);
 
     const { predictionPredictedLabels } = report ?? {};
