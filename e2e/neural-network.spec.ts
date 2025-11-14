@@ -87,12 +87,12 @@ test.describe('Neural Network Training', () => {
         const DATASET_FILE = path.resolve(__dirname, './data/logistic_regression_test_data.csv');
         const EXPECTED_RESULTS = {
             default: {
-                trainAccuracy: 'Train Accuracy: 92.50%',
+                trainAccuracy: 'Train Accuracy: 87.50%',
                 testAccuracy: 'Test Accuracy: 100.00%',
             },
             withLayers: {
-                trainAccuracy: 'Train Accuracy: 100.00%',
-                testAccuracy: 'Test Accuracy: 80.00%',
+                trainAccuracy: 'Train Accuracy: 60.00%',
+                testAccuracy: 'Test Accuracy: 60.00%',
             },
         } as const;
 

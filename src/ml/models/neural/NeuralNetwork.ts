@@ -320,8 +320,8 @@ export class NeuralNetwork extends BaseEstimator {
             }
 
             if (this.isBinaryClassification()) {
-                // For binary classification, return 1 for positive class and 0 for negative class
-                return probability.greater(0.5).toFloat().reshape([-1, 1]) as Tensor2D;
+                // Threshold at 0.5: returns 1 if probability >= 0.5, else 0
+                return probability.greaterEqual(0.5).cast('float32');
             }
 
             return probability; // For regression or other cases, return raw probabilities
