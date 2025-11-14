@@ -36,7 +36,7 @@ export type ModelSettingsComponentProps<TSettings> = {
     additionalParams?: {
         numCategories?: number;
     };
-    onChange: (settings: TSettings) => void;
+    onChange: (settings: Partial<TSettings>) => void;
 };
 
 export type MainMetricsProps<TTrainingReport> = {

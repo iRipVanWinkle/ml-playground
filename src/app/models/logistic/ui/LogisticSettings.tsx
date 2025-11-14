@@ -16,7 +16,7 @@ export function LogisticSettings({
     additionalParams,
 }: ModelSettingsComponentProps<LogisticSettingsType>) {
     const handleChange = (newSettings: Partial<LogisticSettingsType>) => {
-        onChange({ ...settings, ...newSettings });
+        onChange({ ...newSettings });
     };
 
     const numCategories = additionalParams?.numCategories ?? 0;
