@@ -94,6 +94,14 @@ export class Matrix {
         return this.matrix.shape;
     }
 
+    /**
+     * Gets the array of the matrix.
+     * @returns The array of the matrix.
+     */
+    getFlatArray(): TypedArray {
+        return this.matrix.array;
+    }
+
     private createTypedArray(length: number): TypedArray {
         const TypedArrayConstructor = this.matrix.array.constructor as new (
             length: number,

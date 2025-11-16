@@ -6,3 +6,5 @@ export * from './mcc';
 export * from './precision';
 export * from './recall';
 export * from './utils';
+export * from './roc';
+export * from './auc';
