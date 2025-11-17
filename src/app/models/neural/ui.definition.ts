@@ -3,7 +3,7 @@ import type { TaskType } from '@/app/shared/types';
 import { NeuralSettings } from './ui/NeuralSettings';
 import { DEFAULT_OPTIMIZER } from '../defaults';
 import { NeuralMainMetrics } from './ui/NeuralMainMetrics';
-import { ConfusionMatrix, LossHistoryPlot } from '@/app/shared/visualization';
+import { ConfusionMatrix, LossHistoryPlot, RocCurve } from '@/app/shared/visualization';
 import { NeuralModelDataPlots } from './ui/NeuralModelDataPlots';
 import { EMPTY_MATRIX_LIKE } from '@/ml/matrix';
 
@@ -47,6 +47,15 @@ export const neuralModelDefinition: ModelDefinition<'neural'> = {
                             f1: 0,
                         },
                     },
+                    trainRocCurve: {
+                        type: 'binary',
+                        auc: 0,
+                        fpr: new Float32Array([]),
+                        tpr: new Float32Array([]),
+                        thresholds: new Float32Array([]),
+                        youdenOptimalIndex: null,
+                        closestToCornerIndex: null,
+                    },
                 };
             case 'regression':
                 return {
@@ -71,6 +80,7 @@ export const neuralModelDefinition: ModelDefinition<'neural'> = {
         plots: [
             { title: 'Loss History', component: LossHistoryPlot },
             { title: 'Confusion Matrix', component: ConfusionMatrix },
+            { title: 'ROC Curve', component: RocCurve },
         ],
     },
 

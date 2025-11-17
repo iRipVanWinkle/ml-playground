@@ -3,15 +3,7 @@ import type { Model, OptimizerCallbackParameters } from '@/ml/types';
 import type { DatasetManager, LiveMetrics } from '@/app/shared/workers';
 import type { NeuralRegressionTrainingReport } from '../types';
 import { getMatrixFromTensor } from '@/ml/matrix';
-
-async function getTensorData(tensor?: Scalar, defaultValue?: number): Promise<number | undefined> {
-    if (tensor) {
-        const data = await tensor.data();
-        return data[0];
-    }
-
-    return Promise.resolve(defaultValue);
-}
+import { getSafeMatrixFromTensor, getSafeTensorValue } from '@/app/shared/workers';
 
 export class NeuralRegressionLiveMetrics
     implements LiveMetrics<OptimizerCallbackParameters, NeuralRegressionTrainingReport>
@@ -82,12 +74,12 @@ export class NeuralRegressionLiveMetrics
             testLossValue,
         ] = await Promise.all([
             getMatrixFromTensor(theta),
-            getMatrixFromTensor(yPredictions),
+            getSafeMatrixFromTensor(yPredictions),
             // train
             getMatrixFromTensor(yTraining),
             // test
-            getMatrixFromTensor(yTesting),
-            getTensorData(testLoss),
+            getSafeMatrixFromTensor(yTesting),
+            getSafeTensorValue(testLoss),
         ]);
 
         // Dispose of all tensors to free up memory

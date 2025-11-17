@@ -12,12 +12,13 @@ export type MatrixLike = {
 
 export const EMPTY_MATRIX_LIKE: MatrixLike = { array: new Uint8Array([]), shape: [0, 0] };
 
-export async function getMatrixFromTensor(tensor?: Tensor2D): Promise<MatrixLike> {
-    if (!tensor) {
-        return EMPTY_MATRIX_LIKE;
-    }
-
-    const shape = tensor.shape;
+/**
+ * Gets a matrix from a tensor.
+ * @param tensor - The tensor to get the matrix from.
+ * @returns A matrix.
+ */
+export async function getMatrixFromTensor(tensor: Tensor2D): Promise<MatrixLike> {
+    const shape = tensor.shape as [number, number];
     const array = await tensor.data();
     return { array, shape };
 }

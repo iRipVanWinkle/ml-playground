@@ -1,4 +1,4 @@
-import type { ConfusionMatrixData } from '@/app/shared/visualization';
+import type { ConfusionMatrixData, RocCurveData } from '@/app/shared/visualization';
 import type { CriterionConfig } from '@/ml/factories';
 import type { MatrixLike } from '@/ml/matrix';
 import type {
@@ -42,6 +42,9 @@ export type TreeClassificationTrainingReport = {
 
     trainConfusionMatrix: ConfusionMatrixData;
     testConfusionMatrix?: ConfusionMatrixData;
+
+    trainRocCurve: RocCurveData;
+    testRocCurve?: RocCurveData;
 };
 
 export type TreeRegressionTrainingReport = {

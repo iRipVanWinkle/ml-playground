@@ -3,7 +3,7 @@ import type { TaskType } from '@/app/shared/types';
 import { TreeSettings } from './ui/TreeSettings';
 import { TreeMainMetrics } from './ui/TreeMainMetrics';
 import { TreeModelDataPlots } from './ui/TreeModelDataPlots';
-import { ConfusionMatrix } from '@/app/shared/visualization';
+import { ConfusionMatrix, RocCurve } from '@/app/shared/visualization';
 import { EMPTY_MATRIX_LIKE } from '@/ml/matrix';
 
 export const treeModelDefinition: ModelDefinition<'tree'> = {
@@ -47,6 +47,15 @@ export const treeModelDefinition: ModelDefinition<'tree'> = {
                             f1: 0,
                         },
                     },
+                    trainRocCurve: {
+                        type: 'binary',
+                        auc: 0,
+                        fpr: new Float32Array([]),
+                        tpr: new Float32Array([]),
+                        thresholds: new Float32Array([]),
+                        youdenOptimalIndex: null,
+                        closestToCornerIndex: null,
+                    },
                 };
             case 'regression':
                 return {
@@ -65,7 +74,10 @@ export const treeModelDefinition: ModelDefinition<'tree'> = {
     visualization: {
         metricsGridComponent: TreeMainMetrics,
         modelDataPlotComponent: TreeModelDataPlots,
-        plots: [{ title: 'Confusion Matrix', component: ConfusionMatrix }],
+        plots: [
+            { title: 'Confusion Matrix', component: ConfusionMatrix },
+            { title: 'ROC Curve', component: RocCurve },
+        ],
     },
 
     progress: {

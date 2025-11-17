@@ -3,15 +3,7 @@ import type { Model, TreeCallbackParameters, EnsembleTree, TreeNode } from '@/ml
 import type { DatasetManager, LiveMetrics } from '@/app/shared/workers';
 import type { TreeRegressionTrainingReport } from '../types';
 import { getMatrixFromTensor } from '@/ml/matrix';
-
-async function getTensorData(tensor?: Scalar, defaultValue?: number): Promise<number | undefined> {
-    if (tensor) {
-        const data = await tensor.data();
-        return data[0];
-    }
-
-    return Promise.resolve(defaultValue);
-}
+import { getSafeMatrixFromTensor, getSafeTensorValue } from '@/app/shared/workers';
 
 export class TreeRegressionLiveMetrics
     implements LiveMetrics<TreeCallbackParameters, TreeRegressionTrainingReport>
@@ -88,12 +80,12 @@ export class TreeRegressionLiveMetrics
             testPredictedLabels,
             testLossValue,
         ] = await Promise.all([
-            getMatrixFromTensor(yPredictions),
+            getSafeMatrixFromTensor(yPredictions),
             // train
             getMatrixFromTensor(yTraining),
             // test
-            getMatrixFromTensor(yTesting),
-            getTensorData(testLoss),
+            getSafeMatrixFromTensor(yTesting),
+            getSafeTensorValue(testLoss),
         ]);
 
         // Dispose of all tensors to free up memory

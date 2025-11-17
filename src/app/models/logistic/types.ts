@@ -7,7 +7,7 @@ import type {
     RegularizationConfig,
     ThetaInitializationConfig,
 } from '@/ml/factories';
-import type { ConfusionMatrixData } from '@/app/shared/visualization';
+import type { ConfusionMatrixData, RocCurveData } from '@/app/shared/visualization';
 
 export type ClassificationType = 'binary' | 'softmax' | 'ovr';
 
@@ -44,4 +44,7 @@ export type LogisticTrainingReport = {
 
     trainConfusionMatrix: ConfusionMatrixData;
     testConfusionMatrix?: ConfusionMatrixData;
+
+    trainRocCurve: RocCurveData;
+    testRocCurve?: RocCurveData;
 };

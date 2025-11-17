@@ -4,34 +4,17 @@ import type { DatasetManager, LiveMetrics } from '@/app/shared/workers';
 import type { TreeClassificationTrainingReport } from '../types';
 import { accuracy, confusionMatrix } from '@/ml/metrics';
 import { confusionMatrixData } from '@/app/shared/visualization/metrics/confusion-matrix/calculations';
-import { getMatrixFromTensor } from '@/ml/matrix';
-
-function getTensorArray(
-    tensor?: Tensor2D,
-    defaultValue?: number[][],
-): Promise<number[][] | undefined> {
-    if (tensor) {
-        return tensor.array();
-    }
-
-    return Promise.resolve(defaultValue);
-}
-
-async function getTensorData(tensor?: Scalar, defaultValue?: number): Promise<number | undefined> {
-    if (tensor) {
-        const data = await tensor.data();
-        return data[0];
-    }
-
-    return Promise.resolve(defaultValue);
-}
+import {
+    getSafeMatrixFromTensor,
+    getSafeTensorArray,
+    getSafeTensorValue,
+} from '@/app/shared/workers';
+import { rocCurveData } from '@/app/shared/visualization/plots/roc-curve/calculations';
 
 export class TreeClassificationLiveMetrics
     implements LiveMetrics<TreeCallbackParameters, TreeClassificationTrainingReport>
 {
     private iterationCounts: number[] = [];
-    private thetaArray: Tensor2D[] = [];
-
     private model: Model<EnsembleTree>;
     private datasetManager: DatasetManager;
 
@@ -86,6 +69,7 @@ export class TreeClassificationLiveMetrics
             trainingData.y,
             modelRepresentation,
         );
+
         const trainAccuracy = accuracy(trainingData.y, yTraining!);
         const trainConfusionMatrix = confusionMatrix(
             trainingData.y,
@@ -114,20 +98,28 @@ export class TreeClassificationLiveMetrics
             trainPredictedLabels,
             trainAccuracyValue,
             trainConfusionMatrixValue,
+            trainProbabilityValue,
+            trainLabelValue,
             // test
             testPredictedLabels,
             testAccuracyValue,
             testConfusionMatrixValue,
+            testProbabilityValue,
+            testLabelValue,
         ] = await Promise.all([
-            getMatrixFromTensor(yPredictions),
+            getSafeMatrixFromTensor(yPredictions),
             // train
-            getMatrixFromTensor(yTraining),
-            getTensorData(trainAccuracy),
-            getTensorArray(trainConfusionMatrix),
+            getSafeMatrixFromTensor(yTraining),
+            getSafeTensorValue(trainAccuracy),
+            getSafeTensorArray(trainConfusionMatrix),
+            getSafeMatrixFromTensor(yTrainingProbability),
+            getSafeMatrixFromTensor(trainingData.y),
             // test
-            getMatrixFromTensor(yTesting),
-            getTensorData(testAccuracy),
-            getTensorArray(testConfusionMatrix),
+            getSafeMatrixFromTensor(yTesting),
+            getSafeTensorValue(testAccuracy),
+            getSafeTensorArray(testConfusionMatrix),
+            getSafeMatrixFromTensor(yTestingProbability),
+            getSafeMatrixFromTensor(testData?.y),
         ]);
 
         // Dispose of all tensors to free up memory
@@ -156,10 +148,16 @@ export class TreeClassificationLiveMetrics
             testConfusionMatrix: testConfusionMatrixValue
                 ? confusionMatrixData(testConfusionMatrixValue, this.datasetManager.getNumClasses())
                 : undefined,
-        };
-    }
 
-    dispose(): void {
-        this.thetaArray.forEach((theta) => theta.dispose());
+            trainRocCurve: rocCurveData(
+                trainLabelValue,
+                trainProbabilityValue,
+                trainConfusionMatrixValue,
+            ),
+            testRocCurve:
+                testLabelValue && testProbabilityValue && testConfusionMatrixValue
+                    ? rocCurveData(testLabelValue, testProbabilityValue, testConfusionMatrixValue)
+                    : undefined,
+        };
     }
 }

@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import type { TrainingReport } from '@/app/models/types';
 import type { Dataset } from '@/app/shared/types';
+import { TrainTestSelector } from '@/app/shared/ui';
 import { generateLabels } from './utils';
-import { MatrixGrid, MetricsDisplay, ViewSelector, TrainTestSelector } from './components';
+import { MatrixGrid, MetricsDisplay, ViewSelector } from './components';
 import type { ConfusionMatrixData } from './types';
 import { useMatrixLabels } from './hooks';
 
@@ -15,8 +16,9 @@ export const ConfusionMatrix = ({ dataset, report }: ConfusionMatrixProps) => {
     const [selectedView, setSelectedView] = useState<string>('full');
     const [selectedDataset, setSelectedDataset] = useState<string>('train');
 
+    const supportsConfusionMatrix = 'trainConfusionMatrix' in report;
     const hasConfusionMatrix =
-        'trainConfusionMatrix' in report && report.trainConfusionMatrix.matrix.length > 0;
+        supportsConfusionMatrix && report.trainConfusionMatrix.matrix.length > 0;
 
     const categories = dataset.categories ?? [];
     const matrixSize = categories?.length ?? 2;
@@ -30,6 +32,16 @@ export const ConfusionMatrix = ({ dataset, report }: ConfusionMatrixProps) => {
             setSelectedDataset('train');
         }, 0);
     }, [dataset]);
+
+    if (!supportsConfusionMatrix) {
+        return (
+            <div className="w-full h-full p-4 flex items-center justify-center">
+                <div className="text-center text-muted-foreground">
+                    The model does not support confusion matrix.
+                </div>
+            </div>
+        );
+    }
 
     if (!hasConfusionMatrix) {
         return (
@@ -50,16 +62,16 @@ export const ConfusionMatrix = ({ dataset, report }: ConfusionMatrixProps) => {
         <div className="w-full h-full p-4 flex flex-col gap-4">
             <div className="flex flex-row justify-end">
                 <div className="flex flex-row gap-2">
-                    {report.testConfusionMatrix && (
-                        <TrainTestSelector value={selectedDataset} onChange={setSelectedDataset} />
-                    )}
-
                     {!isBinaryClassification && (
                         <ViewSelector
                             value={selectedView}
                             onChange={setSelectedView}
                             labels={labels}
                         />
+                    )}
+
+                    {report.testConfusionMatrix && (
+                        <TrainTestSelector value={selectedDataset} onChange={setSelectedDataset} />
                     )}
                 </div>
             </div>

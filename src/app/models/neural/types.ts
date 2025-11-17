@@ -7,7 +7,7 @@ import type {
     ThetaInitializationConfig,
 } from '@/ml/factories';
 import type { MatrixLike } from '@/ml/matrix';
-import type { ConfusionMatrixData } from '@/app/shared/visualization';
+import type { ConfusionMatrixData, RocCurveData } from '@/app/shared/visualization';
 
 export type NeuralSettings = {
     type: 'neural';
@@ -42,6 +42,9 @@ export type NeuralClassificationTrainingReport = {
 
     trainConfusionMatrix: ConfusionMatrixData;
     testConfusionMatrix?: ConfusionMatrixData;
+
+    trainRocCurve: RocCurveData;
+    testRocCurve?: RocCurveData;
 };
 
 export type NeuralRegressionTrainingReport = {

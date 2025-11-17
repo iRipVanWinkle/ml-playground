@@ -23,3 +23,5 @@ export * from './basic/tooltip';
 
 export { default as GitHub } from './icons/GitHub';
 export { default as ML } from './icons/ML';
+
+export * from './common';

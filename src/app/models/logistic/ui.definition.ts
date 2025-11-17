@@ -2,7 +2,12 @@ import type { ModelDefinition } from '@/app/shared/registry/types';
 import { DEFAULT_OPTIMIZER } from '../defaults';
 import { LogisticSettings } from './ui/LogisticSettings';
 import { LogisticMainMetrics } from './ui/LogisticMainMetrics';
-import { LossHistoryPlot, LogisticPlots, ConfusionMatrix } from '@/app/shared/visualization';
+import {
+    LossHistoryPlot,
+    LogisticPlots,
+    ConfusionMatrix,
+    RocCurve,
+} from '@/app/shared/visualization';
 import { EMPTY_MATRIX_LIKE } from '@/ml/matrix';
 
 function arrayAvg(arr: number[]): number {
@@ -47,6 +52,15 @@ export const logisticModelDefinition: ModelDefinition<'logistic'> = {
                 f1: 0,
             },
         },
+        trainRocCurve: {
+            type: 'binary',
+            auc: 0,
+            fpr: new Float32Array([]),
+            tpr: new Float32Array([]),
+            thresholds: new Float32Array([]),
+            youdenOptimalIndex: null,
+            closestToCornerIndex: null,
+        },
     }),
     visualization: {
         metricsGridComponent: LogisticMainMetrics,
@@ -54,6 +68,7 @@ export const logisticModelDefinition: ModelDefinition<'logistic'> = {
         plots: [
             { title: 'Loss History', component: LossHistoryPlot },
             { title: 'Confusion Matrix', component: ConfusionMatrix },
+            { title: 'ROC Curve', component: RocCurve },
         ],
     },
 
