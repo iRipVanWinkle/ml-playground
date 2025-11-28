@@ -127,7 +127,9 @@ export function LogisticPlots({ dataset, report }: LogisticPlotsProps) {
             report.trainPredictedLabels && report.trainPredictedLabels.array.length
                 ? [
                       ...report.trainPredictedLabels.array.slice(0, numbersToDisplay),
-                      ...report.testPredictedLabels.array.slice(0, numbersToDisplay),
+                      ...(report.testPredictedLabels
+                          ? report.testPredictedLabels.array.slice(0, numbersToDisplay)
+                          : []),
                   ]
                 : undefined;
 

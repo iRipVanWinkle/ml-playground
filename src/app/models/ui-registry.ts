@@ -3,6 +3,7 @@ import { linearModelDefinition } from './linear/ui.definition';
 import { logisticModelDefinition } from './logistic/ui.definition';
 import { neuralModelDefinition } from './neural/ui.definition';
 import { treeModelDefinition } from './tree/ui.definition';
+import { naiveBayesModelDefinition } from './naive-bayes/ui.definition';
 import type { ModelType } from './types';
 
 export const uiRegistry = new ModelRegistry([
@@ -10,6 +11,7 @@ export const uiRegistry = new ModelRegistry([
     logisticModelDefinition,
     neuralModelDefinition,
     treeModelDefinition,
+    naiveBayesModelDefinition,
 ]);
 
 export function getModelRegistry(): ModelRegistry {

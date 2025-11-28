@@ -37,7 +37,7 @@ export type TreeClassificationTrainingReport = {
     testAccuracy: number;
     trainAccuracy: number;
     trainPredictedLabels: MatrixLike;
-    testPredictedLabels: MatrixLike;
+    testPredictedLabels?: MatrixLike;
     predictionPredictedLabels?: MatrixLike;
 
     trainConfusionMatrix: ConfusionMatrixData;

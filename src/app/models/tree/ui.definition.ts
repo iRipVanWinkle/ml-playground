@@ -33,8 +33,6 @@ export const treeModelDefinition: ModelDefinition<'tree'> = {
                     testAccuracy: 0,
                     trainAccuracy: 0,
                     trainPredictedLabels: EMPTY_MATRIX_LIKE,
-                    testPredictedLabels: EMPTY_MATRIX_LIKE,
-                    predictionPredictedLabels: EMPTY_MATRIX_LIKE,
                     trainConfusionMatrix: {
                         matrix: [],
                         metrics: {

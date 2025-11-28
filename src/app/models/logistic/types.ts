@@ -38,7 +38,7 @@ export type LogisticTrainingReport = {
     testAccuracy: number;
     trainAccuracy: number;
     trainPredictedLabels: MatrixLike;
-    testPredictedLabels: MatrixLike;
+    testPredictedLabels?: MatrixLike;
     predictionPredictedLabels?: MatrixLike;
     theta: MatrixLike;
 

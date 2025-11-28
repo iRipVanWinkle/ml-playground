@@ -27,8 +27,19 @@ import type {
     TreeRepresentation,
     TreeSettings,
 } from './tree/types';
+import type {
+    NaiveBayesCallbackParameters,
+    NaiveBayesRepresentation,
+    NaiveBayesSettings,
+    NaiveBayesTrainingReport,
+} from './naive-bayes/types';
 
-export type ModelSettings = LinearSettings | LogisticSettings | NeuralSettings | TreeSettings;
+export type ModelSettings =
+    | LinearSettings
+    | LogisticSettings
+    | NeuralSettings
+    | TreeSettings
+    | NaiveBayesSettings;
 
 export type ModelType = ModelSettings['type'];
 
@@ -36,13 +47,15 @@ export type ModelRepresentation =
     | LinearRepresentation
     | LogisticRepresentation
     | NeuralRepresentation
-    | TreeRepresentation;
+    | TreeRepresentation
+    | NaiveBayesRepresentation;
 
 export type CallbackParameters =
     | LinearCallbackParameters
     | LogisticCallbackParameters
     | NeuralCallbackParameters
-    | TreeCallbackParameters;
+    | TreeCallbackParameters
+    | NaiveBayesCallbackParameters;
 
 export type TrainingReport =
     | LinearTrainingReport
@@ -50,7 +63,8 @@ export type TrainingReport =
     | NeuralClassificationTrainingReport
     | NeuralRegressionTrainingReport
     | TreeClassificationTrainingReport
-    | TreeRegressionTrainingReport;
+    | TreeRegressionTrainingReport
+    | NaiveBayesTrainingReport;
 
 export type TrainingSettings<TModelSettings extends ModelSettings = ModelSettings> = {
     taskType: TaskType;

@@ -1,43 +1,31 @@
 import type { ModelDefinition } from '@/app/shared/registry/types';
-import { DEFAULT_OPTIMIZER } from '../defaults';
-import { LogisticSettings } from './ui/LogisticSettings';
-import { LogisticMainMetrics } from './ui/LogisticMainMetrics';
+import { NaiveBayesSettings } from './ui/NaiveBayesSettings';
+import { NaiveBayesMainMetrics } from './ui/NaiveBayesMainMetrics';
 import {
-    LossHistoryPlot,
     LogisticPlots,
-    ConfusionMatrix,
     RocCurve,
+    ConfusionMatrix,
+    ClassConditionalPlot,
 } from '@/app/shared/visualization';
 import { EMPTY_MATRIX_LIKE } from '@/ml/matrix';
 
-function arrayAvg(arr: number[]): number {
-    if (arr.length === 0) return 0;
-    return arr.reduce((acc, val) => acc + val, 0) / arr.length;
-}
-
-export const logisticModelDefinition: ModelDefinition<'logistic'> = {
-    key: 'logistic',
-    label: 'Logistic Regression',
+export const naiveBayesModelDefinition: ModelDefinition<'naive-bayes'> = {
+    key: 'naive-bayes',
+    label: 'Naive Bayes',
     taskTypes: ['classification'],
     defaultSettings: () => ({
-        type: 'logistic',
-        classificationType: 'binary',
-        lossFunction: { type: 'binaryCrossentropy' },
-        optimizer: DEFAULT_OPTIMIZER,
-        regularization: { type: 'none' },
-        thetaInitialization: { type: 'zeros' },
+        type: 'naive-bayes',
+        variant: 'gaussian',
     }),
-    settingsComponent: LogisticSettings,
+    settingsComponent: NaiveBayesSettings,
 
     defaultReport: () => ({
-        type: 'logistic',
+        type: 'naive-bayes',
         taskType: 'classification',
-        trainLossHistory: [],
-        iterations: [],
         testAccuracy: 0,
         trainAccuracy: 0,
         trainPredictedLabels: EMPTY_MATRIX_LIKE,
-        theta: EMPTY_MATRIX_LIKE,
+        iteration: 0,
         trainConfusionMatrix: {
             matrix: [],
             metrics: {
@@ -61,24 +49,23 @@ export const logisticModelDefinition: ModelDefinition<'logistic'> = {
         },
     }),
     visualization: {
-        metricsGridComponent: LogisticMainMetrics,
+        metricsGridComponent: NaiveBayesMainMetrics,
         modelDataPlotComponent: LogisticPlots,
         plots: [
-            { title: 'Loss History', component: LossHistoryPlot },
+            {
+                title: 'Conditional Distributions',
+                component: ClassConditionalPlot,
+            },
             { title: 'Confusion Matrix', component: ConfusionMatrix },
             { title: 'ROC Curve', component: RocCurve },
         ],
     },
 
     progress: {
-        getProgressInfo: (report, settings) => {
-            const current = Math.round(arrayAvg(report?.iterations ?? []));
-            const max = settings.optimizer.maxIterations;
+        getProgressInfo: () => {
             return {
-                type: 'determinate',
-                label: `${current}/${max}`,
-                current,
-                max,
+                type: 'indeterminate',
+                label: '',
             };
         },
     },

@@ -36,7 +36,17 @@ export type OptimizerCallbackParameters = Readonly<{
     threadName?: string;
 }>;
 
-export type CallbackParameters = OptimizerCallbackParameters | TreeCallbackParameters;
+export type NaiveBayesCallbackParameters = Readonly<{
+    threadId: number;
+    iteration: number;
+    threadName?: string;
+    params: NaiveBayesParams;
+}>;
+
+export type CallbackParameters =
+    | OptimizerCallbackParameters
+    | TreeCallbackParameters
+    | NaiveBayesCallbackParameters;
 
 export type TrainingState = 'transforming' | 'training' | 'paused' | 'stopped' | 'stepped-forward';
 /**
@@ -232,7 +242,33 @@ export type TreeNode = {
 
 export type EnsembleTree = ReadonlyArray<TreeNode>;
 
-export type ModelRepresentation = Tensor2D | EnsembleTree;
+/**
+ * Parameters for trained Gaussian Naive Bayes model.
+ */
+export type GaussianNaiveBayesParams = Readonly<{
+    type: 'gaussian';
+    classes: number[];
+    classMeans: number[][]; // Mean values for each class and feature [n_classes, n_features]
+    classVariances: number[][]; // Variance values for each class and feature [n_classes, n_features]
+    classPriors: number[];
+}>;
+
+/**
+ * Parameters for trained Quadratic Naive Bayes model.
+ */
+export type QuadraticNaiveBayesParams = Readonly<{
+    type: 'quadratic';
+    classes: number[];
+    classMeans: number[][]; // Mean values for each class and feature [n_classes, n_features]
+    classCovariances: number[][][]; // Covariance matrices for each class [n_classes, n_features, n_features]
+    classCovariancesInverse: number[][][]; // Inverse of the covariance matrices
+    classCovariancesDeterminant: number[]; // Determinant of the covariance matrices
+    classPriors: number[]; // Prior probabilities for each class
+}>;
+
+export type NaiveBayesParams = GaussianNaiveBayesParams | QuadraticNaiveBayesParams;
+
+export type ModelRepresentation = Tensor2D | EnsembleTree | NaiveBayesParams;
 
 /**
  * Interface for machine learning models.
