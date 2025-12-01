@@ -22,6 +22,14 @@ export const PREPARED_REGRESSION_DATASETS: DatasetOption[] = [
         label: 'World happiness report 2017 (Happiness.Score, Economy..GDP.per.Capita., Freedom)',
     },
     {
+        value: './data/bodyfat.csv',
+        label: 'Body Fat Prediction',
+    },
+    {
+        value: './data/california-housing.csv',
+        label: 'California Housing Prices',
+    },
+    {
         value: './data/non-linear-regression.csv',
         label: 'Non linear regression',
     },
@@ -40,11 +48,6 @@ export const PREPARED_REGRESSION_DATASETS: DatasetOption[] = [
 ];
 
 export const PREPARED_CLASSIFICATION_DATASETS: DatasetOption[] = [
-    {
-        value: './data/mnist-number-0-1.csv',
-        label: 'MNIST numbers (0, 1)',
-        isImage: true,
-    },
     {
         value: './data/microchips-tests.csv',
         label: 'Microchips Tests (non linear)',
@@ -65,10 +68,30 @@ export const PREPARED_CLASSIFICATION_DATASETS: DatasetOption[] = [
         value: './data/XOR.csv',
         label: 'XOR',
     },
-
+    {
+        value: './data/mnist-number-0-1.csv',
+        label: 'MNIST numbers (0, 1)',
+        isImage: true,
+    },
+    {
+        value: './data/breast_cancer_wisconsin.csv',
+        label: 'Breast cancer Wisconsin (Diagnostic)',
+    },
     {
         value: './data/iris-petal.csv',
-        label: 'Iris Petal',
+        label: 'Iris (Petals)',
+    },
+    {
+        value: './data/iris.csv',
+        label: 'Iris',
+    },
+    {
+        value: './data/winequality-red.csv',
+        label: 'Wine quality (Red)',
+    },
+    {
+        value: './data/winequality-white.csv',
+        label: 'Wine quality (White)',
     },
     {
         value: './data/mnist-number.csv',
@@ -78,6 +101,11 @@ export const PREPARED_CLASSIFICATION_DATASETS: DatasetOption[] = [
     {
         value: './data/mnist-fashion.csv',
         label: 'MNIST fashion',
+        isImage: true,
+    },
+    {
+        value: './data/emotions.csv',
+        label: 'Emotions (48x48)',
         isImage: true,
     },
 ];
