@@ -1,11 +1,11 @@
 import type { ModelDefinition } from '@/app/shared/registry/types';
 import type { TaskType } from '@/app/shared/types';
-import { NeuralSettings } from './ui/NeuralSettings';
-import { DEFAULT_OPTIMIZER } from '../defaults';
-import { NeuralMainMetrics } from './ui/NeuralMainMetrics';
-import { ConfusionMatrix, LossHistoryPlot, RocCurve } from '@/app/shared/visualization';
-import { NeuralModelDataPlots } from './ui/NeuralModelDataPlots';
 import { EMPTY_MATRIX_LIKE } from '@/ml/matrix';
+import { DEFAULT_OPTIMIZER } from '../defaults';
+import { NeuralSettings } from './ui/NeuralSettings';
+import { NeuralMainMetrics } from './ui/NeuralMainMetrics';
+import { NeuralModelDataPlots } from './ui/NeuralModelDataPlots';
+import { LossHistory, ConfusionMatrix, RocCurve } from '@/app/shared/visualization';
 
 export const neuralModelDefinition: ModelDefinition<'neural'> = {
     key: 'neural',
@@ -76,7 +76,7 @@ export const neuralModelDefinition: ModelDefinition<'neural'> = {
         metricsGridComponent: NeuralMainMetrics,
         modelDataPlotComponent: NeuralModelDataPlots,
         plots: [
-            { title: 'Loss History', component: LossHistoryPlot },
+            { title: 'Loss History', component: LossHistory },
             { title: 'Confusion Matrix', component: ConfusionMatrix },
             { title: 'ROC Curve', component: RocCurve },
         ],

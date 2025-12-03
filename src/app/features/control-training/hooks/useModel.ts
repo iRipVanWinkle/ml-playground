@@ -1,16 +1,17 @@
 import { useEffect, useRef } from 'react';
 import { toast } from 'sonner';
-import TrainingWorker from '../workers/trainingOrchestrator.worker.ts?worker';
 import { useSystemStore } from '../../configure-system';
 import { useTransformationStore } from '../../transform-data';
 import { useDatasetStore } from '../../load-dataset';
 import { useModelSettingsStore } from '../../configure-model';
 import { setPendingAction, setTrainingStatus } from '../store/actions';
 import type { TrainingWorkerManager, UIToWorkerMessage } from '../workers/types';
-import { WorkerManager } from '@/app/shared/workers';
+import { WorkerManager } from '@/app/shared/workers/manager';
 import type { TrainingReport } from '@/app/models/types';
 import { setTrainingReport } from '@/app/features/visualize-training/store/actions';
 import type { TaskType } from '@/app/shared/types';
+
+import TrainingWorker from '../workers/trainingOrchestrator.worker.ts?worker';
 
 export const useModel = ({ taskType }: { taskType: TaskType }) => {
     const workerRef = useRef<TrainingWorkerManager | null>(null);

@@ -2,8 +2,8 @@ import type { ModelDefinition } from '@/app/shared/registry/types';
 import { DEFAULT_OPTIMIZER } from '../defaults';
 import { LinearSettings } from './ui/LinearSettings';
 import { LinearMainMetrics } from './ui/LinearMainMetrics';
-import { LossHistoryPlot, LinearPlots } from '@/app/shared/visualization';
 import { EMPTY_MATRIX_LIKE } from '@/ml/matrix';
+import { LinearPlots, LossHistory } from '@/app/shared/visualization';
 
 export const linearModelDefinition: ModelDefinition<'linear'> = {
     key: 'linear',
@@ -33,7 +33,7 @@ export const linearModelDefinition: ModelDefinition<'linear'> = {
     visualization: {
         metricsGridComponent: LinearMainMetrics,
         modelDataPlotComponent: LinearPlots,
-        plots: [{ title: 'Loss History', component: LossHistoryPlot }],
+        plots: [{ title: 'Loss History', component: LossHistory }],
     },
 
     progress: {

@@ -8,7 +8,7 @@ import { NeuralNetwork } from '@/ml/models';
 import type { TrainingSettings } from '../../types';
 import type { TrainingControl, TrainingEventEmitter } from '@/ml/types';
 import type { NeuralSettings } from '../types';
-import { calculateOutputFeatures } from '@/ml/data-processing/transformation';
+import { calculateOutputFeatures } from '@/ml/data-processing/transformation/calculateOutputFeatures';
 
 export function neuralModelFactory(
     settings: TrainingSettings<NeuralSettings>,

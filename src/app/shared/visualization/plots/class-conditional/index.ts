@@ -1,1 +1,1 @@
-export * from './ClassConditionalPlot';
+export { ClassConditionalPlot, ClassConditionalPlot as default } from './ClassConditionalPlot';

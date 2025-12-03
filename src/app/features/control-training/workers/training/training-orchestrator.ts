@@ -13,7 +13,7 @@ import type {
 } from '@/ml/types';
 import { PreprocessingModelDecorator } from '@/ml/models';
 import type { Dataset, TaskType } from '@/app/shared/types';
-import { DatasetManager } from '../../../../shared/workers/DatasetManager';
+import { DatasetManager } from '@/app/shared/workers';
 import { createPreprocessingPipeline } from '../../helpers';
 import type { SystemSettings } from '@/app/features/configure-system';
 import type { TransformationSettings } from '@/app/features/transform-data';

@@ -1,15 +1,15 @@
-import Plot from 'react-plotly.js';
 import type { TrainingReport } from '@/app/models/types';
 import type { Dataset } from '@/app/shared/types';
+import { PlotlyScatter } from '../plotly';
 
-type LossHistoryPlotProps = {
+type LossHistoryProps = {
     dataset: Dataset;
     report: TrainingReport;
 };
 
 const colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b'];
 
-export function LossHistoryPlot({ dataset, report }: LossHistoryPlotProps) {
+export function LossHistory({ dataset, report }: LossHistoryProps) {
     const lossHistory = 'trainLossHistory' in report ? report.trainLossHistory : undefined;
     const categories = dataset.categories;
 
@@ -17,7 +17,7 @@ export function LossHistoryPlot({ dataset, report }: LossHistoryPlotProps) {
 
     return (
         <div className="w-full h-80">
-            <Plot
+            <PlotlyScatter
                 data={lossHistory.map((loss, index) => ({
                     x: Array.from({ length: loss.length }, (_, i) => i + 1),
                     y: loss,

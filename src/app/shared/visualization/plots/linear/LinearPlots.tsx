@@ -1,7 +1,7 @@
 import type { TrainingReport } from '@/app/models/types';
-import Plot from 'react-plotly.js';
 import type { Dataset } from '@/app/shared/types';
 import { useLinearPlotData } from './hooks/useLinearPlotData';
+import { PlotlyScatter, PlotlyScatter3D } from '../plotly';
 
 type LinerPlotsProps = {
     dataset: Dataset;
@@ -22,7 +22,7 @@ export function LinearPlots({ dataset, report }: LinerPlotsProps) {
 
     if (is2DPlot) {
         plot = (
-            <Plot
+            <PlotlyScatter
                 data={[
                     {
                         x: trainX,
@@ -69,7 +69,7 @@ export function LinearPlots({ dataset, report }: LinerPlotsProps) {
         );
     } else if (is3DPlot) {
         plot = (
-            <Plot
+            <PlotlyScatter3D
                 data={[
                     {
                         x: trainX,

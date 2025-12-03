@@ -1,14 +1,14 @@
-import { type Scalar, type Tensor2D } from '@tensorflow/tfjs';
+import type { Scalar, Tensor2D } from '@tensorflow/tfjs';
 import type { Model, NaiveBayesParams, NaiveBayesCallbackParameters } from '@/ml/types';
+import { accuracy, confusionMatrix } from '@/ml/metrics';
 import {
-    getSafeMatrixFromTensor,
     type DatasetManager,
     type LiveMetrics,
+    getSafeMatrixFromTensor,
     getSafeTensorValue,
     getSafeTensorArray,
 } from '@/app/shared/workers';
 import type { NaiveBayesTrainingReport } from '../types';
-import { accuracy, confusionMatrix } from '@/ml/metrics';
 import { confusionMatrixData } from '@/app/shared/visualization/metrics/confusion-matrix/calculations';
 import { rocCurveData } from '@/app/shared/visualization/plots/roc-curve/calculations';
 

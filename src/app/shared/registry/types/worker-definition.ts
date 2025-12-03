@@ -1,10 +1,8 @@
 import type { ModelType, TrainingSettings } from '@/app/models/types';
 import type { Model, TrainingControl, TrainingEventEmitter } from '@/ml/types';
-import type { CallbackParametersOf, RepresentationOf, SettingsOf, TrainingReportOf } from './utils';
-
-import type { DatasetManager } from '@/app/shared/workers/DatasetManager';
-import type { LiveMetrics } from '../../workers/types';
+import type { DatasetManager, LiveMetrics } from '../../workers';
 import type { TaskType } from '../../types';
+import type { CallbackParametersOf, RepresentationOf, SettingsOf, TrainingReportOf } from './utils';
 
 export interface WorkerDefinition<TKey extends ModelType = ModelType> {
     key: TKey;

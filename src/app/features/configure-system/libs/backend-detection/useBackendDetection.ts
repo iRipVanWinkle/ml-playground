@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { WorkerManager } from '@/app/shared/workers';
+import { WorkerManager } from '@/app/shared/workers/manager';
 import BackendDetectionWorker from './backend-detection.worker.ts?worker';
 
 type BackendInfo = {

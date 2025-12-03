@@ -1,10 +1,9 @@
 import { useState } from 'react';
-import Plot from 'react-plotly.js';
 import type { PlotProps } from '@/app/shared/registry/types';
 import type { NaiveBayesTrainingReport } from '@/app/models/naive-bayes/types';
 import { useClassConditionalPlotData } from './hooks/useClassConditionalPlotData';
 import { Select } from '@/app/shared/ui/basic/select';
-
+import { PlotlyScatter } from '../plotly';
 /**
  * ClassConditionalPlot component
  * @param dataset - The dataset
@@ -48,7 +47,7 @@ export function ClassConditionalPlot({ dataset, report }: PlotProps<NaiveBayesTr
                 </Select>
             </div>
             <div className="w-full h-100 bg-background">
-                <Plot
+                <PlotlyScatter
                     data={traces}
                     layout={{
                         xaxis: {

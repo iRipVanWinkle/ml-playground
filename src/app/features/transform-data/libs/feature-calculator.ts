@@ -1,4 +1,4 @@
-import { calculateOutputFeatures } from '@/ml/data-processing/transformation';
+import { calculateOutputFeatures } from '@/ml/data-processing/transformation/calculateOutputFeatures';
 import type { TransformationType } from '../store/types';
 
 export function calculateTransformationOutputFeatures(

@@ -5,8 +5,6 @@ import { generateFullPolynomialFeatures } from './generateFullPolynomialFeatures
 import { generateCosinusoidalFeatures } from './generateCosinusoidalFeatures';
 import { generateFourierFeatures } from './generateFourierFeatures';
 
-export * from './calculateOutputFeatures';
-
 export type TransformationFn = (data: Tensor2D) => Tensor2D | null;
 
 export function cosinusoidGenerator(degree: number): TransformationFn {

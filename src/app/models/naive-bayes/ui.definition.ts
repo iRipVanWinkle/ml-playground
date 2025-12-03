@@ -1,13 +1,13 @@
 import type { ModelDefinition } from '@/app/shared/registry/types';
 import { NaiveBayesSettings } from './ui/NaiveBayesSettings';
 import { NaiveBayesMainMetrics } from './ui/NaiveBayesMainMetrics';
+import { EMPTY_MATRIX_LIKE } from '@/ml/matrix';
 import {
     LogisticPlots,
-    RocCurve,
-    ConfusionMatrix,
     ClassConditionalPlot,
+    ConfusionMatrix,
+    RocCurve,
 } from '@/app/shared/visualization';
-import { EMPTY_MATRIX_LIKE } from '@/ml/matrix';
 
 export const naiveBayesModelDefinition: ModelDefinition<'naive-bayes'> = {
     key: 'naive-bayes',
@@ -52,10 +52,7 @@ export const naiveBayesModelDefinition: ModelDefinition<'naive-bayes'> = {
         metricsGridComponent: NaiveBayesMainMetrics,
         modelDataPlotComponent: LogisticPlots,
         plots: [
-            {
-                title: 'Conditional Distributions',
-                component: ClassConditionalPlot,
-            },
+            { title: 'Conditional Distributions', component: ClassConditionalPlot },
             { title: 'Confusion Matrix', component: ConfusionMatrix },
             { title: 'ROC Curve', component: RocCurve },
         ],

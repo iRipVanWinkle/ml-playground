@@ -1,6 +1,5 @@
-import React from 'react';
-import Plot from 'react-plotly.js';
-import { useMNISTGridFrame } from './hooks/useMNISTGridFrame';
+import { PlotlyHeatmap } from '../../plotly';
+import { useMNISTGridFrame } from '../hooks';
 
 interface MNISTGridProps {
     data: number[][];
@@ -9,7 +8,7 @@ interface MNISTGridProps {
     originalLabels: string[];
 }
 
-const MNISTGrid: React.FC<MNISTGridProps> = ({ data, labels, originalLabels, predictions }) => {
+export function MNISTGrid({ data, labels, originalLabels, predictions }: MNISTGridProps) {
     const numbersToDisplay = data.length;
     const frames = useMNISTGridFrame(data);
 
@@ -88,13 +87,11 @@ const MNISTGrid: React.FC<MNISTGridProps> = ({ data, labels, originalLabels, pre
     };
 
     return (
-        <Plot
+        <PlotlyHeatmap
             data={plotData}
             layout={layout}
             config={{ displayModeBar: false, staticPlot: true, responsive: true }}
             style={{ width: '100%', aspectRatio: '1 / 1' }}
         />
     );
-};
-
-export default MNISTGrid;
+}

@@ -1,4 +1,4 @@
-import Plot from 'react-plotly.js';
+import { PlotlyScatter } from '../../plotly';
 import type { RocCurveData } from '../types';
 import { useRocCurvePlotData } from '../hooks';
 
@@ -12,7 +12,7 @@ export function RocCurvePlot({ rocCurveData, categories }: RocCurvePlotProps) {
 
     return (
         <div className="w-full h-120 bg-background">
-            <Plot
+            <PlotlyScatter
                 data={plotData}
                 layout={{
                     xaxis: {

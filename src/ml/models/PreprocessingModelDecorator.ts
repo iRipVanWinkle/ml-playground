@@ -1,4 +1,4 @@
-import { concat, tidy, type Scalar, type Tensor2D } from '@tensorflow/tfjs-core/dist/base';
+import { concat, tidy, type Scalar, type Tensor2D } from '@tensorflow/tfjs';
 import type { Model, ModelRepresentation, TrainingEventEmitter } from '../types';
 import type { NormalizatorFn } from '../data-processing/normalization';
 import type { TransformationFn } from '../data-processing/transformation';

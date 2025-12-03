@@ -1,8 +1,8 @@
-import MNISTGrid from './MNISTGrid';
-import type { TrainingReport } from '@/app/models/types';
 import type { Dataset } from '@/app/shared/types';
-import Plot from 'react-plotly.js';
-import { useLogisticPlotData } from './hooks/useLogisticPlotData';
+import type { TrainingReport } from '@/app/models/types';
+import { PlotlyScatterContour } from '../plotly';
+import { MNISTGrid } from './components';
+import { useLogisticPlotData } from './hooks';
 
 type LogisticPlotsProps = {
     dataset: Dataset;
@@ -96,7 +96,7 @@ export function LogisticPlots({ dataset, report }: LogisticPlotsProps) {
         ] as Partial<Plotly.PlotData>[];
 
         plot = (
-            <Plot
+            <PlotlyScatterContour
                 data={plotData}
                 layout={{
                     title: { text: 'Data & Model' },

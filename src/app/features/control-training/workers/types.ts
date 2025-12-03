@@ -1,5 +1,5 @@
 import type { TrainingSettings, TrainingReport } from '@/app/models/types';
-import type { WorkerManager } from '@/app/shared/workers';
+import type { WorkerManager } from '@/app/shared/workers/manager';
 
 export interface TrainingWorkerManager extends WorkerManager<UIToWorkerMessage, TrainingReport> {
     on(type: 'report', handler: (report: TrainingReport) => void): () => void;

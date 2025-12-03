@@ -1,4 +1,4 @@
-import { type Scalar, type Tensor2D } from '@tensorflow/tfjs';
+import type { Scalar, Tensor2D } from '@tensorflow/tfjs';
 import type { Model, ModelRepresentation, OptimizerCallbackParameters } from '@/ml/types';
 import type { DatasetManager, LiveMetrics } from '@/app/shared/workers';
 import type { LinearTrainingReport } from '../types';
