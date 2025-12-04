@@ -1,3 +1,4 @@
+import { usePlotlyColors } from '../../../colors';
 import { PlotlyHeatmap } from '../../plotly';
 import { useMNISTGridFrame } from '../hooks';
 
@@ -11,6 +12,7 @@ interface MNISTGridProps {
 export function MNISTGrid({ data, labels, originalLabels, predictions }: MNISTGridProps) {
     const numbersToDisplay = data.length;
     const frames = useMNISTGridFrame(data);
+    const plotlyColors = usePlotlyColors();
 
     const ind = (index: number) => (index ? index + 1 : '');
 
@@ -58,7 +60,7 @@ export function MNISTGrid({ data, labels, originalLabels, predictions }: MNISTGr
             x: 0.5,
             y: -0.3,
             showarrow: false,
-            font: { size: 12, color: 'black', align: 'center' },
+            font: { size: 12, color: plotlyColors.textColor, align: 'center' },
         })),
         ...Object.fromEntries(
             Array.from({ length: numbersToDisplay }, (_, index) => {
@@ -90,7 +92,6 @@ export function MNISTGrid({ data, labels, originalLabels, predictions }: MNISTGr
         <PlotlyHeatmap
             data={plotData}
             layout={layout}
-            config={{ displayModeBar: false, staticPlot: true, responsive: true }}
             style={{ width: '100%', aspectRatio: '1 / 1' }}
         />
     );

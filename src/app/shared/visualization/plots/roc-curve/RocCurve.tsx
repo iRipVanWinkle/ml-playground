@@ -34,9 +34,9 @@ export function RocCurve({ dataset, report }: RocCurveProps) {
     const hasData = hasRocCurveData(rocCurveData);
 
     return (
-        <div className="w-full py-4 bg-background">
+        <div className="w-full py-4 bg-card">
             {report.testRocCurve && (
-                <div className="flex flex-row justify-end">
+                <div className="flex flex-row justify-end pr-4 pb-1.5">
                     <TrainTestSelector value={selectedDataset} onChange={setSelectedDataset} />
                 </div>
             )}

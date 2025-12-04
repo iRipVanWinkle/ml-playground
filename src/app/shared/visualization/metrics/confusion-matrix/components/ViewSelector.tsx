@@ -9,7 +9,7 @@ interface ViewSelectorProps {
 export function ViewSelector({ value, onChange, labels }: ViewSelectorProps) {
     return (
         <Select value={value} onValueChange={onChange}>
-            <Select.Trigger id="selectedClass" size="xs" className="border-0 shadow-none">
+            <Select.Trigger id="selectedClass" size="xs" variant="transparent">
                 <Select.Value placeholder="Select a class" />
             </Select.Trigger>
             <Select.Content>

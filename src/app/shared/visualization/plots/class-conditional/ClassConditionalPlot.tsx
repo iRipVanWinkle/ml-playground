@@ -28,13 +28,13 @@ export function ClassConditionalPlot({ dataset, report }: PlotProps<NaiveBayesTr
     const { traces = [], featureName } = plotData ?? {};
 
     return (
-        <div className="w-full py-4 bg-background">
-            <div className="flex flex-row justify-end">
+        <div className="w-full py-4 bg-card">
+            <div className="flex flex-row justify-end pr-4 pb-1.5">
                 <Select
                     value={selectedFeatureIndex.toString()}
                     onValueChange={(value: string) => setSelectedFeatureIndex(parseInt(value))}
                 >
-                    <Select.Trigger id="feature-select" size="xs" className="border-0 shadow-none">
+                    <Select.Trigger id="feature-select" size="xs" variant="transparent">
                         <Select.Value placeholder="Select feature" />
                     </Select.Trigger>
                     <Select.Content>
@@ -68,9 +68,6 @@ export function ClassConditionalPlot({ dataset, report }: PlotProps<NaiveBayesTr
                         margin: { l: 60, r: 40, t: 40, b: 80 },
                         hovermode: 'closest',
                     }}
-                    style={{ width: '100%', height: '100%' }}
-                    config={{ displayModeBar: false, staticPlot: false, responsive: true }}
-                    useResizeHandler
                 />
             </div>
         </div>

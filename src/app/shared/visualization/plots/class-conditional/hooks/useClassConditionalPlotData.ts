@@ -4,9 +4,9 @@ import type {
     NaiveBayesParams,
     QuadraticNaiveBayesParams,
 } from '@/ml/types';
+import { useColor } from '../../../colors';
 
 // Constants
-const colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b'];
 const NUM_POINTS = 200;
 const STD_MULTIPLIER = 4;
 
@@ -24,14 +24,16 @@ export function useClassConditionalPlotData(
     headers: string[],
     featureIndex: number = 0,
 ): PlotData | null {
+    const { getColor } = useColor();
+
     return useMemo(() => {
         if (params?.type === 'gaussian') {
-            return calculateGaussianPlotData(params, categories, headers, featureIndex);
+            return calculateGaussianPlotData(params, categories, headers, featureIndex, getColor);
         } else if (params?.type === 'quadratic') {
-            return calculateQuadraticPlotData(params, categories, headers, featureIndex);
+            return calculateQuadraticPlotData(params, categories, headers, featureIndex, getColor);
         }
         return null;
-    }, [params, categories, headers, featureIndex]);
+    }, [params, categories, headers, featureIndex, getColor]);
 }
 
 /**
@@ -42,6 +44,7 @@ function calculateGaussianPlotData(
     categories: string[],
     headers: string[],
     featureIndex: number,
+    getColor: (index: number) => string,
 ): PlotData {
     const { classes, classMeans, classVariances } = params;
     const featureName = headers[featureIndex + 1] || `Feature ${featureIndex}`;
@@ -82,8 +85,7 @@ function calculateGaussianPlotData(
             mode: 'lines',
             name: `P(${featureName}|${categoryLabel})`,
             line: {
-                color: colors[classIdx % colors.length],
-                width: 2,
+                color: getColor(classIdx),
             },
             type: 'scatter',
         };
@@ -103,6 +105,7 @@ function calculateQuadraticPlotData(
     categories: string[],
     headers: string[],
     featureIndex: number,
+    getColor: (index: number) => string,
 ): PlotData {
     const { classes, classMeans, classCovariances } = params;
     const featureName = headers[featureIndex + 1] || `Feature ${featureIndex}`;
@@ -144,8 +147,7 @@ function calculateQuadraticPlotData(
             mode: 'lines',
             name: `P(${featureName}|${categoryLabel})`,
             line: {
-                color: colors[classIdx % colors.length],
-                width: 2,
+                color: getColor(classIdx),
             },
             type: 'scatter',
         };

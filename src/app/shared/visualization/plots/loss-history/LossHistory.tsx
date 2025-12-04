@@ -1,15 +1,15 @@
 import type { TrainingReport } from '@/app/models/types';
 import type { Dataset } from '@/app/shared/types';
 import { PlotlyScatter } from '../plotly';
+import { useColor } from '../../colors';
 
 type LossHistoryProps = {
     dataset: Dataset;
     report: TrainingReport;
 };
 
-const colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b'];
-
 export function LossHistory({ dataset, report }: LossHistoryProps) {
+    const { getColor } = useColor();
     const lossHistory = 'trainLossHistory' in report ? report.trainLossHistory : undefined;
     const categories = dataset.categories;
 
@@ -23,8 +23,8 @@ export function LossHistory({ dataset, report }: LossHistoryProps) {
                     y: loss,
                     mode: 'lines',
                     name: categories ? categories[index] : `Loss ${index + 1}`,
-                    line: { color: colors[index % colors.length] },
-                    marker: { color: colors[index % colors.length] },
+                    line: { color: getColor(index) },
+                    marker: { color: getColor(index) },
                 }))}
                 layout={{
                     xaxis: { title: { text: 'Iterations' } },
@@ -38,8 +38,6 @@ export function LossHistory({ dataset, report }: LossHistoryProps) {
                     },
                     margin: { l: 40, r: 40, t: 20, b: 60 },
                 }}
-                style={{ width: '100%', height: '100%' }}
-                useResizeHandler
             />
         </div>
     );

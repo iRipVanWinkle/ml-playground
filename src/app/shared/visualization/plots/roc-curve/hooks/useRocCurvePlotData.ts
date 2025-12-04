@@ -7,8 +7,7 @@ import {
     thresholdMarkers,
     hasRocCurveData,
 } from '../utils';
-
-const colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b'];
+import { useColor } from '../../../colors';
 
 type UseRocCurvePlotDataParams = {
     rocCurveData: RocCurveData;
@@ -19,6 +18,8 @@ export function useRocCurvePlotData({
     rocCurveData,
     categories,
 }: UseRocCurvePlotDataParams): Plotly.Data[] {
+    const { getColor } = useColor();
+
     return useMemo(() => {
         if (!hasRocCurveData(rocCurveData)) return [diagonalLine()];
 
@@ -28,8 +29,7 @@ export function useRocCurvePlotData({
             // Binary classification: single curve
             const { fpr, tpr, thresholds, youdenOptimalIndex, closestToCornerIndex } = rocCurveData;
             const legendGroup = 'roc-binary';
-            const color = colors[0];
-            data.push(binaryLine({ x: fpr, y: tpr, thresholds, legendGroup, color }));
+            data.push(binaryLine({ x: fpr, y: tpr, thresholds, legendGroup, color: getColor(0) }));
             data.push(
                 ...thresholdMarkers({
                     fpr,
@@ -38,7 +38,7 @@ export function useRocCurvePlotData({
                     youdenOptimalIndex,
                     closestToCornerIndex,
                     legendGroup,
-                    color,
+                    color: getColor(0, 'darken'),
                 }),
             );
         } else {
@@ -51,7 +51,6 @@ export function useRocCurvePlotData({
                 const classIndex = classIndices[index];
                 const label = categories?.[classIndex] || `Class ${classIndex}`;
                 const legendGroup = `roc-class-${classIndex}`;
-                const color = colors[index % colors.length];
 
                 data.push(
                     multiclassLine({
@@ -60,7 +59,7 @@ export function useRocCurvePlotData({
                         thresholds,
                         label,
                         legendGroup,
-                        color,
+                        color: getColor(index),
                     }),
                 );
 
@@ -72,7 +71,7 @@ export function useRocCurvePlotData({
                         youdenOptimalIndex,
                         closestToCornerIndex,
                         legendGroup,
-                        color,
+                        color: getColor(index, 'darken'),
                     }),
                 );
             }
@@ -81,5 +80,5 @@ export function useRocCurvePlotData({
         data.push(diagonalLine());
 
         return data;
-    }, [rocCurveData, categories]);
+    }, [rocCurveData, categories, getColor]);
 }

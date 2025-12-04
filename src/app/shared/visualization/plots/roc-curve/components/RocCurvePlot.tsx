@@ -37,9 +37,6 @@ export function RocCurvePlot({ rocCurveData, categories }: RocCurvePlotProps) {
                     margin: { l: 60, r: 40, t: 20, b: 20 },
                     hovermode: 'closest' as const,
                 }}
-                style={{ width: '100%', height: '100%' }}
-                config={{ displayModeBar: false, staticPlot: false, responsive: true }}
-                useResizeHandler
             />
         </div>
     );

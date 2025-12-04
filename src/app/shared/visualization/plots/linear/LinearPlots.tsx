@@ -2,6 +2,7 @@ import type { TrainingReport } from '@/app/models/types';
 import type { Dataset } from '@/app/shared/types';
 import { useLinearPlotData } from './hooks/useLinearPlotData';
 import { PlotlyScatter, PlotlyScatter3D } from '../plotly';
+import { useColor } from '../../colors';
 
 type LinerPlotsProps = {
     dataset: Dataset;
@@ -13,6 +14,12 @@ export function LinearPlots({ dataset, report }: LinerPlotsProps) {
 
     const { trainX, trainY, trainZ, testX, testY, testZ, predictionX, predictionY } =
         useLinearPlotData(dataset);
+
+    const { getColor } = useColor();
+
+    const trainColor = getColor(0);
+    const testColor = getColor(1);
+    const predictionColor = getColor(2);
 
     const [yLabel, x1Label, x2Label] = dataset.headers;
     const is2DPlot = dataset.trainInputFeatures[0]?.length === 1;
@@ -29,14 +36,14 @@ export function LinearPlots({ dataset, report }: LinerPlotsProps) {
                         y: trainY,
                         mode: 'markers',
                         name: 'Training Dataset',
-                        marker: { color: 'green' },
+                        marker: { color: trainColor },
                     },
                     {
                         x: testX,
                         y: testY,
                         mode: 'markers',
                         name: 'Test Dataset',
-                        marker: { color: 'blue' },
+                        marker: { color: testColor },
                     },
                     ...(predictionPredictedLabels
                         ? [
@@ -45,7 +52,7 @@ export function LinearPlots({ dataset, report }: LinerPlotsProps) {
                                   y: predictionPredictedLabels.array,
                                   mode: 'lines' as const,
                                   name: 'Prediction',
-                                  line: { color: 'red' },
+                                  line: { color: predictionColor },
                               },
                           ]
                         : []),
@@ -77,7 +84,7 @@ export function LinearPlots({ dataset, report }: LinerPlotsProps) {
                         z: trainZ,
                         mode: 'markers',
                         name: 'Training Dataset',
-                        marker: { color: 'green' },
+                        marker: { color: trainColor },
                         type: 'scatter3d',
                     },
                     {
@@ -86,7 +93,7 @@ export function LinearPlots({ dataset, report }: LinerPlotsProps) {
                         z: testZ,
                         mode: 'markers',
                         name: 'Test Dataset',
-                        marker: { color: 'blue' },
+                        marker: { color: testColor },
                         type: 'scatter3d',
                     },
                     ...(predictionPredictedLabels
@@ -97,7 +104,7 @@ export function LinearPlots({ dataset, report }: LinerPlotsProps) {
                                   z: predictionPredictedLabels.array,
                                   mode: 'lines' as const,
                                   name: 'Prediction',
-                                  line: { color: 'red' },
+                                  line: { color: predictionColor },
                                   type: 'scatter3d' as const,
                               },
                           ]

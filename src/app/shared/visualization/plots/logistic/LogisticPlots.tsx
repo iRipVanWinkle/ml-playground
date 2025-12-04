@@ -3,6 +3,7 @@ import type { TrainingReport } from '@/app/models/types';
 import { PlotlyScatterContour } from '../plotly';
 import { MNISTGrid } from './components';
 import { useLogisticPlotData } from './hooks';
+import { useColor } from '../../colors';
 
 type LogisticPlotsProps = {
     dataset: Dataset;
@@ -24,6 +25,8 @@ export function LogisticPlots({ dataset, report }: LogisticPlotsProps) {
     const is2DPlot = featureLength === 2;
     const isMNISTPlot = dataset.isImage;
     const { groupedData, groupedPredictions } = useLogisticPlotData(dataset);
+
+    const { getColor } = useColor();
 
     const { predictionPredictedLabels } = report ?? {};
 
@@ -54,9 +57,6 @@ export function LogisticPlots({ dataset, report }: LogisticPlotsProps) {
         }
     }
 
-    const colors = ['green', 'blue', 'red', 'orange', 'purple', 'cyan'];
-    const treningColors = ['lime', 'skyblue', 'crimson', 'gold', 'violet', 'teal'];
-
     let plot = null;
 
     if (is2DPlot) {
@@ -80,7 +80,7 @@ export function LogisticPlots({ dataset, report }: LogisticPlotsProps) {
                         y: points.trainingY,
                         mode: 'markers',
                         name: `${categories![Number(label)]}`,
-                        marker: { color: colors[Number(label)] },
+                        marker: { color: getColor(Number(label)) },
                         legendgroup: 'Training Dataset',
                     },
                     {
@@ -88,7 +88,7 @@ export function LogisticPlots({ dataset, report }: LogisticPlotsProps) {
                         y: points.testingY,
                         mode: 'markers',
                         name: `${categories![Number(label)]}`,
-                        marker: { color: treningColors[Number(label)] },
+                        marker: { color: getColor(Number(label), 'lighten') },
                         legendgroup: 'Test Dataset',
                     },
                 ])
@@ -111,7 +111,6 @@ export function LogisticPlots({ dataset, report }: LogisticPlotsProps) {
                     },
                     margin: { l: 40, r: 40, t: 40, b: 40 },
                 }}
-                style={{ width: '100%', height: '100%' }}
             />
         );
     }
