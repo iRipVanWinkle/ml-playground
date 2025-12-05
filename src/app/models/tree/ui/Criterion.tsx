@@ -68,7 +68,7 @@ export default function Criterion({ taskType, criterion, disabled, onChange }: C
                     value={criterion.type as string}
                     onValueChange={(value) => handleFunctionChange(value as CriterionType)}
                 >
-                    <Select.Trigger className="w-full truncate">
+                    <Select.Trigger className="w-full truncate" data-testid="criterion-select">
                         <Select.Value placeholder="Select loss function" />
                     </Select.Trigger>
                     <Select.Content>
@@ -87,6 +87,7 @@ export default function Criterion({ taskType, criterion, disabled, onChange }: C
                         placeholder="Delta (for Huber)"
                         step={0.1}
                         type="number"
+                        data-testid="huber-delta-input"
                         value={criterion.delta}
                         onChange={(e) =>
                             onChange({ ...criterion, delta: parseFloat(e.target.value) })

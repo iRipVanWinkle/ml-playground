@@ -28,7 +28,11 @@ export function NaiveBayesSettings({
                         })
                     }
                 >
-                    <Select.Trigger id="naiveBayesVariant" className="w-full truncate">
+                    <Select.Trigger
+                        id="naiveBayesVariant"
+                        className="w-full truncate"
+                        data-testid="naive-bayes-variant-select"
+                    >
                         <Select.Value placeholder="Select variant" />
                     </Select.Trigger>
                     <Select.Content>

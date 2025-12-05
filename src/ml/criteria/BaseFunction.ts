@@ -18,7 +18,7 @@ export abstract class BaseFunction implements CriterionFunction {
      * @returns Scalar representing the computed loss.
      */
     loss(yTrue: Tensor2D, yPred: Tensor2D): Scalar {
-        return this.lossFunc.compute(yTrue, yPred);
+        return this.lossFunc.compute(yTrue, yPred.toFloat());
     }
 
     /**

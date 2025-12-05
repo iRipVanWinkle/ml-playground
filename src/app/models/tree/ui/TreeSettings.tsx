@@ -90,6 +90,7 @@ export function TreeSettings({
                     step={1}
                     min={2}
                     type="number"
+                    data-testid="max-depth-input"
                     value={maxDepth}
                     onChange={(e) => handleInputChange('maxDepth', e.target.value)}
                 />
@@ -102,6 +103,7 @@ export function TreeSettings({
                         step={1}
                         min={2}
                         type="number"
+                        data-testid="min-samples-split-input"
                         value={minSamplesSplit}
                         onChange={(e) => handleInputChange('minSamplesSplit', e.target.value)}
                     />
@@ -113,6 +115,7 @@ export function TreeSettings({
                         step={1}
                         min={1}
                         type="number"
+                        data-testid="min-samples-leaf-input"
                         value={minSamplesLeaf}
                         onChange={(e) => handleInputChange('minSamplesLeaf', e.target.value)}
                     />
@@ -127,6 +130,7 @@ export function TreeSettings({
                             step={1}
                             min={2}
                             type="number"
+                            data-testid="estimators-input"
                             value={estimators}
                             onChange={(e) => handleInputChange('estimators', e.target.value)}
                         />
@@ -142,6 +146,7 @@ export function TreeSettings({
                             step={1}
                             min={1}
                             type="number"
+                            data-testid="max-features-input"
                             value={maxFeatures}
                             onChange={(e) => handleInputChange('maxFeatures', e.target.value)}
                         />
@@ -155,6 +160,7 @@ export function TreeSettings({
                             step={1}
                             min={1}
                             type="number"
+                            data-testid="random-thresholds-input"
                             value={numRandomThresholds}
                             onChange={(e) =>
                                 handleInputChange('numRandomThresholds', e.target.value)
