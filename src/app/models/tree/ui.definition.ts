@@ -72,10 +72,13 @@ export const treeModelDefinition: ModelDefinition<'tree'> = {
     visualization: {
         metricsGridComponent: TreeMainMetrics,
         modelDataPlotComponent: TreeModelDataPlots,
-        plots: [
-            { title: 'Confusion Matrix', component: ConfusionMatrix },
-            { title: 'ROC Curve', component: RocCurve },
-        ],
+        plots: (taskType) =>
+            taskType === 'regression'
+                ? []
+                : [
+                      { title: 'Confusion Matrix', component: ConfusionMatrix },
+                      { title: 'ROC Curve', component: RocCurve },
+                  ],
     },
 
     progress: {

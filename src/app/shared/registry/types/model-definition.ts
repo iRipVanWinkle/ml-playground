@@ -3,6 +3,15 @@ import type { ModelType } from '@/app/models/types';
 import type { Dataset, TaskType } from '@/app/shared/types';
 import type { SettingsOf, TrainingReportOf } from './utils';
 
+export type PlotVisualization<TKey extends ModelType> = {
+    title: string;
+    component: ComponentType<PlotProps<TrainingReportOf<TKey>>>;
+};
+
+type PlotsVisualization<TKey extends ModelType> =
+    | Array<PlotVisualization<TKey>>
+    | ((taskType: TaskType) => Array<PlotVisualization<TKey>>);
+
 export interface ModelDefinition<TKey extends ModelType = ModelType> {
     key: TKey;
     label: string;
@@ -15,10 +24,7 @@ export interface ModelDefinition<TKey extends ModelType = ModelType> {
     visualization: {
         metricsGridComponent: ComponentType<MainMetricsProps<TrainingReportOf<TKey>>>;
         modelDataPlotComponent: ComponentType<ModelDataPlotProps<TrainingReportOf<TKey>>>;
-        plots?: Array<{
-            title: string;
-            component: ComponentType<PlotProps<TrainingReportOf<TKey>>>;
-        }>;
+        plots?: PlotsVisualization<TKey>;
     };
 
     progress: {

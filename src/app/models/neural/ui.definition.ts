@@ -75,11 +75,14 @@ export const neuralModelDefinition: ModelDefinition<'neural'> = {
     visualization: {
         metricsGridComponent: NeuralMainMetrics,
         modelDataPlotComponent: NeuralModelDataPlots,
-        plots: [
-            { title: 'Loss History', component: LossHistory },
-            { title: 'Confusion Matrix', component: ConfusionMatrix },
-            { title: 'ROC Curve', component: RocCurve },
-        ],
+        plots: (taskType) =>
+            taskType === 'regression'
+                ? [{ title: 'Loss History', component: LossHistory }]
+                : [
+                      { title: 'Loss History', component: LossHistory },
+                      { title: 'Confusion Matrix', component: ConfusionMatrix },
+                      { title: 'ROC Curve', component: RocCurve },
+                  ],
     },
 
     progress: {

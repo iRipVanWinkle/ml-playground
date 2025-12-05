@@ -3,6 +3,7 @@ import { Tabs } from '@/app/shared/ui';
 import type { ModelType } from '@/app/models/types';
 import { useModelDefinition } from '@/app/models/ui-registry';
 import { useTrainingReport } from '../store';
+import type { PlotVisualization } from '@/app/shared/registry';
 
 type TabbedVisualizationsProps = {
     modelType: ModelType;
@@ -11,8 +12,16 @@ type TabbedVisualizationsProps = {
 
 export function TabbedVisualizations({ dataset, modelType }: TabbedVisualizationsProps) {
     const report = useTrainingReport();
-    const modelDefinition = useModelDefinition(modelType);
-    const plots = modelDefinition.visualization.plots;
+    const { visualization } = useModelDefinition(modelType);
+
+    let plots: Array<PlotVisualization<ModelType>> = [];
+
+    if (visualization.plots) {
+        plots =
+            typeof visualization.plots === 'function'
+                ? visualization.plots(report.taskType)
+                : visualization.plots;
+    }
 
     if (!plots || plots.length === 0) return null;
 
