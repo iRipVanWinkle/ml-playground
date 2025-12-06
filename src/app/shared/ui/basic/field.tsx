@@ -19,9 +19,10 @@ function Field({ label, className, children, htmlFor, info, ...props }: FieldPro
 
     return (
         <div className={cn('grid gap-2', className)} {...props}>
-            <Label htmlFor={htmlFor}>
-                {label} {infoTooltip}
-            </Label>
+            <div className="flex items-center gap-1.5">
+                <Label htmlFor={htmlFor}>{label}</Label>
+                {infoTooltip}
+            </div>
             {children}
         </div>
     );

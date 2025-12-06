@@ -18,7 +18,7 @@ function HoverCardContent({
     className,
     align = 'center',
     side = 'top',
-    sideOffset = 0,
+    sideOffset = 4,
     children,
     ...props
 }: React.ComponentProps<typeof HoverCardPrimitive.Content>) {
@@ -36,7 +36,6 @@ function HoverCardContent({
                 {...props}
             >
                 {children}
-                <HoverCardPrimitive.Arrow className="bg-popover fill-white z-50 size-2.5 translate-y-[calc(-50%_-_2px)] rotate-45 rounded-[2px]" />
             </HoverCardPrimitive.Content>
         </HoverCardPrimitive.Portal>
     );

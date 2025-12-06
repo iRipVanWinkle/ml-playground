@@ -1,4 +1,4 @@
-import { Checkbox, Field, Input, Label, Select } from '@/app/shared/ui';
+import { Checkbox, Field, InfoTooltip, Input, Label, Select } from '@/app/shared/ui';
 import type { OptimizerConfig } from '@/ml/factories';
 
 type OptimizerProps = {
@@ -7,11 +7,35 @@ type OptimizerProps = {
     onChange: (config: OptimizerConfig) => void;
 };
 
+const OPTIMIZER_INFO = 'The method that adjusts model parameters to reduce loss during training.';
+const MAX_ITERATIONS_INFO = 'Maximum training steps before stopping.';
+const TOLERANCE_INFO = 'Stops early if improvement is smaller than this value.';
+const LEARNING_RATE_INFO = 'How big a step the optimizer takes when updating the model.';
+const SCHEDULER_INFO = 'Gradually reduces learning rate for finer adjustments.';
+const DECAY_OFFSET_INFO = 'Smooths the decay curve. Higher values mean slower, gentler decay.';
+const DECAY_POWER_INFO = 'Controls the steepness of the decay. Higher values mean faster decay.';
+
 const DEFAULT_OPTIMIZER_TYPES = [
-    { value: 'batch', label: 'Batch Gradient Descent' },
-    { value: 'sgd', label: 'Stochastic Gradient Descent' },
-    { value: 'momentum', label: 'Momentum' },
-    { value: 'adam', label: 'Adam' },
+    {
+        value: 'batch',
+        label: 'Batch Gradient Descent',
+        info: 'Uses all data for each update. Stable but can be slow on large datasets.',
+    },
+    {
+        value: 'sgd',
+        label: 'Stochastic Gradient Descent',
+        info: 'Updates after each small batch. Faster but less stable than using all data.',
+    },
+    {
+        value: 'momentum',
+        label: 'Momentum',
+        info: 'Remembers past updates to speed up learning.',
+    },
+    {
+        value: 'adam',
+        label: 'Adam',
+        info: 'An adaptive method that combines momentum and per-parameter learning rates.',
+    },
 ];
 
 const DEFAULT_OPTIMIZER_CONFIGS = {
@@ -74,7 +98,7 @@ export default function Optimizer({ optimizer, disabled, onChange }: OptimizerPr
 
     return (
         <>
-            <Field label="Optimizer" htmlFor="optimizerSelect">
+            <Field label="Optimizer" htmlFor="optimizerSelect" info={OPTIMIZER_INFO}>
                 <Select disabled={disabled} value={optimizer.type} onValueChange={handleTypeChange}>
                     <Select.Trigger
                         id="optimizerSelect"
@@ -85,7 +109,11 @@ export default function Optimizer({ optimizer, disabled, onChange }: OptimizerPr
                     </Select.Trigger>
                     <Select.Content>
                         {DEFAULT_OPTIMIZER_TYPES.map((option) => (
-                            <Select.Item key={option.value} value={option.value}>
+                            <Select.Item
+                                key={option.value}
+                                value={option.value}
+                                title={option.info}
+                            >
                                 {option.label}
                             </Select.Item>
                         ))}
@@ -159,7 +187,11 @@ export default function Optimizer({ optimizer, disabled, onChange }: OptimizerPr
             )}
 
             <div className="grid grid-cols-2 gap-2">
-                <Field label="Max Iterations" htmlFor="maxIterationsInput">
+                <Field
+                    label="Max Iterations"
+                    htmlFor="maxIterationsInput"
+                    info={MAX_ITERATIONS_INFO}
+                >
                     <Input
                         id="maxIterationsInput"
                         data-testid="max-iterations-input"
@@ -171,7 +203,7 @@ export default function Optimizer({ optimizer, disabled, onChange }: OptimizerPr
                     />
                 </Field>
 
-                <Field label="Tolerance" htmlFor="toleranceInput">
+                <Field label="Tolerance" htmlFor="toleranceInput" info={TOLERANCE_INFO}>
                     <Input
                         id="toleranceInput"
                         disabled={disabled}
@@ -184,8 +216,9 @@ export default function Optimizer({ optimizer, disabled, onChange }: OptimizerPr
                     />
                 </Field>
             </div>
-            <div className="grid grid-cols-2 gap-2">
-                <Field label="Learning Rate" htmlFor="learningRateInput">
+
+            <Field label="Learning Rate" htmlFor="learningRateInput" info={LEARNING_RATE_INFO}>
+                <div className="grid grid-cols-2 gap-2">
                     <Input
                         id="learningRateInput"
                         data-testid="learning-rate-input"
@@ -197,22 +230,30 @@ export default function Optimizer({ optimizer, disabled, onChange }: OptimizerPr
                         value={optimizer.learningRate}
                         onChange={(e) => handleInputChange('learningRate', e.target.value)}
                     />
-                </Field>
-                <div className="flex items-center gap-2 mt-6">
-                    <Checkbox
-                        id="schedulerCheckbox"
-                        data-testid="scheduler-checkbox"
-                        disabled={disabled}
-                        checked={!!optimizer.scheduler}
-                        onCheckedChange={(checked) => handleSchedulerChange(checked === true)}
-                    />
-                    <Label htmlFor="schedulerCheckbox">Enable scheduler</Label>
+
+                    <div className="flex items-center gap-2">
+                        <Checkbox
+                            id="schedulerCheckbox"
+                            data-testid="scheduler-checkbox"
+                            disabled={disabled}
+                            checked={!!optimizer.scheduler}
+                            onCheckedChange={(checked) => handleSchedulerChange(checked === true)}
+                        />
+                        <div className="flex items-center gap-1">
+                            <Label htmlFor="schedulerCheckbox">Enable scheduler</Label>
+                            <InfoTooltip>{SCHEDULER_INFO}</InfoTooltip>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            </Field>
 
             {optimizer.scheduler && (
                 <div className="grid grid-cols-2 gap-2">
-                    <Field label="Decay Offset (s₀)" htmlFor="decayOffsetInput">
+                    <Field
+                        label="Decay Offset (s₀)"
+                        htmlFor="decayOffsetInput"
+                        info={DECAY_OFFSET_INFO}
+                    >
                         <Input
                             id="decayOffsetInput"
                             data-testid="decay-offset-input"
@@ -224,7 +265,11 @@ export default function Optimizer({ optimizer, disabled, onChange }: OptimizerPr
                             onChange={(e) => handleSchedulerConfigChange('s0', e.target.value)}
                         />
                     </Field>
-                    <Field label="Decay Power (p)" htmlFor="decayPowerInput">
+                    <Field
+                        label="Decay Power (p)"
+                        htmlFor="decayPowerInput"
+                        info={DECAY_POWER_INFO}
+                    >
                         <Input
                             id="decayPowerInput"
                             data-testid="decay-power-input"

@@ -33,13 +33,15 @@ const PER_CLASS_METRICS_CONFIG: PerClassMetricConfig[] = [
     {
         label: 'MCC',
         field: 'mcc',
-        tooltip: 'Correlation coefficient between observed and predicted classifications.',
+        tooltip:
+            'Measures how well predictions match actual values. Ranges from -1 to 1, where 1 is perfect.',
         format: 'decimal',
     },
     {
         label: "Cohen's Kappa",
         field: 'cohensKappa',
-        tooltip: 'Agreement between predictions and actuals, accounting for chance.',
+        tooltip:
+            'Measures how well predictions match actual values, considering that some agreement might happen by luck.',
         format: 'decimal',
     },
     {
@@ -57,7 +59,8 @@ const PER_CLASS_METRICS_CONFIG: PerClassMetricConfig[] = [
     {
         label: 'F1',
         field: 'f1',
-        tooltip: 'Harmonic mean of precision and recall.',
+        tooltip:
+            'Combines precision and recall into a single score. Balances both metrics equally.',
         format: 'percentage',
     },
 ];
@@ -72,49 +75,55 @@ const FULL_METRICS_CONFIG: FullMetricConfig[] = [
     {
         label: 'MCC',
         field: 'mcc',
-        tooltip: 'Correlation coefficient between observed and predicted classifications.',
+        tooltip:
+            'Measures how well predictions match actual values. Ranges from -1 to 1, where 1 is perfect.',
         format: 'decimal',
     },
     {
         label: "Cohen's Kappa",
         field: 'cohensKappa',
-        tooltip: 'Agreement between predictions and actuals, accounting for chance.',
+        tooltip:
+            'Measures how well predictions match actual values, considering that some agreement might happen by luck.',
         format: 'decimal',
     },
     {
         label: 'Macro Precision',
         field: 'macroPrecision',
-        tooltip: 'Unweighted mean of precision across all classes.',
+        tooltip:
+            'Average precision across all classes. Each class counts equally, regardless of size.',
         format: 'percentage',
     },
     {
         label: 'Macro Recall',
         field: 'macroRecall',
-        tooltip: 'Unweighted mean of recall across all classes.',
+        tooltip: 'Average of recall across all classes.',
         format: 'percentage',
     },
     {
         label: 'Macro F1',
         field: 'macroF1',
-        tooltip: 'Unweighted mean of F1 score across all classes.',
+        tooltip: 'Average of F1 score across all classes.',
         format: 'percentage',
     },
     {
         label: 'Weighted Precision',
         field: 'weightedPrecision',
-        tooltip: 'Precision averaged across classes, weighted by class support.',
+        tooltip:
+            'Average of precision across all classes, weighted by the number of samples in each class.',
         format: 'percentage',
     },
     {
         label: 'Weighted Recall',
         field: 'weightedRecall',
-        tooltip: 'Recall averaged across classes, weighted by class support.',
+        tooltip:
+            'Average recall across all classes, weighted by the number of samples in each class.',
         format: 'percentage',
     },
     {
         label: 'Weighted F1',
         field: 'weightedF1',
-        tooltip: 'F1 score averaged across classes, weighted by class support.',
+        tooltip:
+            'Average F1 score across all classes, weighted by the number of samples in each class.',
         format: 'percentage',
     },
 ];
@@ -122,7 +131,7 @@ const FULL_METRICS_CONFIG: FullMetricConfig[] = [
 export function MetricsDisplay({ metrics }: MetricsDisplayProps) {
     if (metrics.type === 'binary') {
         return (
-            <div className="p-3 rounded-lg bg-primary-foreground">
+            <div className="p-4 rounded-lg bg-primary-foreground">
                 <div className="grid grid-cols-3 md:grid-cols-3 gap-3 text-sm">
                     {PER_CLASS_METRICS_CONFIG.map((metricConfig) => (
                         <MetricCard
@@ -139,7 +148,7 @@ export function MetricsDisplay({ metrics }: MetricsDisplayProps) {
     }
 
     return (
-        <div className="p-3 rounded-lg bg-primary-foreground">
+        <div className="p-4 rounded-lg bg-primary-foreground">
             <div className="grid grid-cols-3 md:grid-cols-3 gap-3 text-sm">
                 {FULL_METRICS_CONFIG.map((metricConfig) => (
                     <MetricCard

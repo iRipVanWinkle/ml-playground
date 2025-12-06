@@ -7,6 +7,49 @@ type InitThetaProps = {
     onChange: (thetaInitialization: ThetaInitializationConfig) => void;
 };
 
+const THETA_INITIALIZATION_INFO =
+    'Starting values for weights. Think of it as the first guess for how the model should look.';
+
+const DEFAULT_THETA_INITIALIZERS = [
+    { value: 'zeros', label: 'Zeros', info: 'All weights start at zero.' },
+    { value: 'ones', label: 'Ones', info: 'All weights start at one.' },
+    {
+        value: 'constant',
+        label: 'Constant',
+        info: 'All weights start at the chosen constant value.',
+    },
+    {
+        value: 'uniform',
+        label: 'Random Uniform',
+        info: 'Random values between min and max.',
+    },
+    {
+        value: 'normal',
+        label: 'Random Normal (Gaussian)',
+        info: 'Random values around a mean. Most values stay near that center.',
+    },
+    {
+        value: 'xavierUniform',
+        label: 'Xavier / Glorot Uniform',
+        info: 'Random values spread evenly. The size of values depends on how many units are in the layer.',
+    },
+    {
+        value: 'xavierNormal',
+        label: 'Xavier / Glorot Normal',
+        info: 'Random values clustered around zero. The spread depends on how many units are in the layer.',
+    },
+    {
+        value: 'heUniform',
+        label: 'He Uniform',
+        info: 'Random values spread evenly. The size of values depends on how many inputs the layer receives.',
+    },
+    {
+        value: 'heNormal',
+        label: 'He Normal',
+        info: 'Random values clustered around zero. The spread depends on how many inputs the layer receives.',
+    },
+];
+
 const DEFAULT_INITIALIZER_CONFIGS = {
     zeros: { type: 'zeros' },
     ones: { type: 'ones' },
@@ -18,18 +61,6 @@ const DEFAULT_INITIALIZER_CONFIGS = {
     heUniform: { type: 'heUniform' },
     heNormal: { type: 'heNormal' },
 } as Record<ThetaInitializationConfig['type'], ThetaInitializationConfig>;
-
-const DEFAULT_THETA_INITIALIZERS = [
-    { value: 'zeros', label: 'Zeros' },
-    { value: 'ones', label: 'Ones' },
-    { value: 'constant', label: 'Constant' },
-    { value: 'uniform', label: 'Random Uniform' },
-    { value: 'normal', label: 'Random Normal (Gaussian)' },
-    { value: 'xavierUniform', label: 'Xavier / Glorot Uniform' },
-    { value: 'xavierNormal', label: 'Xavier / Glorot Normal' },
-    { value: 'heUniform', label: 'He Uniform' },
-    { value: 'heNormal', label: 'He Normal' },
-];
 
 export default function ThetaInitialization({
     thetaInitialization,
@@ -46,7 +77,11 @@ export default function ThetaInitialization({
 
     return (
         <>
-            <Field label="Weight Initialization" htmlFor="thetaInitializationSelect">
+            <Field
+                label="Weight Initialization"
+                htmlFor="thetaInitializationSelect"
+                info={THETA_INITIALIZATION_INFO}
+            >
                 <Select
                     disabled={disabled}
                     value={thetaInitialization.type}
@@ -63,7 +98,11 @@ export default function ThetaInitialization({
                     </Select.Trigger>
                     <Select.Content>
                         {DEFAULT_THETA_INITIALIZERS.map((initializer) => (
-                            <Select.Item key={initializer.value} value={initializer.value}>
+                            <Select.Item
+                                key={initializer.value}
+                                value={initializer.value}
+                                title={initializer.info}
+                            >
                                 {initializer.label}
                             </Select.Item>
                         ))}

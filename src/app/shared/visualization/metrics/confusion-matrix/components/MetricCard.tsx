@@ -20,8 +20,10 @@ export function MetricCard({ label, value, tooltip, format, decimals }: MetricCa
     return (
         <div className="text-center">
             <div>
-                <span className="text-muted-foreground text-xs">{label}</span>{' '}
-                <InfoTooltip>{tooltip}</InfoTooltip>
+                <div className="flex flex-row gap-1.5 items-center justify-center">
+                    <span className="text-muted-foreground text-xs">{label}</span>
+                    <InfoTooltip>{tooltip}</InfoTooltip>
+                </div>
             </div>
             <div className="font-semibold">{formattedValue}</div>
         </div>

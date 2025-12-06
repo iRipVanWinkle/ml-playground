@@ -3,22 +3,36 @@ import { Field, Input, Label, RadioGroup } from '@/app/shared/ui';
 import Criterion from './Criterion';
 import type { ModelSettingsComponentProps } from '@/app/shared/registry';
 
+const MODEL_VARIANT_INFO = 'The variant of the model to use.';
+const MAX_DEPTH_INFO = 'Limits how deep the tree can grow.';
+const MIN_SAMPLES_SPLIT_INFO = 'Minimum number of samples needed before the tree can split a node.';
+const MIN_SAMPLES_LEAF_INFO = 'Minimum number of samples required in any leaf node.';
+const ESTIMATORS_INFO = 'The number of decision trees to use in the ensemble.';
+const MAX_FEATURES_INFO =
+    'The maximum number of features to consider when looking for the best split.';
+const NUM_RANDOM_THRESHOLDS_INFO =
+    'The number of random thresholds to consider when looking for the best split.';
+
 const DEFAULT_MODEL_VARIANTS = [
     {
         value: 'decision',
         label: 'Single Decision Tree',
+        info: 'Simple model that makes decisions based on a series of binary splits.',
     },
     {
         value: 'bagging',
         label: 'Bagging',
+        info: 'Creates multiple trees using random samples of data. Averages their predictions for better results.',
     },
     {
         value: 'forest',
         label: 'Random Forest',
+        info: 'Creates multiple trees using random samples of data and random features. Combines their predictions.',
     },
     {
         value: 'extra',
         label: 'Extra Trees',
+        info: 'Creates multiple trees using random samples, random features, and random split points. Even more randomness than Random Forest.',
     },
 ];
 
@@ -58,7 +72,7 @@ export function TreeSettings({
 
     return (
         <>
-            <Field label="Model Variant">
+            <Field label="Model Variant" info={MODEL_VARIANT_INFO}>
                 <RadioGroup
                     value={modelVariant}
                     onValueChange={handleModelVariantChange}
@@ -69,7 +83,11 @@ export function TreeSettings({
                         return (
                             <div className="flex items-center space-x-2" key={model.value}>
                                 <RadioGroup.Item value={model.value} id={model.value} />
-                                <Label className="font-normal" htmlFor={model.value}>
+                                <Label
+                                    className="font-normal"
+                                    htmlFor={model.value}
+                                    title={model.info}
+                                >
                                     {model.label}
                                 </Label>
                             </div>
@@ -83,7 +101,7 @@ export function TreeSettings({
                 disabled={disabled}
                 onChange={(criterion) => onChange({ ...settings, criterion })}
             />
-            <Field label="Max Depth">
+            <Field label="Max Depth" info={MAX_DEPTH_INFO}>
                 <Input
                     disabled={disabled}
                     placeholder="Max Depth"
@@ -96,7 +114,7 @@ export function TreeSettings({
                 />
             </Field>
             <div className="grid gap-2 grid-cols-2">
-                <Field label="Min Samples Split">
+                <Field label="Min Samples Split" info={MIN_SAMPLES_SPLIT_INFO}>
                     <Input
                         disabled={disabled}
                         placeholder="Min Samples Split"
@@ -108,7 +126,7 @@ export function TreeSettings({
                         onChange={(e) => handleInputChange('minSamplesSplit', e.target.value)}
                     />
                 </Field>
-                <Field label="Min Samples Leaf">
+                <Field label="Min Samples Leaf" info={MIN_SAMPLES_LEAF_INFO}>
                     <Input
                         disabled={disabled}
                         placeholder="Min Samples Leaf"
@@ -123,7 +141,7 @@ export function TreeSettings({
             </div>
             {needsEstimators && (
                 <>
-                    <Field label="Estimators">
+                    <Field label="Estimators" info={ESTIMATORS_INFO}>
                         <Input
                             disabled={disabled}
                             placeholder="Estimators"
@@ -139,7 +157,7 @@ export function TreeSettings({
             )}
             <div className="grid gap-2 grid-cols-2">
                 {needsMaxFeatures && (
-                    <Field label="Max Features">
+                    <Field label="Max Features" info={MAX_FEATURES_INFO}>
                         <Input
                             disabled={disabled}
                             placeholder="Max Features"
@@ -153,7 +171,7 @@ export function TreeSettings({
                     </Field>
                 )}
                 {needsRandomThresholds && (
-                    <Field label="Random Thresholds">
+                    <Field label="Random Thresholds" info={NUM_RANDOM_THRESHOLDS_INFO}>
                         <Input
                             disabled={disabled}
                             placeholder="Random Thresholds"

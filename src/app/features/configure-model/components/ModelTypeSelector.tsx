@@ -13,6 +13,8 @@ type ModelTypeProps = {
 
 const modelRegistry = getModelRegistry();
 
+const MODEL_TYPE_INFO = 'The algorithm used to find patterns in the data and make predictions.';
+
 export function ModelTypeSelector({ taskType, disabled }: ModelTypeProps) {
     const modelType = useModelType();
 
@@ -24,7 +26,7 @@ export function ModelTypeSelector({ taskType, disabled }: ModelTypeProps) {
     };
 
     return (
-        <Field label="Model Type" htmlFor="modelType">
+        <Field label="Model Type" htmlFor="modelType" info={MODEL_TYPE_INFO}>
             <Select
                 disabled={disabled}
                 value={modelType}

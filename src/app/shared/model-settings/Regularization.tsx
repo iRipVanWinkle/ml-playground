@@ -9,6 +9,12 @@ type RegularizationProps = {
 
 const DEFAULT_LAMBDA = 1;
 const DEFAULT_ELASTICNET_ALPHA = 0.5;
+const REGULARIZATION_INFO =
+    'Prevents the model from overfitting to training data. Helps it work on new data.';
+const LAMBDA_INFO =
+    'Controls the strength of regularization. Higher values make the model simpler.';
+const ELASTICNET_ALPHA_INFO =
+    'Controls the balance between ignoring features and keeping them small.';
 
 const DEFAULT_REGULARIZATIONS = [
     {
@@ -18,14 +24,17 @@ const DEFAULT_REGULARIZATIONS = [
     {
         value: 'l2',
         label: 'L2 (Ridge)',
+        info: 'Keeps model values small and spread evenly. Prevents the model from relying too much on any single feature.',
     },
     {
         value: 'l1',
         label: 'L1 (Lasso)',
+        info: 'Sets some weights to exactly zero, which helps ignore less important features. Useful when you have many features.',
     },
     {
         value: 'elasticnet',
         label: 'Elastic Net',
+        info: 'Combines L1 and L2 regularization. Can both ignore unimportant features and keep remaining weights small.',
     },
 ];
 
@@ -70,7 +79,11 @@ export default function Regularization({
     return (
         <>
             <div className={containerClass}>
-                <Field label="Regularization" htmlFor="regularizationSelect">
+                <Field
+                    label="Regularization"
+                    htmlFor="regularizationSelect"
+                    info={REGULARIZATION_INFO}
+                >
                     <Select
                         disabled={disabled}
                         value={regularization.type as string}
@@ -85,7 +98,7 @@ export default function Regularization({
                         </Select.Trigger>
                         <Select.Content>
                             {DEFAULT_REGULARIZATIONS.map((func) => (
-                                <Select.Item key={func.value} value={func.value}>
+                                <Select.Item key={func.value} value={func.value} title={func.info}>
                                     {func.label}
                                 </Select.Item>
                             ))}
@@ -94,7 +107,7 @@ export default function Regularization({
                 </Field>
 
                 {(isL || isElasticNet) && (
-                    <Field label="Lambda" htmlFor="lambdaInput">
+                    <Field label="Lambda" htmlFor="lambdaInput" info={LAMBDA_INFO}>
                         <Input
                             id="lambdaInput"
                             data-testid="lambda-input"
@@ -112,7 +125,7 @@ export default function Regularization({
             </div>
 
             {isElasticNet && (
-                <Field label="Alpha (α)" htmlFor="alphaInput">
+                <Field label="Alpha (α)" htmlFor="alphaInput" info={ELASTICNET_ALPHA_INFO}>
                     <div className="flex justify-between">
                         <span className="text-xs text-muted-foreground">
                             L1 ({regularization.alpha.toFixed(1)})

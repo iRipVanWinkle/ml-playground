@@ -9,12 +9,36 @@ type LayersProps = {
     onChange: (layers: Layers[]) => void;
 };
 
+const LAYERS_INFO = 'Define the neural network structure: neurons and activation per layer.';
+
 const DEFAULT_ACTIVATION_FUNCTIONS = [
-    { value: 'linear', label: 'Linear' },
-    { value: 'relu', label: 'ReLU', title: 'Rectified Linear Unit' },
-    { value: 'sigmoid', label: 'Sigmoid' },
-    { value: 'tanh', label: 'Tanh', title: 'Hyperbolic Tangent' },
-    { value: 'softmax', label: 'Softmax' },
+    {
+        value: 'linear',
+        label: 'Linear',
+        info: 'No change to the input. Good for predicting numbers (regression problems).',
+    },
+    {
+        value: 'relu',
+        label: 'ReLU',
+        title: 'Rectified Linear Unit',
+        info: 'Outputs the input if positive, otherwise outputs zero. Most common for hidden layers in the network.',
+    },
+    {
+        value: 'sigmoid',
+        label: 'Sigmoid',
+        info: 'Converts output to a value between 0 and 1. Good for yes/no problems (binary classification).',
+    },
+    {
+        value: 'tanh',
+        label: 'Tanh',
+        title: 'Hyperbolic Tangent',
+        info: 'Transforms output to a range between -1 and 1. Similar to sigmoid but centered at zero instead of 0.5.',
+    },
+    {
+        value: 'softmax',
+        label: 'Softmax',
+        info: 'Outputs probabilities for each class. Good for problems with multiple classes.',
+    },
 ];
 
 export default function Layers({ layers, onChange, disabled }: LayersProps) {
@@ -54,7 +78,7 @@ export default function Layers({ layers, onChange, disabled }: LayersProps) {
     };
 
     return (
-        <Field label="Layers">
+        <Field label="Layers" info={LAYERS_INFO}>
             {localLayers.map((layer, index) => {
                 return (
                     <div
@@ -90,7 +114,7 @@ export default function Layers({ layers, onChange, disabled }: LayersProps) {
                                         <Select.Item
                                             key={item.value}
                                             value={item.value}
-                                            title={item.title}
+                                            title={item.info}
                                         >
                                             {item.label}
                                         </Select.Item>

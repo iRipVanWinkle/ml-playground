@@ -9,19 +9,24 @@ type ClassificationTypeProps = {
     onChange: (config: ClassificationTypeName) => void;
 };
 
+const CLASSIFICATION_TYPE_INFO = 'Determines how the model handles different numbers of classes.';
+
 const DEFAULT_CLASSIFICATION_TYPES = [
     {
         value: 'binary',
         label: 'Binary Classification (Sigmoid)',
         onlyBinary: true,
+        info: 'Predicts one of two classes (yes/no).',
     },
     {
         value: 'softmax',
         label: 'Multiclass Classification (Softmax)',
+        info: 'Uses one model to predict which class each example belongs to. Good for problems with multiple classes.',
     },
     {
         value: 'ovr',
         label: 'Multiclass Classification (One-vs-Rest)',
+        info: 'Trains one yes/no model for each class. Can work well when classes are very different from each other.',
     },
 ];
 
@@ -41,7 +46,7 @@ export default function ClassificationType({
     }, [isMulticlass, classificationType, onChange]);
 
     return (
-        <Field label="Classification Type">
+        <Field label="Classification Type" info={CLASSIFICATION_TYPE_INFO}>
             <RadioGroup
                 value={classificationType}
                 onValueChange={(value) => onChange(value as ClassificationTypeName)}
@@ -51,7 +56,7 @@ export default function ClassificationType({
                 {DEFAULT_CLASSIFICATION_TYPES.map((model) => {
                     const disabledBinary = model.onlyBinary && isMulticlass;
                     const tooltip = disabledBinary
-                        ? 'This option is not suitable for multiclass classification.'
+                        ? 'Binary classification only works with two classes. Use multiclass methods for problems with more classes.'
                         : undefined;
 
                     return (
@@ -63,7 +68,11 @@ export default function ClassificationType({
                                     data-testid={`classification-type-${model.value}`}
                                     disabled={disabledBinary}
                                 />
-                                <Label className="font-normal" htmlFor={model.value}>
+                                <Label
+                                    className="font-normal"
+                                    htmlFor={model.value}
+                                    title={model.info}
+                                >
                                     {model.label}
                                 </Label>
                             </div>

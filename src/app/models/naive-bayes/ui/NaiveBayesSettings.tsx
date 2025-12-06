@@ -2,6 +2,9 @@ import type { NaiveBayesSettings as NaiveBayesSettingsType, NaiveBayesVariant } 
 import type { ModelSettingsComponentProps } from '@/app/shared/registry';
 import { Field, Select } from '@/app/shared/ui';
 
+const VARIANT_INFO =
+    'The variant of Naive Bayes to use. Different variants make different assumptions about the data distribution.';
+
 export function NaiveBayesSettings({
     settings,
     disabled,
@@ -12,13 +15,21 @@ export function NaiveBayesSettings({
     };
 
     const variantOptions = [
-        { value: 'gaussian', label: 'Gaussian' },
-        { value: 'quadratic', label: 'Quadratic' },
+        {
+            value: 'gaussian',
+            label: 'Gaussian',
+            info: 'Assumes data follows a bell curve pattern. Good for numbers that can have any value (like height or weight).',
+        },
+        {
+            value: 'quadratic',
+            label: 'Quadratic',
+            info: 'Assumes each class has its own covariance. Good for discrete counts or categories (like counts).',
+        },
     ];
 
     return (
         <>
-            <Field label="Variant" htmlFor="naiveBayesVariant">
+            <Field label="Variant" htmlFor="naiveBayesVariant" info={VARIANT_INFO}>
                 <Select
                     disabled={disabled}
                     value={settings.variant}
@@ -37,7 +48,11 @@ export function NaiveBayesSettings({
                     </Select.Trigger>
                     <Select.Content>
                         {variantOptions.map((option) => (
-                            <Select.Item key={option.value} value={option.value}>
+                            <Select.Item
+                                key={option.value}
+                                value={option.value}
+                                title={option.info}
+                            >
                                 {option.label}
                             </Select.Item>
                         ))}
