@@ -13,6 +13,8 @@ export const initState: TrainingStore = {
         trainPredictedLabels: EMPTY_MATRIX_LIKE,
         testPredictedLabels: EMPTY_MATRIX_LIKE,
         theta: EMPTY_MATRIX_LIKE,
+        trainMetrics: null,
+        trainResiduals: EMPTY_MATRIX_LIKE,
     },
 };
 

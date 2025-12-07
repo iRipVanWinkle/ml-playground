@@ -1,3 +1,4 @@
+import type { RegressionMetricsData } from '@/app/shared/visualization';
 import type {
     LossFunctionConfig,
     OptimizerConfig,
@@ -34,7 +35,11 @@ export type LinearTrainingReport = {
     trainLoss: number;
     testLoss: number;
     trainPredictedLabels: MatrixLike;
-    testPredictedLabels: MatrixLike;
+    testPredictedLabels?: MatrixLike;
     predictionPredictedLabels?: MatrixLike;
     theta: MatrixLike;
+    trainMetrics: RegressionMetricsData | null;
+    testMetrics?: RegressionMetricsData | null;
+    trainResiduals: MatrixLike;
+    testResiduals?: MatrixLike;
 };

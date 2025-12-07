@@ -5,7 +5,13 @@ import { DEFAULT_OPTIMIZER } from '../defaults';
 import { NeuralSettings } from './ui/NeuralSettings';
 import { NeuralMainMetrics } from './ui/NeuralMainMetrics';
 import { NeuralModelDataPlots } from './ui/NeuralModelDataPlots';
-import { LossHistory, ConfusionMatrix, RocCurve } from '@/app/shared/visualization';
+import {
+    LossHistory,
+    ConfusionMatrix,
+    RocCurve,
+    ResidualsPlot,
+    RegressionMetrics,
+} from '@/app/shared/visualization';
 
 export const neuralModelDefinition: ModelDefinition<'neural'> = {
     key: 'neural',
@@ -64,9 +70,9 @@ export const neuralModelDefinition: ModelDefinition<'neural'> = {
                     trainLoss: 0,
                     testLoss: 0,
                     trainPredictedLabels: EMPTY_MATRIX_LIKE,
-                    testPredictedLabels: EMPTY_MATRIX_LIKE,
-                    predictionPredictedLabels: EMPTY_MATRIX_LIKE,
                     theta: EMPTY_MATRIX_LIKE,
+                    trainMetrics: null,
+                    trainResiduals: EMPTY_MATRIX_LIKE,
                 };
             default:
                 throw new Error(`Unsupported task type: ${taskType}`);
@@ -77,7 +83,11 @@ export const neuralModelDefinition: ModelDefinition<'neural'> = {
         modelDataPlotComponent: NeuralModelDataPlots,
         plots: (taskType) =>
             taskType === 'regression'
-                ? [{ title: 'Loss History', component: LossHistory }]
+                ? [
+                      { title: 'Loss History', component: LossHistory },
+                      { title: 'Metrics', component: RegressionMetrics },
+                      { title: 'Residuals', component: ResidualsPlot },
+                  ]
                 : [
                       { title: 'Loss History', component: LossHistory },
                       { title: 'Confusion Matrix', component: ConfusionMatrix },

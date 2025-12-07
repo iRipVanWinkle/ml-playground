@@ -8,13 +8,13 @@ export class MeanSquaredError implements LossFunction {
      * It measures the average of the squares of the errors, which is the difference
      * between the predicted and actual values.
      *
-     * The formula for MSE is:
+     * Formula:
      *     MSE = (1/n) * Σ(y_true - y_pred)²
      *
      * where:
-     *     - n is the number of samples
-     *     - y_true is the true value
-     *     - y_pred is the predicted value
+     *     - n: number of samples
+     *     - y_true: true value
+     *     - y_pred: predicted value
      *
      * @param yTrue - The true values (labels).
      * @param yPred - The predicted values.
@@ -27,7 +27,7 @@ export class MeanSquaredError implements LossFunction {
     /**
      * Computes the gradient of the Mean Squared Error (MSE) loss function.
      *
-     * The gradients are computed as follows:
+     * Formula:
      *   - For the bias term:
      *       ∇MSE_bias = (1/n) * Σ (y_pred - y_true)
      *   - For the weights:
@@ -35,13 +35,13 @@ export class MeanSquaredError implements LossFunction {
      *
      * where:
      *   - n: number of samples
-     *   - x: feature matrix (shape: [n_samples, n_features])
-     *   - y_true: true values (labels) (shape: [n_samples, 1])
-     *   - y_pred: predicted values (shape: [n_samples, 1])
+     *   - x: feature matrix
+     *   - y_true: true values (labels)
+     *   - y_pred: predicted values
      *
-     * @param xTrue - The feature matrix (shape: [n_samples, n_features]).
-     * @param yTrue - The true values (labels) (shape: [n_samples, 1]).
-     * @param yPred - The predicted values (shape: [n_samples, 1]).
+     * @param xTrue - The feature matrix.
+     * @param yTrue - The true values (labels).
+     * @param yPred - The predicted values.
      * @returns Tensor2D containing the gradients.
      */
     parameterGradient(xTrue: Tensor2D, yTrue: Tensor2D, yPred: Tensor2D): Tensor2D {
@@ -65,15 +65,15 @@ export class MeanSquaredError implements LossFunction {
     /**
      * Computes the gradient of the Mean Squared Error (MSE) loss function with respect to the predictions.
      *
-     * The gradient is computed as follows:
+     * Formula:
      *   - grad = 2 * (y_pred - y_true)
      *
      * where:
-     *   - y_true: true values (labels) (shape: [n_samples, 1])
-     *   - y_pred: predicted values (shape: [n_samples, 1])
+     *   - y_true: true values (labels)
+     *   - y_pred: predicted values
      *
-     * @param yTrue - The true values (labels) (shape: [n_samples, 1]).
-     * @param yPred - The predicted values (shape: [n_samples, 1]).
+     * @param yTrue - The true values (labels).
+     * @param yPred - The predicted values.
      * @returns Tensor2D containing the gradients.
      */
     predictionGradient(yTrue: Tensor2D, yPred: Tensor2D): Tensor2D {

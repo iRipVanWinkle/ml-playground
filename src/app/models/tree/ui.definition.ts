@@ -4,7 +4,12 @@ import { EMPTY_MATRIX_LIKE } from '@/ml/matrix';
 import { TreeSettings } from './ui/TreeSettings';
 import { TreeMainMetrics } from './ui/TreeMainMetrics';
 import { TreeModelDataPlots } from './ui/TreeModelDataPlots';
-import { ConfusionMatrix, RocCurve } from '@/app/shared/visualization';
+import {
+    ConfusionMatrix,
+    RegressionMetrics,
+    ResidualsPlot,
+    RocCurve,
+} from '@/app/shared/visualization';
 
 export const treeModelDefinition: ModelDefinition<'tree'> = {
     key: 'tree',
@@ -62,8 +67,8 @@ export const treeModelDefinition: ModelDefinition<'tree'> = {
                     iterations: [],
                     testLoss: 0,
                     trainPredictedLabels: EMPTY_MATRIX_LIKE,
-                    testPredictedLabels: EMPTY_MATRIX_LIKE,
-                    predictionPredictedLabels: EMPTY_MATRIX_LIKE,
+                    trainMetrics: null,
+                    trainResiduals: EMPTY_MATRIX_LIKE,
                 };
             default:
                 throw new Error(`Unsupported task type: ${taskType}`);
@@ -74,7 +79,10 @@ export const treeModelDefinition: ModelDefinition<'tree'> = {
         modelDataPlotComponent: TreeModelDataPlots,
         plots: (taskType) =>
             taskType === 'regression'
-                ? []
+                ? [
+                      { title: 'Metrics', component: RegressionMetrics },
+                      { title: 'Residuals', component: ResidualsPlot },
+                  ]
                 : [
                       { title: 'Confusion Matrix', component: ConfusionMatrix },
                       { title: 'ROC Curve', component: RocCurve },

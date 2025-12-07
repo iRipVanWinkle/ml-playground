@@ -7,7 +7,11 @@ import type {
     ThetaInitializationConfig,
 } from '@/ml/factories';
 import type { MatrixLike } from '@/ml/matrix';
-import type { ConfusionMatrixData, RocCurveData } from '@/app/shared/visualization';
+import type {
+    ConfusionMatrixData,
+    RegressionMetricsData,
+    RocCurveData,
+} from '@/app/shared/visualization';
 
 export type NeuralSettings = {
     type: 'neural';
@@ -55,7 +59,11 @@ export type NeuralRegressionTrainingReport = {
     trainLoss: number;
     testLoss: number;
     trainPredictedLabels: MatrixLike;
-    testPredictedLabels: MatrixLike;
+    testPredictedLabels?: MatrixLike;
     predictionPredictedLabels?: MatrixLike;
     theta: MatrixLike;
+    trainMetrics: RegressionMetricsData | null;
+    testMetrics?: RegressionMetricsData | null;
+    trainResiduals: MatrixLike;
+    testResiduals?: MatrixLike;
 };

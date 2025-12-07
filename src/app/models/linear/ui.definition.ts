@@ -3,7 +3,12 @@ import { DEFAULT_OPTIMIZER } from '../defaults';
 import { LinearSettings } from './ui/LinearSettings';
 import { LinearMainMetrics } from './ui/LinearMainMetrics';
 import { EMPTY_MATRIX_LIKE } from '@/ml/matrix';
-import { LinearPlots, LossHistory } from '@/app/shared/visualization';
+import {
+    LinearPlots,
+    LossHistory,
+    RegressionMetrics,
+    ResidualsPlot,
+} from '@/app/shared/visualization';
 
 export const linearModelDefinition: ModelDefinition<'linear'> = {
     key: 'linear',
@@ -26,14 +31,18 @@ export const linearModelDefinition: ModelDefinition<'linear'> = {
         trainLoss: 0,
         testLoss: 0,
         trainPredictedLabels: EMPTY_MATRIX_LIKE,
-        testPredictedLabels: EMPTY_MATRIX_LIKE,
-        predictionPredictedLabels: EMPTY_MATRIX_LIKE,
         theta: EMPTY_MATRIX_LIKE,
+        trainMetrics: null,
+        trainResiduals: EMPTY_MATRIX_LIKE,
     }),
     visualization: {
         metricsGridComponent: LinearMainMetrics,
         modelDataPlotComponent: LinearPlots,
-        plots: [{ title: 'Loss History', component: LossHistory }],
+        plots: [
+            { title: 'Loss History', component: LossHistory },
+            { title: 'Metrics', component: RegressionMetrics },
+            { title: 'Residuals', component: ResidualsPlot },
+        ],
     },
 
     progress: {
