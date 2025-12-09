@@ -1,10 +1,6 @@
-export type NormalizationMethod = 'none' | 'zscore' | 'linear' | 'log';
-export type TransformationType = 'sinusoid' | 'cosinusoid' | 'fourier' | 'polynomial';
+import type { Transformation } from '@/app/shared/types';
 
-export type Transformation = {
-    type: TransformationType;
-    degree: number;
-};
+export type NormalizationMethod = 'none' | 'zscore' | 'linear' | 'log';
 
 export type TransformationSettings = {
     normalization: NormalizationMethod;

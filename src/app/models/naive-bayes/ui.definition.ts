@@ -1,7 +1,7 @@
 import type { ModelDefinition } from '@/app/shared/registry/types';
 import { NaiveBayesSettings } from './ui/NaiveBayesSettings';
 import { NaiveBayesMainMetrics } from './ui/NaiveBayesMainMetrics';
-import { EMPTY_MATRIX_LIKE } from '@/ml/matrix';
+import { EMPTY_MATRIX_LIKE } from '@/app/shared/helpers';
 import {
     LogisticPlots,
     ClassConditionalPlot,

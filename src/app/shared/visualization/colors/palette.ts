@@ -105,6 +105,19 @@ const DARK_THEME_COLORS = {
     },
 } as const;
 
+export const NAME_COLORS = {
+    blue: 0,
+    orange: 1,
+    green: 2,
+    red: 3,
+    gray: 4,
+    yellow: 5,
+    lightBlue: 6,
+    vermillion: 7,
+} as const;
+
+export type NameColor = keyof typeof NAME_COLORS;
+
 /**
  * Get the color scheme for the theme
  */

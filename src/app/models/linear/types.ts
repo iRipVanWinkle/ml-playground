@@ -5,7 +5,7 @@ import type {
     RegularizationConfig,
     ThetaInitializationConfig,
 } from '@/ml/factories';
-import type { MatrixLike } from '@/ml/matrix';
+import type { MatrixLike } from '@/app/shared/helpers';
 import type { OptimizerCallbackParameters } from '@/ml/types';
 import type { Tensor2D } from '@tensorflow/tfjs';
 

@@ -1,6 +1,7 @@
 export * from './basic/button';
 export * from './basic/card';
 export * from './basic/checkbox';
+export * from './basic/collapsible';
 export * from './basic/delayed-loader';
 export * from './basic/dropdown-menu';
 export * from './basic/field';

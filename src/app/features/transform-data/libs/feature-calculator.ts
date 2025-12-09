@@ -1,5 +1,5 @@
-import { calculateOutputFeatures } from '@/ml/data-processing/transformation/calculateOutputFeatures';
-import type { TransformationType } from '../store/types';
+import type { TransformationType } from '@/app/shared/types';
+import { calculateOutputFeatures } from '@/app/shared/helpers';
 
 export function calculateTransformationOutputFeatures(
     type: TransformationType,

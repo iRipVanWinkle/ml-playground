@@ -1,4 +1,4 @@
-import type { MatrixLike } from '@/ml/matrix';
+import type { MatrixLike } from '@/app/shared/helpers';
 import { auc, macroAverage, multiclassRocCurve, rocCurve, weightedAverage } from '@/ml/metrics';
 import type { RocCurveData } from '../types';
 

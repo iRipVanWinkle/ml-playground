@@ -4,11 +4,11 @@ import {
     regularizationFactory,
     thetaInitializerFactory,
 } from '@/ml/factories';
-import { NeuralNetwork } from '@/ml/models';
-import type { TrainingSettings } from '../../types';
 import type { TrainingControl, TrainingEventEmitter } from '@/ml/types';
+import { NeuralNetwork } from '@/ml/models';
+import { calculateOutputFeatures } from '@/app/shared/helpers';
+import type { TrainingSettings } from '../../types';
 import type { NeuralSettings } from '../types';
-import { calculateOutputFeatures } from '@/ml/data-processing/transformation/calculateOutputFeatures';
 
 export function neuralModelFactory(
     settings: TrainingSettings<NeuralSettings>,

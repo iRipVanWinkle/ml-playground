@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Button, Field } from '@/app/shared/ui';
-import { type TransformationType, useTransformations } from '../store';
+import { useTransformations } from '../store';
 import { resetTransformations, updateTransformations } from '../store/actions';
 import {
     createEmptyTransformation,
@@ -9,7 +9,7 @@ import {
     removeTransformation,
 } from '../libs';
 import { TransformationItem } from './TransformationItem';
-import type { TaskType } from '@/app/shared/types';
+import type { TaskType, TransformationType } from '@/app/shared/types';
 
 type TransformationBuilderProps = {
     disabled?: boolean;

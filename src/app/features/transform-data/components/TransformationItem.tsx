@@ -2,7 +2,7 @@ import { type ChangeEvent } from 'react';
 import { Button, Input, Select } from '@/app/shared/ui';
 import { TRANSFORMATION_TYPES } from '../constants';
 import { calculateTransformationOutputFeatures, isPolynomialWithDegreeOne } from '../libs';
-import type { Transformation, TransformationType } from '../store';
+import type { Transformation, TransformationType } from '@/app/shared/types';
 
 export type TransformationItemProps = {
     transformation: Transformation;

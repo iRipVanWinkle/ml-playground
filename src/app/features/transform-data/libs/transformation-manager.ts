@@ -1,4 +1,4 @@
-import type { Transformation, TransformationType } from '../store/types';
+import type { Transformation, TransformationType } from '@/app/shared/types';
 
 export function createEmptyTransformation(): Transformation {
     return { type: '', degree: 1 } as unknown as Transformation;

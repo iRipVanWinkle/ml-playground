@@ -7,3 +7,4 @@ export const initState: TransformationSettings = {
 };
 
 export const useTransformationStore = create(() => initState);
+export const useTransformations = () => useTransformationStore((state) => state.transformations);

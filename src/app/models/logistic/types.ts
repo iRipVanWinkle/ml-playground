@@ -1,6 +1,6 @@
 import type { Tensor2D } from '@tensorflow/tfjs';
 import type { OptimizerCallbackParameters } from '@/ml/types';
-import type { MatrixLike } from '@/ml/matrix';
+import type { MatrixLike } from '@/app/shared/helpers';
 import type {
     LossFunctionConfig,
     OptimizerConfig,

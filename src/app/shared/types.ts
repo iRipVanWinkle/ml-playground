@@ -13,6 +13,13 @@ export type Dataset = {
     isImage?: boolean;
 };
 
+export type TransformationType = 'sinusoid' | 'cosinusoid' | 'fourier' | 'polynomial';
+
+export type Transformation = {
+    type: TransformationType;
+    degree: number;
+};
+
 export type TypedArray = Float32Array | Uint32Array | Int32Array;
 
 export type TypedMatrix = {

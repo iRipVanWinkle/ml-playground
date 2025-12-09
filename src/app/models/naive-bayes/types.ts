@@ -1,5 +1,5 @@
 import type { ConfusionMatrixData, RocCurveData } from '@/app/shared/visualization';
-import type { MatrixLike } from '@/ml/matrix';
+import type { MatrixLike } from '@/app/shared/helpers';
 import type {
     NaiveBayesCallbackParameters as NaiveBayesCallbackParametersType,
     NaiveBayesParams,

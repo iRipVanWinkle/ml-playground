@@ -2,7 +2,7 @@ import type { ModelDefinition } from '@/app/shared/registry/types';
 import { DEFAULT_OPTIMIZER } from '../defaults';
 import { LogisticSettings } from './ui/LogisticSettings';
 import { LogisticMainMetrics } from './ui/LogisticMainMetrics';
-import { EMPTY_MATRIX_LIKE } from '@/ml/matrix';
+import { EMPTY_MATRIX_LIKE } from '@/app/shared/helpers';
 import { LogisticPlots, LossHistory, ConfusionMatrix, RocCurve } from '@/app/shared/visualization';
 
 function arrayAvg(arr: number[]): number {

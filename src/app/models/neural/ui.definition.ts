@@ -1,6 +1,6 @@
 import type { ModelDefinition } from '@/app/shared/registry/types';
 import type { TaskType } from '@/app/shared/types';
-import { EMPTY_MATRIX_LIKE } from '@/ml/matrix';
+import { EMPTY_MATRIX_LIKE } from '@/app/shared/helpers';
 import { DEFAULT_OPTIMIZER } from '../defaults';
 import { NeuralSettings } from './ui/NeuralSettings';
 import { NeuralMainMetrics } from './ui/NeuralMainMetrics';

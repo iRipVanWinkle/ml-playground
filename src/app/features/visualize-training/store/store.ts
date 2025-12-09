@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import type { TrainingStore } from './types';
-import { EMPTY_MATRIX_LIKE } from '@/ml/matrix';
+import { EMPTY_MATRIX_LIKE } from '@/app/shared/helpers';
 
 export const initState: TrainingStore = {
     trainingReport: {

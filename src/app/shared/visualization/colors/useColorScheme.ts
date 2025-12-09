@@ -3,8 +3,10 @@ import {
     DEFAULT_THEME,
     getColorScheme,
     getPlotlyColors,
+    NAME_COLORS,
     type ColorScheme,
     type ColorVariant,
+    type NameColor,
     type ThemeType,
 } from './palette';
 import { useMemo } from 'react';
@@ -30,7 +32,7 @@ export function useColorScheme(): ColorScheme {
  * Get the color for the effective theme
  */
 type UseColorReturn = {
-    getColor: (index: number, variant?: ColorVariant) => string;
+    getColor: (index: number | NameColor, variant?: ColorVariant) => string;
 };
 
 export function useColor(): UseColorReturn {
@@ -38,8 +40,10 @@ export function useColor(): UseColorReturn {
 
     return useMemo(
         () => ({
-            getColor: (index: number, variant: ColorVariant = 'base') =>
-                scheme[variant][index % scheme[variant].length],
+            getColor: (index: number | NameColor, variant: ColorVariant = 'base') =>
+                scheme[variant][
+                    typeof index === 'number' ? index % scheme[variant].length : NAME_COLORS[index]
+                ],
         }),
         [scheme],
     );

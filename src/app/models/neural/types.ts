@@ -6,7 +6,7 @@ import type {
     RegularizationConfig,
     ThetaInitializationConfig,
 } from '@/ml/factories';
-import type { MatrixLike } from '@/ml/matrix';
+import type { MatrixLike } from '@/app/shared/helpers';
 import type {
     ConfusionMatrixData,
     RegressionMetricsData,

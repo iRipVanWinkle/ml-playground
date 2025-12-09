@@ -1,14 +1,14 @@
 import type { ModelDefinition } from '@/app/shared/registry/types';
-import { DEFAULT_OPTIMIZER } from '../defaults';
-import { LinearSettings } from './ui/LinearSettings';
-import { LinearMainMetrics } from './ui/LinearMainMetrics';
-import { EMPTY_MATRIX_LIKE } from '@/ml/matrix';
+import { EMPTY_MATRIX_LIKE } from '@/app/shared/helpers';
 import {
     LinearPlots,
     LossHistory,
     RegressionMetrics,
     ResidualsPlot,
 } from '@/app/shared/visualization';
+import { DEFAULT_OPTIMIZER } from '../defaults';
+import { LinearSettings } from './ui/LinearSettings';
+import { LinearMainMetrics } from './ui/LinearMainMetrics';
 
 export const linearModelDefinition: ModelDefinition<'linear'> = {
     key: 'linear',

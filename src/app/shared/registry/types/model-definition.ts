@@ -1,6 +1,6 @@
 import type { ComponentType, ReactNode } from 'react';
-import type { ModelType } from '@/app/models/types';
-import type { Dataset, TaskType } from '@/app/shared/types';
+import type { ModelSettings, ModelType } from '@/app/models/types';
+import type { Dataset, TaskType, Transformation } from '@/app/shared/types';
 import type { SettingsOf, TrainingReportOf } from './utils';
 
 export type PlotVisualization<TKey extends ModelType> = {
@@ -25,6 +25,7 @@ export interface ModelDefinition<TKey extends ModelType = ModelType> {
         metricsGridComponent: ComponentType<MainMetricsProps<TrainingReportOf<TKey>>>;
         modelDataPlotComponent: ComponentType<ModelDataPlotProps<TrainingReportOf<TKey>>>;
         plots?: PlotsVisualization<TKey>;
+        parametersComponent?: ComponentType<ParametersVisualizationProps<TrainingReportOf<TKey>>>;
     };
 
     progress: {
@@ -56,6 +57,13 @@ export type ModelDataPlotProps<TTrainingReport> = {
 
 export type PlotProps<TTrainingReport> = {
     dataset: Dataset;
+    report: TTrainingReport;
+};
+
+export type ParametersVisualizationProps<TTrainingReport> = {
+    dataset: Dataset;
+    modelSettings: ModelSettings;
+    transformations: Transformation[];
     report: TTrainingReport;
 };
 
