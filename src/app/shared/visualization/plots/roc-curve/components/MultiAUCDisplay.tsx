@@ -32,7 +32,7 @@ export function MultiAUCDisplay({ rocCurveData, categories }: MultiAUCDisplayPro
         <>
             <div className="grid grid-cols-2 gap-3">
                 {AUC_CONFIG.map((config) => (
-                    <div className="p-4 rounded-lg bg-primary-foreground">
+                    <div key={config.value} className="p-4 rounded-lg bg-primary-foreground">
                         <AUCCard
                             label={config.label}
                             value={rocCurveData[config.value]}

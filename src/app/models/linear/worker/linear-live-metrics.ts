@@ -105,7 +105,7 @@ export class LinearLiveMetrics
             testR2Value,
             testResidualsArray,
         ] = await Promise.all([
-            getMatrixFromTensor(theta),
+            getMatrixFromTensor(theta.transpose()),
             getSafeMatrixFromTensor(yPredictions),
             // train
             getMatrixFromTensor(yTraining),

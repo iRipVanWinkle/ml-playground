@@ -51,20 +51,8 @@ export class LogisticLiveMetrics
         this.iterationCounts[threadId] = iteration + 1;
     }
 
-    getIterations(): number[] {
-        return [...this.iterationCounts];
-    }
-
-    getModelRepresentation(): Tensor2D {
-        return concat(this.thetaArray.filter(Boolean), 1) as Tensor2D;
-    }
-
-    getFormattedLossHistory(): number[][] {
-        return fixLength(this.lossHistory);
-    }
-
     async calculateMetrics(): Promise<LogisticTrainingReport> {
-        const modelRepresentation = this.getModelRepresentation();
+        const modelRepresentation = concat(this.thetaArray.filter(Boolean), 1) as Tensor2D;
 
         const trainingData = this.datasetManager.getTrainingData();
         const testData = this.datasetManager.getTestData();
@@ -117,7 +105,7 @@ export class LogisticLiveMetrics
             testProbabilityValue,
             testLabelValue,
         ] = await Promise.all([
-            getSafeMatrixFromTensor(modelRepresentation),
+            getSafeMatrixFromTensor(modelRepresentation.transpose()),
             getSafeMatrixFromTensor(yPredictions),
             // train
             getSafeMatrixFromTensor(yTraining),
@@ -149,8 +137,8 @@ export class LogisticLiveMetrics
         return {
             type: 'logistic',
             taskType: 'classification',
-            trainLossHistory: this.getFormattedLossHistory(),
-            iterations: this.getIterations(),
+            trainLossHistory: fixLength(this.lossHistory),
+            iterations: this.iterationCounts,
             testAccuracy: testAccuracyValue!,
             trainAccuracy: trainAccuracyValue!,
             trainPredictedLabels: trainPredictedLabels!,

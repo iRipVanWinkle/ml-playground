@@ -1,1 +1,1 @@
-export { type MatrixLike, EMPTY_MATRIX_LIKE } from '@/ml/matrix';
+export { type MatrixLike, type TypedArray, EMPTY_MATRIX_LIKE } from '@/ml/matrix';

@@ -1,4 +1,4 @@
-import type { TypedArray } from '@/app/shared/types';
+import type { TypedArray } from '@/app/shared/helpers';
 
 export type BinaryLineParams = {
     x: TypedArray;

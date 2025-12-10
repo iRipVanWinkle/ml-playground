@@ -1,6 +1,6 @@
 import type { Tensor2D } from '@tensorflow/tfjs';
 
-type TypedArray = Float32Array | Uint8Array | Int32Array;
+export type TypedArray = Float32Array | Uint8Array | Int32Array;
 
 /**
  * A type representing a matrix-like object.

@@ -4,6 +4,7 @@ import {
     LinearPlots,
     LossHistory,
     RegressionMetrics,
+    RegressionParameters,
     ResidualsPlot,
 } from '@/app/shared/visualization';
 import { DEFAULT_OPTIMIZER } from '../defaults';
@@ -43,6 +44,7 @@ export const linearModelDefinition: ModelDefinition<'linear'> = {
             { title: 'Metrics', component: RegressionMetrics },
             { title: 'Residuals', component: ResidualsPlot },
         ],
+        parametersComponent: RegressionParameters,
     },
 
     progress: {
