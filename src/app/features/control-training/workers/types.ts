@@ -9,13 +9,14 @@ export interface TrainingWorkerManager extends WorkerManager<UIToWorkerMessage, 
     on(type: 'finished', handler: () => void): void;
 }
 
-export type UIToWorkerMessage =
+export type UIToWorkerMessage = (
     | TrainMessage
     | TrainByStepMessage
     | StopMessage
     | PauseMessage
     | ResumeMessage
-    | StepForwardMessage;
+    | StepForwardMessage
+) & { sentAt?: number };
 
 export type TrainMessage = {
     type: 'train';

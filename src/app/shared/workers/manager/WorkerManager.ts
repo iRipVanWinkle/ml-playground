@@ -8,6 +8,7 @@ type ResponseMessage<TResponse> = {
     type: string;
     payload: TResponse;
     requestId?: string;
+    sentAt?: number;
 };
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -42,7 +43,11 @@ export class WorkerManager<TMessage, TResponse> {
         },
     ): void {
         const requestId = crypto.randomUUID();
-        const messageWithId = { ...message, requestId };
+        const messageWithId = {
+            ...message,
+            requestId,
+            sentAt: import.meta.env.DEV ? performance.now() + performance.timeOrigin : undefined,
+        };
 
         if (options?.transfer) {
             this.getWorker().postMessage(messageWithId, options.transfer);
@@ -74,7 +79,13 @@ export class WorkerManager<TMessage, TResponse> {
                 timeout: timeoutHandle,
             });
 
-            const messageWithId = { ...message, requestId };
+            const messageWithId = {
+                ...message,
+                requestId,
+                sentAt: import.meta.env.DEV
+                    ? performance.now() + performance.timeOrigin
+                    : undefined,
+            };
 
             if (options?.transfer) {
                 this.getWorker().postMessage(messageWithId, options.transfer);
@@ -119,7 +130,18 @@ export class WorkerManager<TMessage, TResponse> {
     }
 
     private handleMessage = (event: MessageEvent<TResponse>): void => {
-        const { type, payload, requestId } = event.data as ResponseMessage<TResponse>;
+        const { type, payload, requestId, sentAt } = event.data as ResponseMessage<TResponse>;
+
+        if (import.meta.env.DEV && sentAt) {
+            const now = performance.now() + performance.timeOrigin;
+            const latency = now - sentAt;
+            console.log(
+                `%c[Worker -> Client] %c${type} %clatency: ${latency.toFixed(2)}ms`,
+                'color: #00bcd4; font-weight: bold',
+                'color: inherit',
+                'color: #4caf50',
+            );
+        }
 
         const pending = this.pendingRequests.get(requestId!);
         if (pending) {

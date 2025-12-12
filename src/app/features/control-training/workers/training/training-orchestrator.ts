@@ -197,7 +197,17 @@ export class TrainingOrchestrator {
 
         liveMetrics.updateIteration(params);
 
+        const startTime = import.meta.env.DEV ? performance.now() : 0;
         const report = await liveMetrics.calculateMetrics();
+        if (import.meta.env.DEV) {
+            const duration = performance.now() - startTime;
+            console.log(
+                `%c[Worker] %ccalculateMetrics %cduration: ${duration.toFixed(2)}ms`,
+                'color: #9c27b0; font-weight: bold',
+                'color: inherit',
+                'color: #4caf50',
+            );
+        }
 
         callbacks.onReport(report);
 

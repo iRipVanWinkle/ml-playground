@@ -7,7 +7,18 @@ let orchestrator: TrainingOrchestrator | null = null;
 
 self.onmessage = (event: MessageEvent<UIToWorkerMessage>) => {
     try {
-        const { type, payload, requestId } = event.data;
+        const { type, payload, requestId, sentAt } = event.data;
+
+        if (import.meta.env.DEV && sentAt) {
+            const now = performance.now() + performance.timeOrigin;
+            const latency = now - sentAt;
+            console.log(
+                `%c[Client -> Worker] %c${type} %clatency: ${latency.toFixed(2)}ms`,
+                'color: #ff9800; font-weight: bold',
+                'color: inherit',
+                'color: #4caf50',
+            );
+        }
 
         switch (type) {
             case 'train':
@@ -60,9 +71,10 @@ function send(
     payload?: string | object | Error,
     transfer?: Transferable[],
 ) {
+    const sentAt = import.meta.env.DEV ? performance.now() + performance.timeOrigin : undefined;
     if (transfer) {
-        self.postMessage({ type, payload, requestId }, { transfer });
+        self.postMessage({ type, payload, requestId, sentAt }, { transfer });
     } else {
-        self.postMessage({ type, payload, requestId });
+        self.postMessage({ type, payload, requestId, sentAt });
     }
 }
