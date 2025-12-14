@@ -1,6 +1,11 @@
 import * as tf from '@tensorflow/tfjs';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { QuadraticNaiveBayes } from './QuadraticNaiveBayes';
+import { getMatrixFromArray, type MatrixLike } from '../../matrix';
+
+function getMatrixValue(m: MatrixLike, row: number, col: number): number {
+    return m.array[row * m.shape[1] + col];
+}
 
 describe('QuadraticNaiveBayes', () => {
     let model: QuadraticNaiveBayes;
@@ -31,7 +36,7 @@ describe('QuadraticNaiveBayes', () => {
 
             expect(params.type).toBe('quadratic');
             expect(params.classes).toEqual([0, 1]);
-            expect(params.classMeans.length).toBe(2);
+            expect(params.classMeans.shape[1]).toBe(2);
             expect(params.classCovariances.length).toBe(2);
             expect(params.classCovariancesInverse.length).toBe(2);
             expect(params.classPriors.length).toBe(2);
@@ -62,7 +67,7 @@ describe('QuadraticNaiveBayes', () => {
             const params = await model.train(X, y);
 
             expect(params.classes).toEqual([0, 1, 2]);
-            expect(params.classMeans.length).toBe(3);
+            expect(params.classMeans.shape[0]).toBe(3);
             expect(params.classCovariances.length).toBe(3);
 
             // Check priors (should be ~0.33 for balanced dataset)
@@ -87,12 +92,12 @@ describe('QuadraticNaiveBayes', () => {
             const params = await model.train(X, y);
 
             // Class 0 mean: (1+2+3)/3 = 2, (2+3+4)/3 = 3
-            expect(params.classMeans[0][0]).toBeCloseTo(2, 5);
-            expect(params.classMeans[0][1]).toBeCloseTo(3, 5);
+            expect(getMatrixValue(params.classMeans, 0, 0)).toBeCloseTo(2, 5);
+            expect(getMatrixValue(params.classMeans, 0, 1)).toBeCloseTo(3, 5);
 
             // Class 1 mean: (10+12)/2 = 11, (20+22)/2 = 21
-            expect(params.classMeans[1][0]).toBeCloseTo(11, 5);
-            expect(params.classMeans[1][1]).toBeCloseTo(21, 5);
+            expect(getMatrixValue(params.classMeans, 1, 0)).toBeCloseTo(11, 5);
+            expect(getMatrixValue(params.classMeans, 1, 1)).toBeCloseTo(21, 5);
 
             X.dispose();
             y.dispose();
@@ -111,16 +116,16 @@ describe('QuadraticNaiveBayes', () => {
             const params = await model.train(X, y);
 
             // Check that covariance matrices are square and positive definite
-            expect(params.classCovariances[0].length).toBe(2);
-            expect(params.classCovariances[0][0].length).toBe(2);
-            expect(params.classCovariances[1].length).toBe(2);
-            expect(params.classCovariances[1][0].length).toBe(2);
+            expect(params.classCovariances[0].shape[0]).toBe(2);
+            expect(params.classCovariances[0].shape[1]).toBe(2);
+            expect(params.classCovariances[1].shape[0]).toBe(2);
+            expect(params.classCovariances[1].shape[1]).toBe(2);
 
             // Diagonal elements should be positive
-            expect(params.classCovariances[0][0][0]).toBeGreaterThan(0);
-            expect(params.classCovariances[0][1][1]).toBeGreaterThan(0);
-            expect(params.classCovariances[1][0][0]).toBeGreaterThan(0);
-            expect(params.classCovariances[1][1][1]).toBeGreaterThan(0);
+            expect(getMatrixValue(params.classCovariances[0], 0, 0)).toBeGreaterThan(0);
+            expect(getMatrixValue(params.classCovariances[0], 1, 1)).toBeGreaterThan(0);
+            expect(getMatrixValue(params.classCovariances[1], 0, 0)).toBeGreaterThan(0);
+            expect(getMatrixValue(params.classCovariances[1], 1, 1)).toBeGreaterThan(0);
 
             X.dispose();
             y.dispose();
@@ -141,8 +146,8 @@ describe('QuadraticNaiveBayes', () => {
             const params = await model.train(X, y);
 
             // Check off-diagonal elements (covariance between features)
-            const cov0_01 = params.classCovariances[0][0][1];
-            const cov0_10 = params.classCovariances[0][1][0];
+            const cov0_01 = getMatrixValue(params.classCovariances[0], 0, 1);
+            const cov0_10 = getMatrixValue(params.classCovariances[0], 1, 0);
 
             // Covariance matrix should be symmetric
             expect(cov0_01).toBeCloseTo(cov0_10, 5);
@@ -240,32 +245,32 @@ describe('QuadraticNaiveBayes', () => {
             const customParams = {
                 type: 'quadratic' as const,
                 classes: [0, 1],
-                classMeans: [
+                classMeans: getMatrixFromArray([
                     [0, 0],
                     [5, 5],
-                ],
+                ]),
                 classCovariances: [
-                    [
+                    getMatrixFromArray([
                         [1, 0],
                         [0, 1],
-                    ],
-                    [
+                    ]),
+                    getMatrixFromArray([
                         [1, 0],
                         [0, 1],
-                    ],
+                    ]),
                 ],
                 classCovariancesInverse: [
-                    [
+                    getMatrixFromArray([
                         [1, 0],
                         [0, 1],
-                    ],
-                    [
+                    ]),
+                    getMatrixFromArray([
                         [1, 0],
                         [0, 1],
-                    ],
+                    ]),
                 ],
-                classCovariancesDeterminant: [1, 1],
-                classPriors: [0.5, 0.5],
+                classCovariancesDeterminant: new Float32Array([1, 1]),
+                classPriors: new Float32Array([0.5, 0.5]),
             };
 
             const predictions = model.predict(X, customParams);
@@ -364,7 +369,7 @@ describe('QuadraticNaiveBayes', () => {
 
             // Validate parameter shapes
             expect(params.classes.length).toBe(3);
-            expect(params.classMeans.length).toBe(3);
+            expect(params.classMeans.shape[0]).toBe(3);
             expect(params.classCovariances.length).toBe(3);
 
             // Test prediction

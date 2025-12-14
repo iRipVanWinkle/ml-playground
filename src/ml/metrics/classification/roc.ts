@@ -135,7 +135,7 @@ export function multiclassRocCurve(yTrue: MatrixLike, yProb: MatrixLike): Multic
     const curves: RocCurve[] = [];
     const classIndices: number[] = [];
 
-    const yTrueFlat = Matrix.from(yTrue).getFlatArray();
+    const yTrueFlat = yTrue.array;
     const probMatrix = Matrix.from(yProb);
 
     for (let classIdx = 0; classIdx < numClasses; classIdx++) {

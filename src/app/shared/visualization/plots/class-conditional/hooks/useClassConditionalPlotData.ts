@@ -54,8 +54,8 @@ function calculateGaussianPlotData(
     let maxX = -Infinity;
 
     for (let c = 0; c < classes.length; c++) {
-        const mean = classMeans[c][featureIndex];
-        const std = Math.sqrt(classVariances[c][featureIndex]);
+        const mean = classMeans.array[c * classMeans.shape[1] + featureIndex];
+        const std = Math.sqrt(classVariances.array[c * classVariances.shape[1] + featureIndex]);
         minX = Math.min(minX, mean - STD_MULTIPLIER * std);
         maxX = Math.max(maxX, mean + STD_MULTIPLIER * std);
     }
@@ -67,8 +67,8 @@ function calculateGaussianPlotData(
 
     // Calculate Gaussian PDF for each class
     const traces: Partial<Plotly.PlotData>[] = classes.map((cls, classIdx) => {
-        const mean = classMeans[classIdx][featureIndex];
-        const variance = classVariances[classIdx][featureIndex];
+        const mean = classMeans.array[classIdx * classMeans.shape[1] + featureIndex];
+        const variance = classVariances.array[classIdx * classVariances.shape[1] + featureIndex];
         const std = Math.sqrt(variance);
 
         const yValues = xValues.map((x) => {
@@ -115,8 +115,9 @@ function calculateQuadraticPlotData(
     let maxX = -Infinity;
 
     for (let c = 0; c < classes.length; c++) {
-        const mean = classMeans[c][featureIndex];
-        const variance = classCovariances[c][featureIndex][featureIndex];
+        const mean = classMeans.array[c * classMeans.shape[1] + featureIndex];
+        const variance =
+            classCovariances[c].array[featureIndex * classCovariances[c].shape[1] + featureIndex];
         const std = Math.sqrt(Math.max(0, variance));
         minX = Math.min(minX, mean - STD_MULTIPLIER * std);
         maxX = Math.max(maxX, mean + STD_MULTIPLIER * std);
@@ -129,8 +130,11 @@ function calculateQuadraticPlotData(
 
     // Calculate marginal Gaussian PDF for each class
     const traces: Partial<Plotly.PlotData>[] = classes.map((cls, classIdx) => {
-        const mean = classMeans[classIdx][featureIndex];
-        const variance = classCovariances[classIdx][featureIndex][featureIndex];
+        const mean = classMeans.array[classIdx * classMeans.shape[1] + featureIndex];
+        const variance =
+            classCovariances[classIdx].array[
+                featureIndex * classCovariances[classIdx].shape[1] + featureIndex
+            ];
         const std = Math.sqrt(Math.max(1e-10, variance));
 
         const yValues = xValues.map((x) => {

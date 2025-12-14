@@ -1,6 +1,11 @@
 import * as tf from '@tensorflow/tfjs';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { GaussianNaiveBayes } from './GaussianNaiveBayes';
+import { getMatrixFromArray, type MatrixLike } from '../../matrix';
+
+function getMatrixValue(m: MatrixLike, row: number, col: number): number {
+    return m.array[row * m.shape[1] + col];
+}
 
 describe('GaussianNaiveBayes', () => {
     let model: GaussianNaiveBayes;
@@ -31,8 +36,8 @@ describe('GaussianNaiveBayes', () => {
 
             expect(params.type).toBe('gaussian');
             expect(params.classes).toEqual([0, 1]);
-            expect(params.classMeans.length).toBe(2);
-            expect(params.classVariances.length).toBe(2);
+            expect(params.classMeans.shape[0]).toBe(2);
+            expect(params.classVariances.shape[0]).toBe(2);
             expect(params.classPriors.length).toBe(2);
 
             // Check priors (should be 0.5 for balanced dataset)
@@ -61,8 +66,8 @@ describe('GaussianNaiveBayes', () => {
             const params = await model.train(X, y);
 
             expect(params.classes).toEqual([0, 1, 2]);
-            expect(params.classMeans.length).toBe(3);
-            expect(params.classVariances.length).toBe(3);
+            expect(params.classMeans.shape[0]).toBe(3);
+            expect(params.classVariances.shape[0]).toBe(3);
 
             // Check priors (should be ~0.33 for balanced dataset)
             expect(params.classPriors[0]).toBeCloseTo(1 / 3, 5);
@@ -86,12 +91,12 @@ describe('GaussianNaiveBayes', () => {
             const params = await model.train(X, y);
 
             // Class 0 mean: (1+2+3)/3 = 2, (2+3+4)/3 = 3
-            expect(params.classMeans[0][0]).toBeCloseTo(2, 5);
-            expect(params.classMeans[0][1]).toBeCloseTo(3, 5);
+            expect(getMatrixValue(params.classMeans, 0, 0)).toBeCloseTo(2, 5);
+            expect(getMatrixValue(params.classMeans, 0, 1)).toBeCloseTo(3, 5);
 
             // Class 1 mean: (10+12)/2 = 11, (20+22)/2 = 21
-            expect(params.classMeans[1][0]).toBeCloseTo(11, 5);
-            expect(params.classMeans[1][1]).toBeCloseTo(21, 5);
+            expect(getMatrixValue(params.classMeans, 1, 0)).toBeCloseTo(11, 5);
+            expect(getMatrixValue(params.classMeans, 1, 1)).toBeCloseTo(21, 5);
 
             X.dispose();
             y.dispose();
@@ -110,13 +115,12 @@ describe('GaussianNaiveBayes', () => {
             const params = await model.train(X, y);
 
             // Class 0: variance = ((1-2)^2 + (3-2)^2) / 2 = (1 + 1) / 2 = 1
-            expect(params.classVariances[0][0]).toBeCloseTo(1 + 1e-9, 5);
-            expect(params.classVariances[0][1]).toBeCloseTo(1 + 1e-9, 5);
+            expect(getMatrixValue(params.classVariances, 0, 0)).toBeCloseTo(1 + 1e-9, 5);
+            expect(getMatrixValue(params.classVariances, 0, 1)).toBeCloseTo(1 + 1e-9, 5);
 
             // Class 1: variance = ((5-6)^2 + (7-6)^2) / 2 = (1 + 1) / 2 = 1
-            expect(params.classVariances[1][0]).toBeCloseTo(1 + 1e-9, 5);
-            expect(params.classVariances[1][1]).toBeCloseTo(1 + 1e-9, 5);
-
+            expect(getMatrixValue(params.classVariances, 1, 0)).toBeCloseTo(1 + 1e-9, 5);
+            expect(getMatrixValue(params.classVariances, 1, 1)).toBeCloseTo(1 + 1e-9, 5);
             X.dispose();
             y.dispose();
         });
@@ -158,10 +162,10 @@ describe('GaussianNaiveBayes', () => {
             const params = await customModel.train(X, y);
 
             // Variance should be greater than zero due to smoothing
-            expect(params.classVariances[0][0]).toBeGreaterThan(0);
-            expect(params.classVariances[0][1]).toBeGreaterThan(0);
-            expect(params.classVariances[1][0]).toBeGreaterThan(0);
-            expect(params.classVariances[1][1]).toBeGreaterThan(0);
+            expect(getMatrixValue(params.classVariances, 0, 0)).toBeGreaterThan(0);
+            expect(getMatrixValue(params.classVariances, 0, 1)).toBeGreaterThan(0);
+            expect(getMatrixValue(params.classVariances, 1, 0)).toBeGreaterThan(0);
+            expect(getMatrixValue(params.classVariances, 1, 1)).toBeGreaterThan(0);
 
             X.dispose();
             y.dispose();
@@ -207,15 +211,15 @@ describe('GaussianNaiveBayes', () => {
             const customParams = {
                 type: 'gaussian' as const,
                 classes: [0, 1],
-                classMeans: [
+                classMeans: getMatrixFromArray([
                     [0, 0],
                     [5, 5],
-                ],
-                classVariances: [
+                ]),
+                classVariances: getMatrixFromArray([
                     [1, 1],
                     [1, 1],
-                ],
-                classPriors: [0.5, 0.5],
+                ]),
+                classPriors: new Float32Array([0.5, 0.5]),
             };
 
             const predictions = model.predict(X, customParams);
@@ -313,7 +317,7 @@ describe('GaussianNaiveBayes', () => {
 
             // Validate parameter shapes
             expect(params.classes.length).toBe(3);
-            expect(params.classMeans.length).toBe(3);
+            expect(params.classMeans.shape[0]).toBe(3);
 
             // Test prediction
             const testX = tf.tensor2d([

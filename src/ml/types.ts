@@ -1,5 +1,6 @@
 import type { Rank, Scalar, Tensor2D, Tensor3D, Variable } from '@tensorflow/tfjs';
 import type { EventEmitter } from './events/EventEmitter';
+import type { MatrixLike } from './matrix';
 
 export type Variable2D = Variable<Rank.R2>;
 
@@ -248,9 +249,9 @@ export type EnsembleTree = ReadonlyArray<TreeNode>;
 export type GaussianNaiveBayesParams = Readonly<{
     type: 'gaussian';
     classes: number[];
-    classMeans: number[][]; // Mean values for each class and feature [n_classes, n_features]
-    classVariances: number[][]; // Variance values for each class and feature [n_classes, n_features]
-    classPriors: number[];
+    classMeans: MatrixLike;
+    classVariances: MatrixLike;
+    classPriors: Float32Array;
 }>;
 
 /**
@@ -259,11 +260,11 @@ export type GaussianNaiveBayesParams = Readonly<{
 export type QuadraticNaiveBayesParams = Readonly<{
     type: 'quadratic';
     classes: number[];
-    classMeans: number[][]; // Mean values for each class and feature [n_classes, n_features]
-    classCovariances: number[][][]; // Covariance matrices for each class [n_classes, n_features, n_features]
-    classCovariancesInverse: number[][][]; // Inverse of the covariance matrices
-    classCovariancesDeterminant: number[]; // Determinant of the covariance matrices
-    classPriors: number[]; // Prior probabilities for each class
+    classMeans: MatrixLike;
+    classCovariances: MatrixLike[];
+    classCovariancesInverse: MatrixLike[];
+    classCovariancesDeterminant: Float32Array;
+    classPriors: Float32Array;
 }>;
 
 export type NaiveBayesParams = GaussianNaiveBayesParams | QuadraticNaiveBayesParams;

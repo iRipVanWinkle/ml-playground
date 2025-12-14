@@ -1,8 +1,9 @@
-import { tidy, tensor2d, type Scalar, type Tensor2D } from '@tensorflow/tfjs';
+import { tidy, tensor2d, type Scalar, type Tensor2D, scalar } from '@tensorflow/tfjs';
 import type { QuadraticNaiveBayesParams } from '../../types';
 import { assertModelTrained } from '../../utils';
 import { EPSILON } from '../../constants';
 import { BaseNaiveBayes, type BaseNaiveBayesOptions } from '../base/BaseNaiveBayes';
+import { Matrix, type MatrixLike } from '../../matrix';
 
 export type QuadraticNaiveBayesOptions = BaseNaiveBayesOptions & {
     regularization?: number;
@@ -42,24 +43,15 @@ export class QuadraticNaiveBayes extends BaseNaiveBayes<QuadraticNaiveBayesParam
         const classes = Array.from(classSet).sort((a, b) => a - b);
 
         // Initialize storage for class statistics
-        const classMeans: number[][] = [];
-        const classCovariances: number[][][] = []; // [n_classes][n_features][n_features]
-        const classCovariancesInverse: number[][][] = [];
-        const classCovariancesDeterminant: number[] = [];
-        const classPriors: number[] = [];
-
-        // Initialize default values for all classes
-        for (let i = 0; i < classes.length; i++) {
-            classMeans.push(new Array(numFeatures).fill(0));
-            classCovariances.push(
-                new Array(numFeatures).fill(0).map(() => new Array(numFeatures).fill(0)),
-            );
-            classCovariancesInverse.push(
-                new Array(numFeatures).fill(0).map(() => new Array(numFeatures).fill(0)),
-            );
-            classCovariancesDeterminant.push(0);
-            classPriors.push(1.0 / classes.length);
-        }
+        const classMeans = Matrix.create([classes.length, numFeatures]);
+        const classCovariances: MatrixLike[] = Array.from({ length: classes.length }, () =>
+            Matrix.create([numFeatures, numFeatures]),
+        );
+        const classCovariancesInverse: MatrixLike[] = Array.from({ length: classes.length }, () =>
+            Matrix.create([numFeatures, numFeatures]),
+        );
+        const classCovariancesDeterminant = new Float32Array(classes.length);
+        const classPriors = new Float32Array(classes.length);
 
         // Calculate statistics for each class
         for (let clsIndex = 0; clsIndex < classes.length; clsIndex++) {
@@ -82,7 +74,7 @@ export class QuadraticNaiveBayes extends BaseNaiveBayes<QuadraticNaiveBayesParam
             const classCount = classIndices.length;
             classPriors[clsIndex] = classCount / numSamples;
 
-            const classMean = classMeans[clsIndex];
+            const classMean = classMeans.row(clsIndex);
 
             // Sum feature values across all samples in this class
             for (const sampleIdx of classIndices) {
@@ -100,11 +92,11 @@ export class QuadraticNaiveBayes extends BaseNaiveBayes<QuadraticNaiveBayesParam
             const classCovariance = classCovariances[clsIndex];
 
             // Compute covariance matrix: Cov[i,j] = E[(X_i - μ_i)(X_j - μ_j)]
-            const centeredData: number[][] = [];
+            const centeredData: Float32Array[] = [];
             for (const sampleIdx of classIndices) {
-                const deviations: number[] = [];
+                const deviations = new Float32Array(numFeatures);
                 for (let featureIdx = 0; featureIdx < numFeatures; featureIdx++) {
-                    deviations.push(XArray[sampleIdx][featureIdx] - classMean[featureIdx]);
+                    deviations[featureIdx] = XArray[sampleIdx][featureIdx] - classMean[featureIdx];
                 }
                 centeredData.push(deviations);
             }
@@ -118,9 +110,9 @@ export class QuadraticNaiveBayes extends BaseNaiveBayes<QuadraticNaiveBayesParam
                     }
 
                     // Normalize by sample count and add regularization to diagonal
-                    classCovariance[row][col] = covarianceSum / classCount;
+                    classCovariance.array[row * numFeatures + col] = covarianceSum / classCount;
                     if (row === col) {
-                        classCovariance[row][col] += this.regularization;
+                        classCovariance.array[row * numFeatures + col] += this.regularization;
                     }
                 }
             }
@@ -162,16 +154,16 @@ export class QuadraticNaiveBayes extends BaseNaiveBayes<QuadraticNaiveBayesParam
 
         const XArray = X.arraySync();
         const numSamples = XArray.length;
-        const predictions: number[][] = [];
+        const predictions = new Float32Array(numSamples);
 
         for (let i = 0; i < numSamples; i++) {
             const sample = XArray[i];
             const scores = this.calculateDiscriminantScores(sample, modelParams);
             const maxIdx = scores.indexOf(Math.max(...scores));
-            predictions.push([modelParams.classes[maxIdx]]);
+            predictions[i] = modelParams.classes[maxIdx];
         }
 
-        return tensor2d(predictions);
+        return tensor2d(predictions, [numSamples, 1]);
     }
 
     /**
@@ -208,12 +200,11 @@ export class QuadraticNaiveBayes extends BaseNaiveBayes<QuadraticNaiveBayesParam
             const sumExpScores = expScores.reduce((a, b) => a + b, 0);
             const probs = expScores.map((s) => s / sumExpScores);
 
-            const maxIdx = scores.indexOf(Math.max(...scores));
+            const maxIdx = scores.indexOf(maxScore);
             const predictedClass = modelParams.classes[maxIdx];
 
             predictions.push([predictedClass]);
-            probabilities.push(probs);
-
+            probabilities.push(Array.from(probs));
             if (predictedClass === yArray[i]) {
                 correctCount++;
             }
@@ -225,9 +216,7 @@ export class QuadraticNaiveBayes extends BaseNaiveBayes<QuadraticNaiveBayesParam
 
             // Loss is negative log likelihood (accuracy-based approximation)
             const accuracy = correctCount / numSamples;
-            const loss = tensor2d([[-Math.log(accuracy + EPSILON)]])
-                .as1D()
-                .asScalar();
+            const loss = scalar(-Math.log(accuracy + EPSILON));
 
             return [yPred, yProbs, loss] as [Tensor2D, Tensor2D, Scalar];
         });
@@ -246,23 +235,28 @@ export class QuadraticNaiveBayes extends BaseNaiveBayes<QuadraticNaiveBayesParam
     private calculateDiscriminantScores(
         sample: number[],
         params: QuadraticNaiveBayesParams,
-    ): number[] {
-        const scores: number[] = [];
+    ): Float32Array {
+        const numFeatures = sample.length;
+        const scores = new Float32Array(params.classes.length);
 
         for (let c = 0; c < params.classes.length; c++) {
-            const mean = params.classMeans[c];
-            const covInv = params.classCovariancesInverse[c];
+            const mean = Matrix.from(params.classMeans).row(c);
+            const covInv = params.classCovariancesInverse[c].array;
             const det = params.classCovariancesDeterminant[c];
 
             // Calculate (x - mean)
-            const diff = sample.map((val, j) => val - mean[j]);
+            const diff = new Float32Array(numFeatures);
+            for (let j = 0; j < diff.length; j++) {
+                diff[j] = sample[j] - mean[j];
+            }
 
             // Quadratic discriminant score:
             // score = log(P(class)) - 0.5 * log(|Cov|) - 0.5 * (x-mean)^T * Cov^-1 * (x-mean)
             let mahalanobis = 0;
-            for (let j = 0; j < sample.length; j++) {
-                for (let k = 0; k < sample.length; k++) {
-                    mahalanobis += diff[j] * covInv[j][k] * diff[k];
+            for (let j = 0; j < numFeatures; j++) {
+                const rowOffset = j * numFeatures;
+                for (let k = 0; k < numFeatures; k++) {
+                    mahalanobis += diff[j] * covInv[rowOffset + k] * diff[k];
                 }
             }
 
@@ -271,7 +265,7 @@ export class QuadraticNaiveBayes extends BaseNaiveBayes<QuadraticNaiveBayesParam
                 0.5 * Math.log(Math.abs(det) + EPSILON) -
                 0.5 * mahalanobis;
 
-            scores.push(score);
+            scores[c] = score;
         }
 
         return scores;
@@ -285,58 +279,53 @@ export class QuadraticNaiveBayes extends BaseNaiveBayes<QuadraticNaiveBayesParam
      * @param matrix - Square symmetric positive-definite matrix
      * @returns Inverted matrix
      */
-    private invertMatrix(matrix: number[][]): number[][] {
-        const n = matrix.length;
+    private invertMatrix(matrix: MatrixLike): MatrixLike {
+        const n = matrix.shape[0];
+        const array = matrix.array;
 
         // Cholesky decomposition: A = L * L^T
-        const L = Array(n)
-            .fill(0)
-            .map(() => Array(n).fill(0));
+        const L = Matrix.create([n, n]).array;
 
         for (let i = 0; i < n; i++) {
             for (let j = 0; j <= i; j++) {
                 let sum = 0;
                 for (let k = 0; k < j; k++) {
-                    sum += L[i][k] * L[j][k];
+                    sum += L[i * n + k] * L[j * n + k];
                 }
 
                 if (i === j) {
-                    const val = matrix[i][i] - sum;
+                    const val = array[i * n + i] - sum;
                     if (val <= 0) {
                         // Not positive definite, add regularization
-                        L[i][j] = Math.sqrt(Math.abs(val) + this.regularization);
+                        L[i * n + j] = Math.sqrt(Math.abs(val) + this.regularization);
                     } else {
-                        L[i][j] = Math.sqrt(val);
+                        L[i * n + j] = Math.sqrt(val);
                     }
                 } else {
-                    L[i][j] = (matrix[i][j] - sum) / L[j][j];
+                    L[i * n + j] = (array[i * n + j] - sum) / L[j * n + j];
                 }
             }
         }
 
         // Invert L (lower triangular)
-        const LInv = Array(n)
-            .fill(0)
-            .map(() => Array(n).fill(0));
+        const LInv = Matrix.create([n, n]).array;
         for (let i = 0; i < n; i++) {
-            LInv[i][i] = 1 / L[i][i];
+            LInv[i * n + i] = 1 / L[i * n + i];
             for (let j = i - 1; j >= 0; j--) {
                 let sum = 0;
                 for (let k = j + 1; k <= i; k++) {
-                    sum += L[i][k] * LInv[k][j];
+                    sum += L[i * n + k] * LInv[k * n + j];
                 }
-                LInv[i][j] = -sum / L[i][i];
+                LInv[i * n + j] = -sum / L[i * n + i];
             }
         }
 
         // A^-1 = (L^T)^-1 * L^-1
-        const inverse = Array(n)
-            .fill(0)
-            .map(() => Array(n).fill(0));
+        const inverse = Matrix.create([n, n]);
         for (let i = 0; i < n; i++) {
             for (let j = 0; j < n; j++) {
                 for (let k = Math.max(i, j); k < n; k++) {
-                    inverse[i][j] += LInv[k][i] * LInv[k][j];
+                    inverse.array[i * n + j] += LInv[k * n + i] * LInv[k * n + j];
                 }
             }
         }
@@ -350,9 +339,9 @@ export class QuadraticNaiveBayes extends BaseNaiveBayes<QuadraticNaiveBayesParam
      * @param matrix - Square matrix
      * @returns Determinant value
      */
-    private determinant(matrix: number[][]): number {
-        const n = matrix.length;
-        const m = matrix.map((row) => [...row]); // Copy matrix
+    private determinant(matrix: MatrixLike): number {
+        const n = matrix.shape[0];
+        const m = matrix.array.slice(); // Copy matrix
 
         let det = 1;
 
@@ -360,7 +349,7 @@ export class QuadraticNaiveBayes extends BaseNaiveBayes<QuadraticNaiveBayesParam
             // Find pivot
             let maxRow = i;
             for (let k = i + 1; k < n; k++) {
-                if (Math.abs(m[k][i]) > Math.abs(m[maxRow][i])) {
+                if (Math.abs(m[k * n + i]) > Math.abs(m[maxRow * n + i])) {
                     maxRow = k;
                 }
             }
@@ -370,17 +359,16 @@ export class QuadraticNaiveBayes extends BaseNaiveBayes<QuadraticNaiveBayesParam
                 det *= -1;
             }
 
-            if (Math.abs(m[i][i]) < 1e-10) {
+            if (Math.abs(m[i * n + i]) < EPSILON) {
                 return 0; // Singular matrix
             }
 
-            det *= m[i][i];
-
+            det *= m[i * n + i];
             // Eliminate below
             for (let k = i + 1; k < n; k++) {
-                const factor = m[k][i] / m[i][i];
+                const factor = m[k * n + i] / m[i * n + i];
                 for (let j = i; j < n; j++) {
-                    m[k][j] -= factor * m[i][j];
+                    m[k * n + j] -= factor * m[i * n + j];
                 }
             }
         }

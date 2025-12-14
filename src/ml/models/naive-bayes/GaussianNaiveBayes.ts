@@ -2,6 +2,8 @@ import { tidy, tensor2d, type Scalar, type Tensor2D, scalar } from '@tensorflow/
 import type { GaussianNaiveBayesParams } from '../../types';
 import { assertModelTrained } from '../../utils';
 import { BaseNaiveBayes, type BaseNaiveBayesOptions } from '../base/BaseNaiveBayes';
+import { Matrix } from '../../matrix';
+import { EPSILON } from '../../constants';
 
 export type GaussianNaiveBayesOptions = BaseNaiveBayesOptions & {
     varianceSmoothing?: number;
@@ -42,15 +44,9 @@ export class GaussianNaiveBayes extends BaseNaiveBayes<GaussianNaiveBayesParams>
         const numClasses = classes.length;
 
         // Initialize default values for all classes
-        const classMeans: number[][] = [];
-        const classVariances: number[][] = [];
-        const classPriors: number[] = [];
-
-        for (let i = 0; i < numClasses; i++) {
-            classMeans.push(new Array(numFeatures).fill(0));
-            classVariances.push(new Array(numFeatures).fill(1));
-            classPriors.push(1 / numClasses);
-        }
+        const classMeans = Matrix.create([numClasses, numFeatures]);
+        const classVariances = Matrix.create([numClasses, numFeatures]);
+        const classPriors = new Float32Array(numClasses);
 
         this.params = {
             type: 'gaussian',
@@ -81,26 +77,28 @@ export class GaussianNaiveBayes extends BaseNaiveBayes<GaussianNaiveBayesParams>
             const classCount = classIndices.length;
             classPriors[clsIndex] = classCount / numSamples;
 
+            const rowOffset = clsIndex * numFeatures;
+
             // Calculate mean for each feature
             for (let j = 0; j < numFeatures; j++) {
                 let sum = 0;
                 for (const idx of classIndices) {
                     sum += XArray[idx][j];
                 }
-                classMeans[clsIndex][j] = sum / classCount;
+                classMeans.array[rowOffset + j] = sum / classCount;
             }
 
             // Calculate variance for each feature
             for (let j = 0; j < numFeatures; j++) {
                 let sumSq = 0;
-                const mean = classMeans[clsIndex][j];
+                const mean = classMeans.array[rowOffset + j];
                 for (const idx of classIndices) {
                     const diff = XArray[idx][j] - mean;
                     sumSq += diff * diff;
                 }
 
                 // Add regularization to prevent zero variance and overfitting
-                classVariances[clsIndex][j] = sumSq / classCount + this.varianceSmoothing;
+                classVariances.array[rowOffset + j] = sumSq / classCount + this.varianceSmoothing;
             }
 
             this.params = {
@@ -180,11 +178,11 @@ export class GaussianNaiveBayes extends BaseNaiveBayes<GaussianNaiveBayesParams>
             const sumExpProbs = expProbs.reduce((a, b) => a + b, 0);
             const probs = expProbs.map((p) => p / sumExpProbs);
 
-            const maxIdx = logProbs.indexOf(Math.max(...logProbs));
+            const maxIdx = logProbs.indexOf(maxLogProb);
             const predictedClass = modelParams.classes[maxIdx];
 
             predictions.push([predictedClass]);
-            probabilities.push(probs);
+            probabilities.push(Array.from(probs));
 
             if (predictedClass === yArray[i]) {
                 correctCount++;
@@ -197,7 +195,7 @@ export class GaussianNaiveBayes extends BaseNaiveBayes<GaussianNaiveBayesParams>
 
             // Loss is negative log likelihood (accuracy-based approximation)
             const accuracy = correctCount / numSamples;
-            const loss = scalar(-Math.log(accuracy + 1e-10));
+            const loss = scalar(-Math.log(accuracy + EPSILON));
 
             return [yPred, yProbs, loss] as [Tensor2D, Tensor2D, Scalar];
         });
@@ -215,17 +213,21 @@ export class GaussianNaiveBayes extends BaseNaiveBayes<GaussianNaiveBayesParams>
     private calculateLogProbabilities(
         sample: number[],
         params: GaussianNaiveBayesParams,
-    ): number[] {
-        const logProbs: number[] = [];
-        const numClasses = params.classPriors.length;
+    ): Float32Array {
+        const { classes, classPriors, classMeans, classVariances } = params;
+        const numClasses = classes.length;
+
+        const logProbs = new Float32Array(numClasses);
 
         for (let c = 0; c < numClasses; c++) {
-            let logProb = Math.log(params.classPriors[c]);
+            let logProb = Math.log(classPriors[c]);
+
+            const rowOffset = c * sample.length;
 
             // Calculate log probability for each feature using Gaussian PDF
             for (let j = 0; j < sample.length; j++) {
-                const mean = params.classMeans[c][j];
-                const variance = params.classVariances[c][j];
+                const mean = classMeans.array[rowOffset + j];
+                const variance = classVariances.array[rowOffset + j];
                 const x = sample[j];
 
                 // Log of Gaussian PDF: log(1/sqrt(2πσ²)) - (x-μ)²/(2σ²)
@@ -234,8 +236,7 @@ export class GaussianNaiveBayes extends BaseNaiveBayes<GaussianNaiveBayesParams>
 
                 logProb += logPdf;
             }
-
-            logProbs.push(logProb);
+            logProbs[c] = logProb;
         }
 
         return logProbs;
