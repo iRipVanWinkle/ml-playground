@@ -7,6 +7,7 @@ import {
     ClassConditionalPlot,
     ConfusionMatrix,
     RocCurve,
+    NaiveBayesParameters,
 } from '@/app/shared/visualization';
 
 export const naiveBayesModelDefinition: ModelDefinition<'naive-bayes'> = {
@@ -56,6 +57,7 @@ export const naiveBayesModelDefinition: ModelDefinition<'naive-bayes'> = {
             { title: 'Confusion Matrix', component: ConfusionMatrix },
             { title: 'ROC Curve', component: RocCurve },
         ],
+        parametersComponent: NaiveBayesParameters,
     },
 
     progress: {

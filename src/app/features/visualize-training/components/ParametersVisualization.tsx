@@ -27,14 +27,12 @@ export function ParametersVisualization({
     return (
         <>
             <Separator />
-            <div className="min-h-40 bg-muted rounded-lg grid place-items-center">
-                <ParametersVisualizationComponent
-                    dataset={dataset}
-                    modelSettings={modelSettings}
-                    transformations={transformations}
-                    report={report}
-                />
-            </div>
+            <ParametersVisualizationComponent
+                dataset={dataset}
+                modelSettings={modelSettings}
+                transformations={transformations}
+                report={report}
+            />
         </>
     );
 }

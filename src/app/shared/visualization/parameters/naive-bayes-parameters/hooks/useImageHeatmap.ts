@@ -1,7 +1,21 @@
-import { useMemo } from 'react';
 import type { TypedArray } from '@/app/shared/helpers';
+import { useMemo } from 'react';
 
-export function useImageHeatmap(weights: TypedArray, gridSize: number, min: number, max: number) {
+type ImageHeatmapParams = {
+    values: TypedArray;
+    gridSize: number;
+    min: number;
+    max: number;
+    showDiagonal?: boolean;
+};
+
+export function useImageHeatmap({
+    values,
+    gridSize,
+    min,
+    max,
+    showDiagonal = false,
+}: ImageHeatmapParams) {
     const context = useCanvasImageData(gridSize);
 
     return useMemo(() => {
@@ -10,8 +24,12 @@ export function useImageHeatmap(weights: TypedArray, gridSize: number, min: numb
         const imageData = context.createImageData(gridSize, gridSize);
         const data = imageData.data;
 
-        for (let i = 0; i < weights.length; i++) {
-            const rgb = getWeightColorRGB(weights[i], min, max);
+        for (let i = 0; i < values.length && i < gridSize * gridSize; i++) {
+            const row = Math.floor(i / gridSize);
+            const col = i % gridSize;
+            const showDiagonalElement = showDiagonal && row === col;
+
+            const rgb = getValueColorRGB(values[i], min, max, showDiagonalElement);
             const pixelIndex = i * 4;
             data[pixelIndex] = rgb.r;
             data[pixelIndex + 1] = rgb.g;
@@ -22,7 +40,7 @@ export function useImageHeatmap(weights: TypedArray, gridSize: number, min: numb
         context.putImageData(imageData, 0, 0);
 
         return context.canvas.toDataURL();
-    }, [context, gridSize, weights, min, max]);
+    }, [context, gridSize, values, min, max, showDiagonal]);
 }
 
 function useCanvasImageData(gridSize: number) {
@@ -38,30 +56,32 @@ function useCanvasImageData(gridSize: number) {
     }, [gridSize]);
 }
 
-function getWeightColorRGB(
-    weight: number,
+function getValueColorRGB(
+    value: number,
     min: number,
     max: number,
+    showDiagonal: boolean,
 ): { r: number; g: number; b: number } {
     const range = max - min;
-    if (range === 0) return { r: 128, g: 128, b: 128 };
-
-    // Normalize to 0-1
-    const normalized = (weight - min) / range;
+    const normalized = (value - min) / range;
 
     // Create a diverging color scale: blue (negative) -> white (zero) -> red (positive)
     const midpoint = -min / range; // Where zero falls in the normalized range
 
-    if (normalized < midpoint) {
-        // Blue to white (negative values)
+    // Diagonal elements (variances) are displayed in green
+    if (showDiagonal) {
+        // Green scale: darker for lower values, lighter for higher values
+        return hslToRgb(120, 0.8, 0.98 - normalized * 0.65);
+    }
+
+    if (value < 0) {
+        // White to blue (negative values)
         const t = midpoint > 0 ? normalized / midpoint : 0;
-        // HSL(0, 80%, 30%) to HSL(0, 80%, 100%)
-        return hslToRgb(0, 0.8, 0.3 + t * 0.7);
+        return hslToRgb(220, 0.8, 0.3 + t * 0.65);
     } else {
-        // White to red (positive values)
+        // Red to white (positive values)
         const t = midpoint < 1 ? (normalized - midpoint) / (1 - midpoint) : 0;
-        // HSL(220, 80%, 100%) to HSL(220, 80%, 30%)
-        return hslToRgb(220, 0.8, 1 - t * 0.7);
+        return hslToRgb(0, 0.8, 0.98 - t * 0.45);
     }
 }
 
