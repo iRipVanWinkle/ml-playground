@@ -6,7 +6,7 @@ interface ViewSelectorProps {
 }
 
 export function ViewSelector({ value, onChange, classLabels }: ViewSelectorProps) {
-    const isBinary = classLabels.length <= 1;
+    const isBinary = classLabels.length <= 2;
 
     return (
         <Select value={value} onValueChange={onChange}>
@@ -17,11 +17,12 @@ export function ViewSelector({ value, onChange, classLabels }: ViewSelectorProps
                 <Select.Item value="all">
                     {isBinary ? 'Formatted Parameters' : 'All Classes'}
                 </Select.Item>
-                {classLabels?.map((label, index) => (
-                    <Select.Item key={`class-${index}`} value={String(index)}>
-                        {label}
-                    </Select.Item>
-                ))}
+                {!isBinary &&
+                    classLabels.map((label, index) => (
+                        <Select.Item key={`class-${index}`} value={String(index)}>
+                            {label}
+                        </Select.Item>
+                    ))}
                 <Select.Item value="raw">Raw Parameters</Select.Item>
             </Select.Content>
         </Select>

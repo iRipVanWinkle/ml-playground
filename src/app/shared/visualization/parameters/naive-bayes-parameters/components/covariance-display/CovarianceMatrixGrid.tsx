@@ -1,14 +1,25 @@
-import { Fragment, useMemo } from 'react';
-import { MatrixGrid } from '../../../../base';
+import { Fragment, useMemo, type ComponentType } from 'react';
 import { type MatrixLike } from '@/app/shared/helpers';
-import { TooltipWrapper } from './TooltipContent';
+import { Tooltip } from '@/app/shared/ui';
+import { MatrixGrid } from '../../../../base';
+import { GRID_TOOLTIP_DELAY_DURATION } from '../../constants';
+
+type TooltipContentProps = {
+    idx: number;
+    gridSize: number;
+};
 
 type CovarianceMatrixGridProps = {
     covariances: MatrixLike;
     featureLabels: string[];
+    tooltipContent: ComponentType<TooltipContentProps>;
 };
 
-export function CovarianceMatrixGrid({ covariances, featureLabels }: CovarianceMatrixGridProps) {
+export function CovarianceMatrixGrid({
+    covariances,
+    featureLabels,
+    tooltipContent,
+}: CovarianceMatrixGridProps) {
     const size = covariances.shape[0];
     const absMax = useMemo(() => {
         let max = -Infinity;
@@ -36,8 +47,9 @@ export function CovarianceMatrixGrid({ covariances, featureLabels }: CovarianceM
                                 key={`cell-${rowIndex}-${colIndex}`}
                                 value={value}
                                 absMax={absMax}
-                                rowIndex={rowIndex}
-                                colIndex={colIndex}
+                                idx={rowIndex * size + colIndex}
+                                gridSize={size}
+                                tooltipContent={tooltipContent}
                             />
                         );
                     })}
@@ -50,20 +62,30 @@ export function CovarianceMatrixGrid({ covariances, featureLabels }: CovarianceM
 type CovarianceCellProps = {
     value: number;
     absMax: number;
-    rowIndex: number;
-    colIndex: number;
+    idx: number;
+    gridSize: number;
+    tooltipContent: ComponentType<TooltipContentProps>;
 };
 
-function CovarianceCell({ value, absMax, rowIndex, colIndex }: CovarianceCellProps) {
+function CovarianceCell({ value, absMax, idx, gridSize, tooltipContent }: CovarianceCellProps) {
+    const rowIndex = Math.floor(idx / gridSize);
+    const colIndex = idx % gridSize;
     const borderClass = getCellBorderClass(value, absMax, rowIndex === colIndex);
     const displayPrecision = getAdaptivePrecision(value);
-
+    const TooltipContent = tooltipContent;
     return (
-        <TooltipWrapper rowIndex={rowIndex} colIndex={colIndex}>
-            <MatrixGrid.Cell className={borderClass}>
-                <div className="tabular-nums font-medium">{value.toFixed(displayPrecision)}</div>
-            </MatrixGrid.Cell>
-        </TooltipWrapper>
+        <Tooltip delayDuration={GRID_TOOLTIP_DELAY_DURATION}>
+            <Tooltip.Trigger>
+                <MatrixGrid.Cell className={borderClass}>
+                    <div className="tabular-nums font-medium">
+                        {value.toFixed(displayPrecision)}
+                    </div>
+                </MatrixGrid.Cell>
+            </Tooltip.Trigger>
+            <Tooltip.Content>
+                <TooltipContent idx={idx} gridSize={gridSize} />
+            </Tooltip.Content>
+        </Tooltip>
     );
 }
 

@@ -1,6 +1,6 @@
 import { Fragment, useMemo } from 'react';
 import { MatrixCell } from './MatrixCell';
-import { useMatrixTransform } from '../hooks';
+import { MatrixGrid as BaseMatrixGrid } from '../../../base';
 
 export interface ClassLabel {
     label: string;
@@ -21,7 +21,6 @@ export function MatrixGrid({
     classLabels,
 }: MatrixGridProps) {
     const size = displayMatrix.length;
-    const { gridCallbackRef } = useMatrixTransform({ size });
     const isBinaryClassification = size === 2;
 
     const rowTotals = useMemo(
@@ -30,75 +29,30 @@ export function MatrixGrid({
     );
 
     return (
-        <div className="w-full h-full flex flex-col items-center justify-center overflow-y-auto">
-            <div
-                ref={gridCallbackRef}
-                className="grid gap-1"
-                style={{
-                    gridTemplateColumns: `auto auto repeat(${size}, minmax(50px, 1fr))`,
-                    gridTemplateRows: `auto auto repeat(${size}, minmax(50px, 1fr))`,
-                }}
-            >
-                <div
-                    className="bg-transparent"
-                    style={{ gridColumn: `1 / 3`, gridRow: `1 / 3` }}
-                ></div>
+        <BaseMatrixGrid size={size} topLabel="Predicted" leftLabel="Expected">
+            {columnLabels.map((label, index) => (
+                <BaseMatrixGrid.ColTitle key={`col-${index}`}>{label}</BaseMatrixGrid.ColTitle>
+            ))}
 
-                <div
-                    className="flex items-center justify-center text-sm text-gray-600 font-normal whitespace-pre"
-                    style={{ gridColumn: `3 / -1` }}
-                >
-                    Predicted
-                </div>
-
-                <div
-                    className="flex items-center justify-center max-w-[20px] text-sm text-gray-600 font-normal whitespace-pre"
-                    style={{
-                        gridColumn: '1',
-                        gridRow: `3 / -1`,
-                    }}
-                >
-                    <div className="-rotate-90">Expected</div>
-                </div>
-
-                {columnLabels.map((label, index) => (
-                    <div
-                        key={`col-${index}`}
-                        className="flex items-center justify-center font-bold text-xs p-1 min-w-0 max-w-[60px]"
-                        title={label}
-                    >
-                        <span className="truncate w-full">{label}</span>
-                    </div>
-                ))}
-
-                {displayMatrix.map((row, rowIndex) => (
-                    <Fragment key={`row-${rowIndex}`}>
-                        <div
-                            className="flex items-center font-bold text-xs p-1 min-w-0 max-w-[120px]"
-                            title={rowLabels[rowIndex]}
-                        >
-                            <span className="break-words hyphens-auto leading-tight truncate text-right w-full">
-                                {rowLabels[rowIndex]}
-                            </span>
-                        </div>
-
-                        {row.map((value, colIndex) => (
-                            <MatrixCell
-                                key={`cell-${rowIndex}-${colIndex}`}
-                                value={value}
-                                rowTotal={rowTotals[rowIndex]}
-                                tooltip={
-                                    isBinaryClassification
-                                        ? getBinaryTooltip(rowIndex, colIndex, classLabels)
-                                        : getTooltip(rowIndex, colIndex, classLabels)
-                                }
-                                isDiagonal={isDiagonal(rowIndex, colIndex)}
-                            />
-                        ))}
-                    </Fragment>
-                ))}
-            </div>
-        </div>
+            {displayMatrix.map((row, rowIndex) => (
+                <Fragment key={`row-${rowIndex}`}>
+                    <BaseMatrixGrid.RowTitle>{rowLabels[rowIndex]}</BaseMatrixGrid.RowTitle>
+                    {row.map((value, colIndex) => (
+                        <MatrixCell
+                            key={`cell-${rowIndex}-${colIndex}`}
+                            value={value}
+                            rowTotal={rowTotals[rowIndex]}
+                            tooltip={
+                                isBinaryClassification
+                                    ? getBinaryTooltip(rowIndex, colIndex, classLabels)
+                                    : getTooltip(rowIndex, colIndex, classLabels)
+                            }
+                            isDiagonal={isDiagonal(rowIndex, colIndex)}
+                        />
+                    ))}
+                </Fragment>
+            ))}
+        </BaseMatrixGrid>
     );
 }
 

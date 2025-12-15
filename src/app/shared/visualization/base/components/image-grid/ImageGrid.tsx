@@ -1,23 +1,32 @@
+import { memo, useMemo, useState, type ComponentType } from 'react';
 import type { TypedArray } from '@/app/shared/helpers';
-import { useImageHeatmap } from '../../hooks';
-import { createContext, memo, useContext, useMemo, useState } from 'react';
-import { GRID_TOOLTIP_DELAY_DURATION } from '../../constants';
 import { Tooltip } from '@/app/shared/ui';
+import { useImageHeatmap } from './useImageHeatmap';
+import { GRID_TOOLTIP_DELAY_DURATION } from '../../constants';
 
-const ImageGridContext = createContext<{ values: TypedArray }>({
-    values: new Float32Array(),
-});
+type TooltipContentProps = {
+    idx: number;
+    gridSize: number;
+};
 
 type ImageGridProps = {
     values: TypedArray;
     gridSize: number;
-    min: number;
-    max: number;
+    tooltipContent: ComponentType<TooltipContentProps>;
 };
 
-export function ImageGrid({ values, gridSize, min, max }: ImageGridProps) {
+export function ImageGrid({ values, gridSize, tooltipContent }: ImageGridProps) {
+    const { min, max } = useMemo(() => {
+        let min = Infinity;
+        let max = -Infinity;
+        for (const val of values) {
+            min = Math.min(min, val);
+            max = Math.max(max, val);
+        }
+        return { min, max };
+    }, [values]);
+
     const imageDataUrl = useImageHeatmap({ values, gridSize, min, max });
-    const contextValue = useMemo(() => ({ values }), [values]);
 
     return (
         <div className="relative w-full" style={{ aspectRatio: '1 / 1' }}>
@@ -31,20 +40,21 @@ export function ImageGrid({ values, gridSize, min, max }: ImageGridProps) {
                 }}
             />
 
-            <ImageGridContext.Provider value={contextValue}>
-                <HoverGrid gridSize={gridSize} />
-            </ImageGridContext.Provider>
+            <HoverGrid gridSize={gridSize} tooltipContent={tooltipContent} />
         </div>
     );
 }
 
 type HoverGridProps = {
     gridSize: number;
+    tooltipContent: ComponentType<TooltipContentProps>;
 };
 
-const HoverGrid = memo(function HoverGrid({ gridSize }: HoverGridProps) {
+const HoverGrid = memo(function HoverGrid({ gridSize, tooltipContent }: HoverGridProps) {
     const [visible, setVisible] = useState(false);
     const cellCount = gridSize * gridSize;
+
+    const TooltipContent = tooltipContent;
 
     const handleVisibilityChange = () => {
         setVisible(true);
@@ -60,7 +70,7 @@ const HoverGrid = memo(function HoverGrid({ gridSize }: HoverGridProps) {
                 Array.from({ length: cellCount }, (_, idx) => (
                     <Tooltip delayDuration={GRID_TOOLTIP_DELAY_DURATION} key={idx}>
                         <Tooltip.Trigger asChild>
-                            <div className="hover:ring-1" />
+                            <div className="w-full h-full hover:ring-1 hover:ring-primary/50 hover:z-10 cursor-pointer transition-all duration-200" />
                         </Tooltip.Trigger>
                         <Tooltip.Content>
                             <TooltipContent idx={idx} gridSize={gridSize} />
@@ -70,21 +80,3 @@ const HoverGrid = memo(function HoverGrid({ gridSize }: HoverGridProps) {
         </div>
     );
 });
-
-type TooltipContentProps = {
-    idx: number;
-    gridSize: number;
-};
-
-function TooltipContent({ idx, gridSize }: TooltipContentProps) {
-    const { values } = useContext(ImageGridContext);
-    const value = values?.[idx] ?? 0;
-    const row = Math.floor(idx / gridSize);
-    const col = idx % gridSize;
-
-    return (
-        <p>
-            [{row}, {col}]: {value.toFixed(4)}
-        </p>
-    );
-}

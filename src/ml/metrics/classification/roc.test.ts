@@ -106,7 +106,6 @@ describe('rocCurve', () => {
             const result = rocCurve(yTrue, yProb);
 
             // Should still return valid structure
-            console.info(result.fpr, result.tpr, result.thresholds);
             expect(Array.from(result.fpr)).toEqual([0, 1]);
             expect(Array.from(result.tpr)).toEqual([0, 1]);
             expect(Array.from(result.thresholds)).toEqual([1, 0]);

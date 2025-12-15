@@ -15,6 +15,7 @@ const LIGHT_THEME_COLORS = {
         '#eca809', // Yellow
         '#56b4e9', // Light Blue
         '#d55e00', // Vermillion
+        '#ffffff', // Zero
     ],
     lighten: [
         '#4d9cd4', // Lightened Blue
@@ -25,6 +26,7 @@ const LIGHT_THEME_COLORS = {
         '#f1be49', // Lightened Yellow
         '#8ac9ef', // Lightened Light Blue
         '#e28640', // Lightened Vermillion
+        '#f5f7fa', // Zero Lightened
     ],
     darken: [
         '#015087', // Darkened Blue
@@ -35,6 +37,7 @@ const LIGHT_THEME_COLORS = {
         '#a57606', // Darkened Yellow
         '#3c7ea3', // Darkened Light Blue
         '#953e00', // Darkened Vermillion
+        '#e0e0e0', // Zero Darkened
     ],
     fade: [
         'rgba(1, 115, 178, 0.4)', // Faded Blue
@@ -45,6 +48,7 @@ const LIGHT_THEME_COLORS = {
         'rgba(236, 168, 9, 0.4)', // Faded Yellow
         'rgba(86, 180, 233, 0.4)', // Faded Light Blue
         'rgba(213, 94, 0, 0.4)', // Faded Vermillion
+        'rgba(245, 247, 250, 0.4)', // Faded Zero
     ],
     plotly: {
         paperBg: '#ffffff', // White
@@ -65,6 +69,7 @@ const DARK_THEME_COLORS = {
         '#ffd166', // Brighter Yellow
         '#7ec8f0', // Brighter Light Blue
         '#ff8a5b', // Brighter Vermillion
+        '#171717', // Zero
     ],
     lighten: [
         '#7cb8f5', // Lightened Blue
@@ -75,6 +80,7 @@ const DARK_THEME_COLORS = {
         '#ffe099', // Lightened Yellow
         '#9fd6f5', // Lightened Light Blue
         '#ffa989', // Lightened Vermillion
+        '#262626', // Zero Lightened
     ],
     darken: [
         '#336fa9', // Darkened Blue
@@ -85,6 +91,7 @@ const DARK_THEME_COLORS = {
         '#b39247', // Darkened Yellow
         '#588ca8', // Darkened Light Blue
         '#b26140', // Darkened Vermillion
+        '#000000', // Zero Darkened
     ],
     fade: [
         'rgba(74, 158, 241, 0.4)', // Faded Blue
@@ -95,6 +102,7 @@ const DARK_THEME_COLORS = {
         'rgba(255, 209, 102, 0.4)', // Faded Yellow
         'rgba(126, 200, 240, 0.4)', // Faded Light Blue
         'rgba(255, 138, 91, 0.4)', // Faded Vermillion
+        'rgba(22, 24, 26, 0.4) ', // Faded Zero
     ],
     plotly: {
         paperBg: '#171717', // Dark Gray
@@ -114,6 +122,7 @@ export const NAME_COLORS = {
     yellow: 5,
     lightBlue: 6,
     vermillion: 7,
+    zero: 8,
 } as const;
 
 export type NameColor = keyof typeof NAME_COLORS;

@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { Tooltip } from '@/app/shared/ui';
 import { getPercentage } from '../utils';
+import { MatrixGrid } from '../../../base';
 
 interface MatrixCellProps {
     value: number;
@@ -23,22 +24,10 @@ export function MatrixCell({ value, rowTotal, tooltip, isDiagonal }: MatrixCellP
     return (
         <Tooltip delayDuration={DELAY_DURATION}>
             <Tooltip.Trigger>
-                <div
-                    data-type="matrix-cell"
-                    className={`
-                flex flex-col items-center justify-center
-                text-sm font-medium
-                aspect-square w-full min-w-[50px] min-h-[50px] max-w-[60px] max-h-[60px]
-                border-2 box-border cursor-pointer transition-all duration-200
-                hover:scale-105
-                ${borderClass}
-            `}
-                >
-                    <>
-                        <div className="text-base font-semibold">{value}</div>
-                        <div className="text-xs text-muted-foreground">{percentage}%</div>
-                    </>
-                </div>
+                <MatrixGrid.Cell className={borderClass}>
+                    <div className="text-base font-semibold">{value}</div>
+                    <div className="text-xs text-muted-foreground">{percentage}%</div>
+                </MatrixGrid.Cell>
             </Tooltip.Trigger>
             <Tooltip.Content>{tooltip}</Tooltip.Content>
         </Tooltip>

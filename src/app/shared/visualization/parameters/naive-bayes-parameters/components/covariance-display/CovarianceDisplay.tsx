@@ -1,10 +1,16 @@
+import { createContext, useContext, useMemo } from 'react';
+import { element, EMPTY_MATRIX_LIKE, type MatrixLike } from '@/app/shared/helpers';
+import { FeatureBlock, ImageGrid } from '@/app/shared/visualization/base';
 import { CovarianceMatrixGrid } from './CovarianceMatrixGrid';
-import { FeatureBlock } from '../../../../base';
-import { CovarianceMatrixHeatmap } from './CovarianceMatrixHeatmap';
-import type { MatrixLike } from '@/app/shared/helpers';
 import { GRID_VIEW_THRESHOLD } from '../../constants';
-import { CovarianceMatrixContext } from './CovarianceMatrixContext';
-import { useMemo } from 'react';
+
+const CovarianceMatrixContext = createContext<{
+    covariances: MatrixLike;
+    featureLabels: string[];
+}>({
+    covariances: EMPTY_MATRIX_LIKE,
+    featureLabels: [],
+});
 
 type CovarianceDisplayProps = {
     featureLabels: string[];
@@ -25,11 +31,67 @@ export function CovarianceDisplay({ covariances, featureLabels }: CovarianceDisp
         <FeatureBlock title="Covariance Matrix">
             <CovarianceMatrixContext.Provider value={contextValue}>
                 {useGridView ? (
-                    <CovarianceMatrixGrid covariances={covariances} featureLabels={featureLabels} />
+                    <CovarianceMatrixGrid
+                        covariances={covariances}
+                        featureLabels={featureLabels}
+                        tooltipContent={TooltipContent}
+                    />
                 ) : (
-                    <CovarianceMatrixHeatmap covariances={covariances} />
+                    <ImageGrid
+                        values={covariances.array}
+                        gridSize={gridSize}
+                        tooltipContent={TooltipContent}
+                    />
                 )}
             </CovarianceMatrixContext.Provider>
         </FeatureBlock>
+    );
+}
+
+type TooltipContentProps = {
+    idx: number;
+    gridSize: number;
+};
+
+export function TooltipContent({ idx, gridSize }: TooltipContentProps) {
+    const { covariances, featureLabels } = useContext(CovarianceMatrixContext);
+
+    const rowIndex = Math.floor(idx / gridSize);
+    const colIndex = idx % gridSize;
+
+    const isDiagonal = rowIndex === colIndex;
+
+    if (isDiagonal) {
+        const variance = element(covariances, rowIndex, colIndex);
+        const stdDev = Math.sqrt(variance);
+        return (
+            <div className="text-sm flex flex-col gap-1">
+                <div className="font-semibold">{featureLabels[rowIndex]}</div>
+                <div>
+                    Variance (σ²): <span className="font-medium">{variance.toFixed(6)}</span>
+                </div>
+                <div>
+                    Std Dev (σ): <span className="font-medium">{stdDev.toFixed(6)}</span>
+                </div>
+            </div>
+        );
+    }
+
+    const covariance = element(covariances, rowIndex, colIndex);
+    const rowVariance = element(covariances, rowIndex, rowIndex);
+    const colVariance = element(covariances, colIndex, colIndex);
+    const correlation = covariance / Math.sqrt(rowVariance * colVariance);
+    return (
+        <div className="text-sm flex flex-col gap-1">
+            <div className="font-semibold">
+                {featureLabels[rowIndex]} vs {featureLabels[colIndex]}
+            </div>
+            <div>
+                Covariance: <span className="font-medium">{covariance.toFixed(6)}</span>
+            </div>
+            <div>
+                Correlation: <span className="font-medium">{correlation.toFixed(6)}</span>
+            </div>
+        </div>
     );
 }

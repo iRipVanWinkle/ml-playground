@@ -1,8 +1,16 @@
-import { row } from '@/app/shared/helpers';
-import { CategoryBlock, FeatureBlock, FeatureHighlight } from '@/app/shared/visualization/base';
+import { row, type TypedArray } from '@/app/shared/helpers';
+import {
+    CategoryBlock,
+    FeatureBlock,
+    FeatureHighlight,
+    ImageGrid,
+} from '@/app/shared/visualization/base';
 import type { NaiveBayesParams } from '@/ml/types';
-import { ImageGrid } from './ImageGrid';
-import { useMemo } from 'react';
+import { createContext, useContext } from 'react';
+
+const ImageGridContext = createContext<{ values: TypedArray }>({
+    values: new Float32Array(),
+});
 
 type ImageDisplayProps = {
     params: NaiveBayesParams;
@@ -21,74 +29,63 @@ export function ImageDisplay({ params, classIndex, categoryName }: ImageDisplayP
     const numFeatures = means.length;
     const calculatedGridSize = Math.floor(Math.sqrt(numFeatures));
 
-    const { minMean, maxMean, minVar, maxVar, minCov, maxCov } = useMemo(() => {
-        let minMean = Infinity;
-        let maxMean = -Infinity;
-        let minVar = Infinity;
-        let maxVar = -Infinity;
-        let minCov = Infinity;
-        let maxCov = -Infinity;
-
-        for (let i = 0; i < numFeatures; i++) {
-            const mean = means[i] ?? 0;
-            minMean = Math.min(minMean, mean);
-            maxMean = Math.max(maxMean, mean);
-
-            if (variances) {
-                const variance = variances[i] ?? 0;
-                minVar = Math.min(minVar, variance);
-                maxVar = Math.max(maxVar, variance);
-            }
-
-            if (covariances) {
-                const rowOffset = i * numFeatures;
-                for (let j = 0; j < numFeatures; j++) {
-                    const covariance = covariances.array[rowOffset + j];
-                    minCov = Math.min(minCov, covariance);
-                    maxCov = Math.max(maxCov, covariance);
-                }
-            }
-        }
-
-        return { minMean, maxMean, minVar, maxVar, minCov, maxCov };
-    }, [means, variances, covariances, numFeatures]);
-
     return (
         <CategoryBlock key={classIndex} title={categoryName || `Class ${classIndex}`}>
             <FeatureHighlight label="Prior">{prior}</FeatureHighlight>
 
             <div className="grid grid-cols-2 gap-3">
                 <FeatureBlock title="Means">
-                    <ImageGrid
-                        values={means}
-                        gridSize={calculatedGridSize}
-                        min={minMean}
-                        max={maxMean}
-                    />
+                    <ImageGridContext.Provider value={{ values: means }}>
+                        <ImageGrid
+                            values={means}
+                            gridSize={calculatedGridSize}
+                            tooltipContent={TooltipContent}
+                        />
+                    </ImageGridContext.Provider>
                 </FeatureBlock>
 
                 {!!variances && (
                     <FeatureBlock title="Variances">
-                        <ImageGrid
-                            values={variances}
-                            gridSize={calculatedGridSize}
-                            min={minVar}
-                            max={maxVar}
-                        />
+                        <ImageGridContext.Provider value={{ values: variances }}>
+                            <ImageGrid
+                                values={variances}
+                                gridSize={calculatedGridSize}
+                                tooltipContent={TooltipContent}
+                            />
+                        </ImageGridContext.Provider>
                     </FeatureBlock>
                 )}
 
                 {!!covariances && (
                     <FeatureBlock title="Covariances">
-                        <ImageGrid
-                            values={covariances.array}
-                            gridSize={calculatedGridSize * calculatedGridSize}
-                            min={minCov}
-                            max={maxCov}
-                        />
+                        <ImageGridContext.Provider value={{ values: covariances.array }}>
+                            <ImageGrid
+                                values={covariances.array}
+                                gridSize={calculatedGridSize * calculatedGridSize}
+                                tooltipContent={TooltipContent}
+                            />
+                        </ImageGridContext.Provider>
                     </FeatureBlock>
                 )}
             </div>
         </CategoryBlock>
+    );
+}
+
+type TooltipContentProps = {
+    idx: number;
+    gridSize: number;
+};
+
+function TooltipContent({ idx, gridSize }: TooltipContentProps) {
+    const { values } = useContext(ImageGridContext);
+    const value = values?.[idx] ?? 0;
+    const row = Math.floor(idx / gridSize);
+    const col = idx % gridSize;
+
+    return (
+        <p>
+            [{row}, {col}]: {value.toFixed(4)}
+        </p>
     );
 }

@@ -81,13 +81,13 @@ function Block({ children, title }: { children: React.ReactNode; title: string }
 }
 
 const formatArray = (params: TypedArray) => {
-    const values = Array.from(params).map((p) => p.toFixed(6));
+    const values = Array.from(params).map((p) => p.toFixed(DEFAULT_PRECISION));
     return `[${values.join(', ')}]`;
 };
 
 const formatMatrix = (matrix: MatrixLike) => {
     const rows = Array.from({ length: matrix.shape[0] }, (_, r) => Array.from(row(matrix, r))).map(
-        (row) => `[${row.map((v) => v.toFixed(6)).join(', ')}]`,
+        (row) => `[${row.map((v) => v.toFixed(DEFAULT_PRECISION)).join(', ')}]`,
     );
     return `[${rows.join(',\n ')}]`;
 };

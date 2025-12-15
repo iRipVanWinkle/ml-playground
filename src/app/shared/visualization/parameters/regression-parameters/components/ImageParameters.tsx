@@ -1,8 +1,11 @@
-import { memo, createContext, useContext, useState, useMemo } from 'react';
+import { createContext, useContext } from 'react';
 import type { MatrixLike, TypedArray } from '@/app/shared/helpers';
-import { BiasTerm } from './BiasTerm';
-import { useClassParameters, useImageHeatmap } from '../hooks';
-import { Tooltip } from '@/app/shared/ui';
+import { useClassParameters } from '../hooks';
+import { FeatureHighlight, ImageGrid } from '../../../base';
+
+const ImageGridContext = createContext<{ weights: TypedArray }>({
+    weights: new Float32Array(0),
+});
 
 type ImageParametersProps = {
     theta: MatrixLike;
@@ -23,7 +26,7 @@ export function ImageParameters({ theta, categories, selectedClassIndex }: Image
 
     return (
         <div className="flex flex-col gap-3">
-            {displayedClasses.map(({ classIndex, bias, weights, min, max }) => {
+            {displayedClasses.map(({ classIndex, bias, weights }) => {
                 const categoryName = categories?.[classIndex] || `Class ${classIndex}`;
                 return (
                     <div
@@ -32,89 +35,21 @@ export function ImageParameters({ theta, categories, selectedClassIndex }: Image
                     >
                         <h4 className="text-base font-semibold text-primary">{categoryName}</h4>
 
-                        <BiasTerm bias={bias} />
+                        <FeatureHighlight label="Intercept (Bias)">{bias}</FeatureHighlight>
 
-                        <ImageGrid
-                            weights={weights}
-                            gridSize={calculatedGridSize}
-                            min={min}
-                            max={max}
-                        />
+                        <ImageGridContext.Provider value={{ weights }}>
+                            <ImageGrid
+                                values={weights}
+                                gridSize={calculatedGridSize}
+                                tooltipContent={TooltipContent}
+                            />
+                        </ImageGridContext.Provider>
                     </div>
                 );
             })}
         </div>
     );
 }
-
-type ImageGridProps = {
-    weights: TypedArray;
-    gridSize: number;
-    min: number;
-    max: number;
-};
-
-const ImageGridContext = createContext<{ weights: TypedArray }>({
-    weights: new Float32Array(0),
-});
-
-function ImageGrid({ weights, gridSize, min, max }: ImageGridProps) {
-    const imageDataUrl = useImageHeatmap(weights, gridSize, min, max);
-    const contextValue = useMemo(() => ({ weights }), [weights]);
-
-    return (
-        <div className="relative w-full" style={{ aspectRatio: '1 / 1' }}>
-            <div
-                className="absolute inset-0"
-                style={{
-                    backgroundImage: `url(${imageDataUrl})`,
-                    backgroundSize: '100% 100%',
-                    backgroundRepeat: 'no-repeat',
-                    imageRendering: 'pixelated',
-                }}
-            />
-
-            <ImageGridContext.Provider value={contextValue}>
-                <HoverGrid gridSize={gridSize} />
-            </ImageGridContext.Provider>
-        </div>
-    );
-}
-
-type HoverGridProps = {
-    gridSize: number;
-};
-
-const DELAY_DURATION = 250;
-
-const HoverGrid = memo(function HoverGrid({ gridSize }: HoverGridProps) {
-    const [visible, setVisible] = useState(false);
-    const cellCount = gridSize * gridSize;
-
-    const handleVisibilityChange = () => {
-        setVisible(true);
-    };
-
-    return (
-        <div
-            className="absolute inset-0 grid"
-            style={{ gridTemplateColumns: `repeat(${gridSize}, 1fr)` }}
-            onPointerEnter={handleVisibilityChange}
-        >
-            {visible &&
-                Array.from({ length: cellCount }, (_, idx) => (
-                    <Tooltip delayDuration={DELAY_DURATION} key={idx}>
-                        <Tooltip.Trigger asChild>
-                            <div className="hover:ring-1" />
-                        </Tooltip.Trigger>
-                        <Tooltip.Content>
-                            <TooltipContent idx={idx} gridSize={gridSize} />
-                        </Tooltip.Content>
-                    </Tooltip>
-                ))}
-        </div>
-    );
-});
 
 type TooltipContentProps = {
     idx: number;
