@@ -20,10 +20,11 @@ export function TaskSwitcher({ disabled, onChange }: TaskSwitcherProps) {
     return (
         <EnhancedTabs
             defaultValue={taskType}
-            className="w-full"
             onValueChange={handleTaskTypeChange}
+            variant="underline"
+            scrollable
         >
-            <EnhancedTabs.List variant="underline" data-testid="task-switcher-list">
+            <EnhancedTabs.List data-testid="task-switcher-list">
                 {TASK_TYPES.map((tt) => (
                     <EnhancedTabs.Trigger
                         key={tt.value}

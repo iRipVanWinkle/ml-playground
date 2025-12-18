@@ -1,5 +1,5 @@
 import type { Dataset } from '@/app/shared/types';
-import { Tabs } from '@/app/shared/ui';
+import { EnhancedTabs } from '@/app/shared/ui';
 import type { ModelType } from '@/app/models/types';
 import { useModelDefinition } from '@/app/models/ui-registry';
 import { useTrainingReport } from '../store';
@@ -29,21 +29,21 @@ export function TabbedVisualizations({ dataset, modelType }: TabbedVisualization
     const defaultPlot = plots[0].title;
 
     return (
-        <Tabs defaultValue={defaultPlot} className="w-full">
-            <Tabs.List>
+        <EnhancedTabs defaultValue={defaultPlot} scrollable>
+            <EnhancedTabs.List>
                 {plots.map(({ title }, index) => (
-                    <Tabs.Trigger key={index} value={title} className="px-8 cursor-pointer">
+                    <EnhancedTabs.Trigger key={index} value={title} className="px-8 cursor-pointer">
                         {title}
-                    </Tabs.Trigger>
+                    </EnhancedTabs.Trigger>
                 ))}
-            </Tabs.List>
+            </EnhancedTabs.List>
             {plots.map(({ title, component: PlotComponent }, index) => (
-                <Tabs.Content key={index} value={title}>
+                <EnhancedTabs.Content key={index} value={title}>
                     <div className="min-h-80 bg-muted rounded-lg flex items-center justify-center">
                         {hasDataset ? <PlotComponent dataset={dataset} report={report} /> : null}
                     </div>
-                </Tabs.Content>
+                </EnhancedTabs.Content>
             ))}
-        </Tabs>
+        </EnhancedTabs>
     );
 }
