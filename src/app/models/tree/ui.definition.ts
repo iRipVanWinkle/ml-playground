@@ -6,6 +6,7 @@ import { TreeMainMetrics } from './ui/TreeMainMetrics';
 import { TreeModelDataPlots } from './ui/TreeModelDataPlots';
 import {
     ConfusionMatrix,
+    DecisionTreeParameters,
     RegressionMetrics,
     ResidualsPlot,
     RocCurve,
@@ -38,6 +39,7 @@ export const treeModelDefinition: ModelDefinition<'tree'> = {
                     testAccuracy: 0,
                     trainAccuracy: 0,
                     trainPredictedLabels: EMPTY_MATRIX_LIKE,
+                    params: [],
                     trainConfusionMatrix: {
                         matrix: [],
                         metrics: {
@@ -69,6 +71,7 @@ export const treeModelDefinition: ModelDefinition<'tree'> = {
                     trainPredictedLabels: EMPTY_MATRIX_LIKE,
                     trainMetrics: null,
                     trainResiduals: EMPTY_MATRIX_LIKE,
+                    params: [],
                 };
             default:
                 throw new Error(`Unsupported task type: ${taskType}`);
@@ -87,6 +90,7 @@ export const treeModelDefinition: ModelDefinition<'tree'> = {
                       { title: 'Confusion Matrix', component: ConfusionMatrix },
                       { title: 'ROC Curve', component: RocCurve },
                   ],
+        parametersComponent: DecisionTreeParameters,
     },
 
     progress: {

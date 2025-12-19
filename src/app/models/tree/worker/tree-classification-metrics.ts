@@ -141,6 +141,7 @@ export class TreeClassificationLiveMetrics
             trainPredictedLabels: trainPredictedLabels!,
             testPredictedLabels: testPredictedLabels!,
             predictionPredictedLabels: predictionPredictedLabels,
+            params: modelRepresentation,
             trainConfusionMatrix: confusionMatrixData(
                 trainConfusionMatrixValue!,
                 this.datasetManager.getNumClasses(),

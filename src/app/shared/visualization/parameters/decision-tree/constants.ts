@@ -1,0 +1,13 @@
+export const NODE_WIDTH = 180;
+export const NODE_HEIGHT = 100;
+export const NODE_HALF_W = NODE_WIDTH / 2;
+export const NODE_HALF_H = NODE_HEIGHT / 2;
+export const EDGE_OFFSET = 50;
+export const PADDING = 40;
+export const MAX_SCALE = 5;
+export const MIN_SCALE = 0.1;
+export const DEFAULT_SCALE = 1.2;
+export const VERTICAL_OFFSET = 50;
+export const LEVEL_HEIGHT = 200;
+export const NODE_SPACING = 40;
+export const ROOT_Y_OFFSET = 50;

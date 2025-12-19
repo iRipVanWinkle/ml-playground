@@ -10,7 +10,7 @@ export function usePlotlyLayout(): Partial<Layout> {
     const colors = usePlotlyColors();
 
     return useMemo(() => {
-        const { paperBg, plotBg, textColor, gridColor, legendBg } = colors;
+        const { paperBg, plotBg, textColor, gridColor, legendBg, axisLineColor } = colors;
 
         return {
             paper_bgcolor: paperBg,
@@ -21,26 +21,31 @@ export function usePlotlyLayout(): Partial<Layout> {
             xaxis: {
                 gridcolor: gridColor,
                 color: textColor,
+                zerolinecolor: axisLineColor,
             },
             yaxis: {
                 gridcolor: gridColor,
                 color: textColor,
+                zerolinecolor: axisLineColor,
             },
             scene: {
                 xaxis: {
                     gridcolor: gridColor,
                     color: textColor,
                     backgroundcolor: plotBg,
+                    zerolinecolor: axisLineColor,
                 },
                 yaxis: {
                     gridcolor: gridColor,
                     color: textColor,
                     backgroundcolor: plotBg,
+                    zerolinecolor: axisLineColor,
                 },
                 zaxis: {
                     gridcolor: gridColor,
                     color: textColor,
                     backgroundcolor: plotBg,
+                    zerolinecolor: axisLineColor,
                 },
             },
             legend: {

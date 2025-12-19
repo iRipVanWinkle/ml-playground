@@ -1,4 +1,5 @@
 export * from './basic/button';
+export * from './basic/button-group';
 export * from './basic/card';
 export * from './basic/checkbox';
 export * from './basic/collapsible';

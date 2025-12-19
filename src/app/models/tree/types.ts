@@ -43,6 +43,7 @@ export type TreeClassificationTrainingReport = {
     trainPredictedLabels: MatrixLike;
     testPredictedLabels?: MatrixLike;
     predictionPredictedLabels?: MatrixLike;
+    params: EnsembleTree;
 
     trainConfusionMatrix: ConfusionMatrixData;
     testConfusionMatrix?: ConfusionMatrixData;
@@ -63,4 +64,5 @@ export type TreeRegressionTrainingReport = {
     testMetrics?: RegressionMetricsData | null;
     trainResiduals: MatrixLike;
     testResiduals?: MatrixLike;
+    params: EnsembleTree;
 };

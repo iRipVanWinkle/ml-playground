@@ -160,6 +160,7 @@ export class TreeRegressionLiveMetrics
             trainPredictedLabels: trainPredictedLabels!,
             testPredictedLabels: testPredictedLabels!,
             predictionPredictedLabels: predictionPredictedLabels,
+            params: modelRepresentation,
             trainMetrics: {
                 mae: trainMaeValue,
                 mse: trainMseValue,

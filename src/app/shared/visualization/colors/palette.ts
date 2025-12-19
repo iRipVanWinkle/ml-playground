@@ -56,6 +56,7 @@ const LIGHT_THEME_COLORS = {
         textColor: '#0a0a0a', // Dark Gray
         gridColor: '#e5e5e5', // Light Gray
         legendBg: 'transparent',
+        axisLineColor: '#0a0a0a', // Dark line for axes and zero lines
     },
 } as const;
 
@@ -110,6 +111,7 @@ const DARK_THEME_COLORS = {
         textColor: '#fafafa', // Light Gray
         gridColor: 'rgba(255, 255, 255, 0.1)', // Very Light Gray
         legendBg: 'transparent', // Dark Gray
+        axisLineColor: '#fafafa', // Light line for axes and zero lines
     },
 } as const;
 
