@@ -10,7 +10,8 @@ type LinerPlotsProps = {
 };
 
 export function LinearPlots({ dataset, report }: LinerPlotsProps) {
-    const { predictionPredictedLabels } = report ?? {};
+    const predictionPredictedLabels =
+        'predictionPredictedLabels' in report ? report.predictionPredictedLabels : undefined;
 
     const { trainX, trainY, trainZ, testX, testY, testZ, predictionX, predictionY } =
         useLinearPlotData(dataset);

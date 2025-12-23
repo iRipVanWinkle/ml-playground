@@ -8,6 +8,7 @@ type FeatureGridProps = {
     items: number[];
     labels: string[];
     visibleCount?: number;
+    oneColumn?: boolean;
     itemComponent: ComponentType<{ label: string; value: number; maxAbs: number }>;
 };
 
@@ -15,6 +16,7 @@ function FeatureGridRoot({
     items,
     labels,
     itemComponent,
+    oneColumn = false,
     visibleCount = INITIAL_VISIBLE_COUNT,
 }: FeatureGridProps) {
     const [isOpen, setIsOpen] = useState(false);
@@ -36,7 +38,9 @@ function FeatureGridRoot({
 
     return (
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3">
+            <div
+                className={`grid grid-cols-1 gap-x-8 gap-y-3 ${!oneColumn ? 'md:grid-cols-2' : ''} `}
+            >
                 {visibleItems.map((item, index) => (
                     <Item
                         key={index}
@@ -49,7 +53,9 @@ function FeatureGridRoot({
             {hasMore && (
                 <>
                     <Collapsible.Content>
-                        <div className="mt-2 grid grid-cols-1 gap-2 md:grid-cols-2 gap-x-8">
+                        <div
+                            className={`mt-2 grid grid-cols-1 gap-2 gap-x-8 ${!oneColumn ? 'md:grid-cols-2' : ''}`}
+                        >
                             {hiddenItems.map((item, index) => {
                                 const actualIndex = index + visibleIndices;
                                 return (

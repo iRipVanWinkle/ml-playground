@@ -1,4 +1,4 @@
-import { concat, tidy, type Scalar, type Tensor2D } from '@tensorflow/tfjs';
+import { concat, oneHot, tidy, type Scalar, type Tensor1D, type Tensor2D } from '@tensorflow/tfjs';
 import type { Model, ModelRepresentation, TrainingEventEmitter } from '../types';
 import type { NormalizatorFn } from '../data-processing/normalization';
 import type { TransformationFn } from '../data-processing/transformation';
@@ -107,8 +107,9 @@ export class PreprocessingModelDecorator<T extends ModelRepresentation> implemen
             const processedLabel = tidy(() => {
                 let processedLabel;
                 if (usesOneHotLabels) {
-                    const numClasses = new Set(labels.flatten().arraySync()).size; // WebGPU does not yet support the unique() function
-                    processedLabel = labels.flatten().toInt().oneHot(numClasses, 1, 0) as Tensor2D;
+                    const labelsFlat = labels.squeeze().toInt() as Tensor1D;
+                    const numClasses = new Set(labelsFlat.arraySync()).size; // WebGPU does not yet support the unique() function
+                    processedLabel = oneHot(labelsFlat, numClasses) as Tensor2D;
                 } else {
                     // Clone to ensure the model manages tensor disposal
                     processedLabel = labels.clone();

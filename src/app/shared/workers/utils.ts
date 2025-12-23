@@ -1,5 +1,5 @@
-import type { Scalar, Tensor2D } from '@tensorflow/tfjs';
-import { getMatrixFromTensor, type MatrixLike } from '@/ml/matrix';
+import type { Scalar, Tensor1D, Tensor2D } from '@tensorflow/tfjs';
+import { getMatrixFromTensor, type MatrixLike, type TypedArray } from '@/ml/matrix';
 
 /**
  * Gets a matrix from a tensor, safely handling undefined values.
@@ -33,6 +33,23 @@ export async function getSafeTensorArray(tensor?: Tensor2D): Promise<number[][] 
     }
 
     return tensor.array();
+}
+
+/**
+ * Gets an data from a tensor, safely handling undefined values.
+ * @param tensor - The tensor to get the array from, or undefined.
+ * @returns A typedarray, or undefined if tensor is undefined.
+ */
+export async function getSafeTensorTypedArray(tensor: Tensor1D): Promise<TypedArray>;
+export async function getSafeTensorTypedArray(
+    tensor: Tensor1D | undefined,
+): Promise<TypedArray | undefined>;
+export async function getSafeTensorTypedArray(tensor?: Tensor1D): Promise<TypedArray | undefined> {
+    if (tensor === undefined) {
+        return undefined;
+    }
+
+    return tensor.data();
 }
 
 /**

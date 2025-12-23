@@ -4,6 +4,7 @@ import type { Dataset, TaskType } from '@/app/shared/types';
 import {
     DEFAULT_STATE,
     PREPARED_CLASSIFICATION_DATASETS,
+    PREPARED_CLUSTERING_DATASETS,
     PREPARED_REGRESSION_DATASETS,
 } from '../constants/datasets';
 import { type DataSectionState } from '../store';
@@ -78,8 +79,19 @@ export function DataLoader({ disabled, taskType, randomSeed, onChange }: DataLoa
         }
     };
 
-    const datasets =
-        taskType === 'regression' ? PREPARED_REGRESSION_DATASETS : PREPARED_CLASSIFICATION_DATASETS;
+    let datasets = PREPARED_REGRESSION_DATASETS;
+
+    switch (taskType) {
+        case 'regression':
+            datasets = PREPARED_REGRESSION_DATASETS;
+            break;
+        case 'classification':
+            datasets = PREPARED_CLASSIFICATION_DATASETS;
+            break;
+        case 'clustering':
+            datasets = PREPARED_CLUSTERING_DATASETS;
+            break;
+    }
 
     return (
         <>

@@ -33,13 +33,20 @@ import type {
     NaiveBayesSettings,
     NaiveBayesTrainingReport,
 } from './naive-bayes/types';
+import type {
+    KMeansCallbackParameters,
+    KMeansRepresentation,
+    KMeansSettings,
+    KMeansTrainingReport,
+} from './k-means/types';
 
 export type ModelSettings =
     | LinearSettings
     | LogisticSettings
     | NeuralSettings
     | TreeSettings
-    | NaiveBayesSettings;
+    | NaiveBayesSettings
+    | KMeansSettings;
 
 export type ModelType = ModelSettings['type'];
 
@@ -48,14 +55,16 @@ export type ModelRepresentation =
     | LogisticRepresentation
     | NeuralRepresentation
     | TreeRepresentation
-    | NaiveBayesRepresentation;
+    | NaiveBayesRepresentation
+    | KMeansRepresentation;
 
 export type CallbackParameters =
     | LinearCallbackParameters
     | LogisticCallbackParameters
     | NeuralCallbackParameters
     | TreeCallbackParameters
-    | NaiveBayesCallbackParameters;
+    | NaiveBayesCallbackParameters
+    | KMeansCallbackParameters;
 
 export type TrainingReport =
     | LinearTrainingReport
@@ -64,7 +73,8 @@ export type TrainingReport =
     | NeuralRegressionTrainingReport
     | TreeClassificationTrainingReport
     | TreeRegressionTrainingReport
-    | NaiveBayesTrainingReport;
+    | NaiveBayesTrainingReport
+    | KMeansTrainingReport;
 
 export type TrainingSettings<TModelSettings extends ModelSettings = ModelSettings> = {
     taskType: TaskType;

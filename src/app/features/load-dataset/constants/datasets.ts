@@ -109,3 +109,34 @@ export const PREPARED_CLASSIFICATION_DATASETS: DatasetOption[] = [
         isImage: true,
     },
 ];
+
+export const PREPARED_CLUSTERING_DATASETS: DatasetOption[] = [
+    {
+        value: './data/iris-petal.csv',
+        label: 'Iris (Petals)',
+    },
+    {
+        value: './data/iris.csv',
+        label: 'Iris',
+    },
+    {
+        value: './data/microchips-tests.csv',
+        label: 'Microchips Tests (non linear)',
+    },
+    {
+        value: './data/circle-classification.csv',
+        label: 'Circle classification',
+    },
+    {
+        value: './data/cluster-2d.csv',
+        label: 'Cluster 2D',
+    },
+    {
+        value: './data/spiral.csv',
+        label: 'Spiral',
+    },
+    {
+        value: './data/XOR.csv',
+        label: 'XOR',
+    },
+];

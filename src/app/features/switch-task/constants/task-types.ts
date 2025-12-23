@@ -1,5 +1,5 @@
 import { createElement } from 'react';
-import { Shapes, TrendingUp } from 'lucide-react';
+import { Shapes, Share2, TrendingUp } from 'lucide-react';
 
 export const TASK_TYPES = [
     {
@@ -13,5 +13,11 @@ export const TASK_TYPES = [
         label: 'Classification',
         description: 'Categorize data into distinct classes or groups',
         icon: createElement(Shapes),
+    },
+    {
+        value: 'clustering',
+        label: 'Clustering',
+        description: 'Group similar data points together without predefined labels',
+        icon: createElement(Share2),
     },
 ];

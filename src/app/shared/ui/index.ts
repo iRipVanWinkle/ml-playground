@@ -22,6 +22,8 @@ export * from './basic/enhanced-tabs';
 export * from './basic/tabs';
 export * from './basic/tooltip-wrapper';
 export * from './basic/tooltip';
+export * from './basic/input-group';
+export * from './basic/textarea';
 
 export { default as GitHub } from './icons/GitHub';
 export { default as ML } from './icons/ML';

@@ -44,10 +44,20 @@ export type NaiveBayesCallbackParameters = Readonly<{
     params: NaiveBayesParams;
 }>;
 
+export type KMeansCallbackParameters = Readonly<{
+    threadId: number;
+    iteration: number;
+    threadName?: string;
+    centroids: Tensor2D;
+    assignments: Tensor2D;
+    inertia: number;
+}>;
+
 export type CallbackParameters =
     | OptimizerCallbackParameters
     | TreeCallbackParameters
-    | NaiveBayesCallbackParameters;
+    | NaiveBayesCallbackParameters
+    | KMeansCallbackParameters;
 
 export type TrainingState = 'transforming' | 'training' | 'paused' | 'stopped' | 'stepped-forward';
 /**

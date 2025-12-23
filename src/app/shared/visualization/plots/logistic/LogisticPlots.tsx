@@ -28,7 +28,8 @@ export function LogisticPlots({ dataset, report }: LogisticPlotsProps) {
 
     const { getColor } = useColor();
 
-    const { predictionPredictedLabels } = report ?? {};
+    const predictionPredictedLabels =
+        'predictionPredictedLabels' in report ? report.predictionPredictedLabels : undefined;
 
     const predictions = [];
 
@@ -122,15 +123,18 @@ export function LogisticPlots({ dataset, report }: LogisticPlotsProps) {
             ...testInputFeatures.slice(0, numbersToDisplay),
         ];
 
-        const predictionsPlot =
-            report.trainPredictedLabels && report.trainPredictedLabels.array.length
-                ? [
-                      ...report.trainPredictedLabels.array.slice(0, numbersToDisplay),
-                      ...(report.testPredictedLabels
-                          ? report.testPredictedLabels.array.slice(0, numbersToDisplay)
-                          : []),
-                  ]
-                : undefined;
+        const trainPredictedLabels =
+            'trainPredictedLabels' in report
+                ? report.trainPredictedLabels.array.slice(0, numbersToDisplay)
+                : [];
+        const testPredictedLabels =
+            'testPredictedLabels' in report && report.testPredictedLabels
+                ? report.testPredictedLabels.array.slice(0, numbersToDisplay)
+                : [];
+
+        const predictionsPlot = trainPredictedLabels.length
+            ? [...trainPredictedLabels, ...testPredictedLabels]
+            : undefined;
 
         const labelsPlot = [
             ...trainTargetLabels.slice(0, numbersToDisplay).flat(),
