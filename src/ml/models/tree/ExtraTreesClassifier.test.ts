@@ -73,12 +73,12 @@ describe('ExtraTreesClassifier', () => {
             expect(Array.isArray(trees[1]?.probabilities)).toBe(true);
 
             // Verify tree structure
-            expect(trees[0]?.featureIndex).toBe(1);
-            expect(trees[0]?.threshold).toBeCloseTo(5.09, 3);
+            expect(trees[0]?.featureIndex).toBe(0);
+            expect(trees[0]?.threshold).toBeCloseTo(5.269, 3);
             expect(trees[0]?.value).toBe(1);
 
-            expect(trees[1]?.featureIndex).toBe(1);
-            expect(trees[1]?.threshold).toBeCloseTo(2.428, 3);
+            expect(trees[1]?.featureIndex).toBe(0);
+            expect(trees[1]?.threshold).toBeCloseTo(1.449, 3);
             expect(trees[1]?.value).toBe(0);
 
             X.dispose();
@@ -103,16 +103,16 @@ describe('ExtraTreesClassifier', () => {
 
             expect(trees.length).toBe(3);
 
-            expect(trees[0]?.featureIndex).toBe(1);
-            expect(trees[0]?.threshold).toBeCloseTo(5.09, 3);
+            expect(trees[0]?.featureIndex).toBe(0);
+            expect(trees[0]?.threshold).toBeCloseTo(5.269, 3);
             expect(trees[0]?.value).toBe(1);
 
-            expect(trees[1]?.featureIndex).toBe(1);
-            expect(trees[1]?.threshold).toBeCloseTo(2.428, 3);
+            expect(trees[1]?.featureIndex).toBe(0);
+            expect(trees[1]?.threshold).toBeCloseTo(1.449, 3);
             expect(trees[1]?.value).toBe(0);
 
-            expect(trees[2]?.featureIndex).toBe(0);
-            expect(trees[2]?.threshold).toBeCloseTo(2.365, 3);
+            expect(trees[2]?.featureIndex).toBe(1);
+            expect(trees[2]?.threshold).toBeCloseTo(3.165, 3);
             expect(trees[2]?.value).toBe(1);
 
             X.dispose();
@@ -192,12 +192,12 @@ describe('ExtraTreesClassifier', () => {
 
             expect(trees.length).toBe(2);
 
-            expect(trees[0]?.featureIndex).toBe(1);
-            expect(trees[0]?.threshold).toBeCloseTo(5.09, 3);
+            expect(trees[0]?.featureIndex).toBe(0);
+            expect(trees[0]?.threshold).toBeCloseTo(5.269, 3);
             expect(trees[0]?.value).toBe(1);
 
-            expect(trees[1]?.featureIndex).toBe(1);
-            expect(trees[1]?.threshold).toBeCloseTo(2.428, 3);
+            expect(trees[1]?.featureIndex).toBe(0);
+            expect(trees[1]?.threshold).toBeCloseTo(1.449, 3);
             expect(trees[1]?.value).toBe(0);
 
             X.dispose();
@@ -252,12 +252,12 @@ describe('ExtraTreesClassifier', () => {
 
             expect(trees.length).toBe(2);
 
-            expect(trees[0]?.featureIndex).toBe(1);
-            expect(trees[0]?.threshold).toBeCloseTo(5.09, 3);
+            expect(trees[0]?.featureIndex).toBe(0);
+            expect(trees[0]?.threshold).toBeCloseTo(5.269, 3);
             expect(trees[0]?.value).toBe(1);
 
-            expect(trees[1]?.featureIndex).toBe(1);
-            expect(trees[1]?.threshold).toBeCloseTo(2.428, 3);
+            expect(trees[1]?.featureIndex).toBe(0);
+            expect(trees[1]?.threshold).toBeCloseTo(1.449, 3);
             expect(trees[1]?.value).toBe(0);
 
             X.dispose();

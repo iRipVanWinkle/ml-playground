@@ -50,7 +50,7 @@ describe('RandomFeatureSelector', () => {
                 [4, 5, 6],
             ];
             const result = selector.selectFeatures(features, 42).sort((a, b) => a - b);
-            expect(result).toEqual([0, 1, 2]);
+            expect(result).toEqual([0, 2, 2]);
         });
 
         it('should be deterministic with the same seed', () => {

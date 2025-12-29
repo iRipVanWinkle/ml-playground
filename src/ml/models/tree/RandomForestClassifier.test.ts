@@ -70,12 +70,12 @@ describe('RandomForestClassifier', () => {
 
             let tree = trees[0];
 
-            expect(tree?.featureIndex).toBe(1);
-            expect(tree?.threshold).toBeCloseTo(6.45, 3);
+            expect(tree?.featureIndex).toBe(0);
+            expect(tree?.threshold).toBeCloseTo(5.7, 3);
             expect(tree?.value).toBe(1);
 
-            expect(tree?.leftChild?.featureIndex).toBe(0);
-            expect(tree?.leftChild?.threshold).toBeCloseTo(2.7, 3);
+            expect(tree?.leftChild?.featureIndex).toBe(1);
+            expect(tree?.leftChild?.threshold).toBeCloseTo(3.55, 3);
             expect(tree?.leftChild?.value).toBe(1);
 
             expect(tree?.leftChild?.leftChild?.featureIndex).toBeNull();
@@ -92,16 +92,16 @@ describe('RandomForestClassifier', () => {
 
             tree = trees[1];
 
-            expect(tree?.featureIndex).toBe(1);
-            expect(tree?.threshold).toBeCloseTo(3.5, 3);
+            expect(tree?.featureIndex).toBe(0);
+            expect(tree?.threshold).toBeCloseTo(2.7, 3);
             expect(tree?.value).toBe(0);
 
             expect(tree?.leftChild?.featureIndex).toBeNull();
             expect(tree?.leftChild?.threshold).toBeNull();
             expect(tree?.leftChild?.value).toBe(0);
 
-            expect(tree?.rightChild?.featureIndex).toBe(1);
-            expect(tree?.rightChild?.threshold).toBeCloseTo(6.45, 3);
+            expect(tree?.rightChild?.featureIndex).toBe(0);
+            expect(tree?.rightChild?.threshold).toBeCloseTo(5.8, 3);
             expect(tree?.rightChild?.value).toBe(1);
 
             expect(tree?.rightChild?.leftChild?.featureIndex).toBeNull();
@@ -155,20 +155,20 @@ describe('RandomForestClassifier', () => {
 
             expect(trees.length).toBe(5);
 
-            expect(trees[0]?.featureIndex).toBe(1);
-            expect(trees[0]?.threshold).toBeCloseTo(6.45, 3);
+            expect(trees[0]?.featureIndex).toBe(0);
+            expect(trees[0]?.threshold).toBeCloseTo(5.7, 3);
             expect(trees[0]?.value).toBe(1);
 
-            expect(trees[1]?.featureIndex).toBe(1);
-            expect(trees[1]?.threshold).toBeCloseTo(3.5, 3);
+            expect(trees[1]?.featureIndex).toBe(0);
+            expect(trees[1]?.threshold).toBeCloseTo(2.7, 3);
             expect(trees[1]?.value).toBe(0);
 
-            expect(trees[2]?.featureIndex).toBe(0);
-            expect(trees[2]?.threshold).toBeCloseTo(2.7, 3);
+            expect(trees[2]?.featureIndex).toBe(1);
+            expect(trees[2]?.threshold).toBeCloseTo(3.55, 3);
             expect(trees[2]?.value).toBe(1);
 
-            expect(trees[3]?.featureIndex).toBe(1);
-            expect(trees[3]?.threshold).toBeCloseTo(3.5, 3);
+            expect(trees[3]?.featureIndex).toBe(0);
+            expect(trees[3]?.threshold).toBeCloseTo(2.65, 3);
             expect(trees[3]?.value).toBe(0);
 
             expect(trees[4]?.featureIndex).toBe(1);

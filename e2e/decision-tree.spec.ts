@@ -21,15 +21,15 @@ test.describe('Decision Tree Training', () => {
                 testAccuracy: 'Test Accuracy: 60.00%',
             },
             withRandomForest: {
-                trainAccuracy: 'Train Accuracy: 97.50%',
-                testAccuracy: 'Test Accuracy: 70.00%',
+                trainAccuracy: 'Train Accuracy: 100.00%',
+                testAccuracy: 'Test Accuracy: 90.00%',
             },
             withBagging: {
                 trainAccuracy: 'Train Accuracy: 100.00%',
                 testAccuracy: 'Test Accuracy: 70.00%',
             },
             withExtraTrees: {
-                trainAccuracy: 'Train Accuracy: 97.50%',
+                trainAccuracy: 'Train Accuracy: 100.00%',
                 testAccuracy: 'Test Accuracy: 80.00%',
             },
         } as const;

@@ -50,7 +50,13 @@ export class Randomizer {
         return tidy(() => {
             const pool = linspace(minval ?? 0, maxval ?? 0, poolSize); // shape [poolSize]
 
-            const randomKeys = randomUniform([poolSize], 0, 1, 'float32', seed);
+            const randomKeys = randomUniform(
+                [poolSize],
+                0,
+                1,
+                'float32',
+                Randomizer.mergeSeed(seed),
+            );
 
             const sortedIndices = topk(randomKeys, poolSize, true).indices;
 
