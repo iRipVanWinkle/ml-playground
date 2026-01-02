@@ -1,4 +1,9 @@
-export type TaskType = 'regression' | 'classification' | 'clustering';
+export type TaskType =
+    | 'regression'
+    | 'classification'
+    | 'clustering'
+    | 'anomaly'
+    | 'recommendation';
 
 export type Dataset = {
     trainInputFeatures: number[][];

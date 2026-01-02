@@ -1,5 +1,13 @@
 import { createElement } from 'react';
-import { Shapes, Share2, TrendingUp } from 'lucide-react';
+import { AlertTriangle, Shapes, Share2, TrendingUp } from 'lucide-react';
+import type { TaskType } from '@/app/shared/types';
+
+type TaskTypeObject = {
+    value: TaskType;
+    label: string;
+    description: string;
+    icon: React.ReactElement;
+};
 
 export const TASK_TYPES = [
     {
@@ -20,4 +28,10 @@ export const TASK_TYPES = [
         description: 'Group similar data points together without predefined labels',
         icon: createElement(Share2),
     },
-];
+    {
+        value: 'anomaly',
+        label: 'Anomaly',
+        description: 'Identify unusual patterns or outliers in data',
+        icon: createElement(AlertTriangle),
+    },
+] as TaskTypeObject[];
