@@ -61,7 +61,7 @@ export class TreeBuilder {
         const treeBuildingIterator = this.createTreeIterator(X, y, context);
 
         for await (const iteration of treeBuildingIterator) {
-            this.eventEmitter?.emit('callback', {
+            await this.eventEmitter?.emit('callback', {
                 threadId,
                 iteration,
                 tree: rootRef.current!,

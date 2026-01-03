@@ -179,7 +179,7 @@ test.describe('Decision Tree Training', () => {
         );
         const EXPECTED_RESULTS = {
             default: {
-                trainAccuracy: 'Train Accuracy: 97.92%',
+                trainAccuracy: 'Train Accuracy: 100.00%',
                 testAccuracy: 'Test Accuracy: 91.67%',
             },
             withBagging: {
