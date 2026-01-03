@@ -20,26 +20,23 @@ From simple linear regression to neural networks and decision trees, the app pro
 ## ✨ Features
 
 - **Train interactively**: Watch models learn in real time with live progress updates
-- **Experiment with algorithms**: Try linear/logistic regression, neural networks, and decision trees
+- **Experiment with algorithms**: Try linear/logistic regression, neural networks, and more
 - **Visualize your data**: Explore results with interactive Plotly.js charts
 - **Bring your own data**: Upload CSVs or use built-in sample datasets
 
 ## 🎮 Usage Guide
 
 1. **Choose Your Task**  
-   Choose between **Regression** (predicting continuous values) or **Classification** (categorizing data).
+   Select a machine learning task: **Regression** (predicting continuous values), **Classification** (categorizing data), or **Clustering** (grouping similar data points).
 
 2. **Select or Upload Data**  
    Use a sample dataset or upload your own CSV. The app takes care of preprocessing and visualization.
 
-3. **Configure Your Model**
-    - Adjust regression settings (regularization, optimization)
-    - Build neural networks layer by layer with custom activations
+3. **Configure Your Model**  
+   Adjust algorithm-specific settings such as regularization, criteria, or distance metrics. Build neural networks layer by layer with custom activations, or configure clustering parameters and number of clusters.
 
-4. **Set Training Parameters**
-    - Choose optimizer (SGD, Momentum, Adam)
-    - Set learning rate, batch size, and number of iterations
-    - Enable regularization to prevent overfitting
+4. **Set Training Parameters**  
+   Choose your optimizer and learning strategy, set learning rate, batch size, and number of iterations. Enable regularization and configure convergence criteria as needed.
 
 5. **Train & Watch**  
    Hit **Start Training** and see loss curves, accuracy metrics, and predictions update live. Try different setups to see what works best.
@@ -59,6 +56,11 @@ From simple linear regression to neural networks and decision trees, the app pro
 - **One-vs-Rest**: Multi-class classification using binary classifiers
 - **Neural Networks**: Deep learning for classification tasks
 - **Decision Trees**: Tree-based classification with ensemble methods
+- **Naive Bayes**: Probabilistic classifier based on Bayes' theorem
+
+#### Clustering
+
+- **K-Means**: Unsupervised clustering algorithm for grouping similar data points
 
 ## 🚀 Quick Start
 
