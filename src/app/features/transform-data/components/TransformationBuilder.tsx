@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { startTransition, useEffect, useState } from 'react';
 import { Button, Field } from '@/app/shared/ui';
 import { useTransformations } from '../store';
 import { resetTransformations, updateTransformations } from '../store/actions';
@@ -26,7 +26,10 @@ export function TransformationBuilder({
     const [localTransformations, setLocalTransformations] = useState(transformations);
 
     useEffect(() => {
-        resetTransformations();
+        startTransition(() => {
+            resetTransformations();
+            setLocalTransformations([]);
+        });
     }, [taskType]);
 
     const handleNewTransformation = () => {
