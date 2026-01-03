@@ -1,22 +1,31 @@
-import type { Scalar, Tensor2D } from '@tensorflow/tfjs';
+import { Rank, Variable, variable, type Scalar, type Tensor2D } from '@tensorflow/tfjs';
 import type { Model, OptimizerCallbackParameters } from '@/ml/types';
 import type { DatasetManager, LiveMetrics } from '@/app/shared/workers';
 import type { NeuralClassificationTrainingReport } from '../types';
 import { accuracy, confusionMatrix } from '@/ml/metrics';
 import { confusionMatrixData } from '@/app/shared/visualization/metrics/confusion-matrix/calculations';
+import { rocCurveData } from '@/app/shared/visualization/plots/roc-curve/calculations';
 import {
+    createTensorContainer,
     getSafeMatrixFromTensor,
     getSafeTensorArray,
     getSafeTensorValue,
 } from '@/app/shared/workers';
-import { rocCurveData } from '@/app/shared/visualization/plots/roc-curve/calculations';
+
+type Tensors = {
+    y: Tensor2D;
+    probabilities: Tensor2D;
+    accuracy: Scalar;
+    confusionMatrix: Tensor2D;
+    loss: Scalar;
+};
 
 export class NeuralClassificationLiveMetrics
     implements LiveMetrics<OptimizerCallbackParameters, NeuralClassificationTrainingReport>
 {
     private lossHistory: number[] = [];
     private iterationCount: number = 0;
-    private theta?: Tensor2D;
+    private theta?: Variable<Rank.R2>;
 
     private model: Model<Tensor2D>;
     private datasetManager: DatasetManager;
@@ -33,7 +42,11 @@ export class NeuralClassificationLiveMetrics
     updateIteration(params: OptimizerCallbackParameters): void {
         const { iteration, theta, loss } = params;
 
-        this.theta = theta;
+        if (!this.theta) {
+            this.theta = variable(theta);
+        } else {
+            this.theta.assign(theta);
+        }
 
         this.lossHistory = this.lossHistory ?? [];
         this.lossHistory.push(loss);
@@ -48,12 +61,10 @@ export class NeuralClassificationLiveMetrics
 
         const theta = this.theta!;
 
+        const train = createTensorContainer<Tensors>();
+        const test = createTensorContainer<Tensors, 'partial'>();
+
         let yPredictions: Tensor2D | undefined;
-        let yTesting: Tensor2D | undefined;
-        let yTestingProbability: Tensor2D | undefined;
-        let testLoss: Scalar | undefined;
-        let testAccuracy: Scalar | undefined;
-        let testConfusionMatrix: Tensor2D | undefined;
 
         if (predictionData) {
             yPredictions = this.model.predict(predictionData, theta);
@@ -64,24 +75,31 @@ export class NeuralClassificationLiveMetrics
             trainingData.y,
             theta,
         );
-        const trainAccuracy = accuracy(trainingData.y, yTraining!);
-        const trainConfusionMatrix = confusionMatrix(
+
+        train.y = yTraining;
+        train.probabilities = yTrainingProbability;
+        train.loss = trainLoss;
+        train.accuracy = accuracy(trainingData.y, yTraining);
+        train.confusionMatrix = confusionMatrix(
             trainingData.y,
             yTraining,
             this.datasetManager.getNumClasses(),
         );
 
         if (testData) {
-            [yTesting, yTestingProbability, testLoss] = this.model.evaluate(
+            const [yTesting, yTestingProbability, testLoss] = this.model.evaluate(
                 testData.X,
                 testData.y,
                 theta,
             );
 
-            testAccuracy = accuracy(testData.y, yTesting!);
-            testConfusionMatrix = confusionMatrix(
+            test.y = yTesting;
+            test.probabilities = yTestingProbability;
+            test.loss = testLoss;
+            test.accuracy = accuracy(testData.y, yTesting);
+            test.confusionMatrix = confusionMatrix(
                 testData.y,
-                yTesting!,
+                yTesting,
                 this.datasetManager.getNumClasses(),
             );
         }
@@ -105,27 +123,23 @@ export class NeuralClassificationLiveMetrics
             getSafeMatrixFromTensor(theta),
             getSafeMatrixFromTensor(yPredictions),
             // train
-            getSafeMatrixFromTensor(yTraining),
-            getSafeTensorValue(trainAccuracy),
-            getSafeTensorArray(trainConfusionMatrix),
-            getSafeMatrixFromTensor(yTrainingProbability),
+            getSafeMatrixFromTensor(train.y),
+            getSafeTensorValue(train.accuracy),
+            getSafeTensorArray(train.confusionMatrix),
+            getSafeMatrixFromTensor(train.probabilities),
             getSafeMatrixFromTensor(trainingData.y),
             // test
-            getSafeMatrixFromTensor(yTesting),
-            getSafeTensorValue(testAccuracy),
-            getSafeTensorArray(testConfusionMatrix),
-            getSafeMatrixFromTensor(yTestingProbability),
+            getSafeMatrixFromTensor(test.y),
+            getSafeTensorValue(test.accuracy),
+            getSafeTensorArray(test.confusionMatrix),
+            getSafeMatrixFromTensor(test.probabilities),
             getSafeMatrixFromTensor(testData?.y),
         ]);
 
         // Dispose of all tensors to free up memory
         yPredictions?.dispose();
-        yTraining?.dispose();
-        yTestingProbability?.dispose();
-        yTesting?.dispose();
-        yTrainingProbability?.dispose();
-        trainLoss?.dispose();
-        testLoss?.dispose();
+        train.dispose();
+        test.dispose();
 
         return {
             type: 'neural',

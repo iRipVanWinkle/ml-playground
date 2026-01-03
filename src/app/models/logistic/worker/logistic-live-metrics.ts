@@ -3,6 +3,7 @@ import type { Model, OptimizerCallbackParameters } from '@/ml/types';
 import type { DatasetManager, LiveMetrics } from '@/app/shared/workers';
 import type { LogisticTrainingReport } from '../types';
 import {
+    createTensorContainer,
     getSafeMatrixFromTensor,
     getSafeTensorArray,
     getSafeTensorValue,
@@ -15,6 +16,14 @@ function fixLength(matrix: number[][]): number[][] {
     const minLength = Math.min(...matrix.map((m) => m.length)) ?? 0;
     return matrix.map((m) => m.slice(0, minLength));
 }
+
+type Tensors = {
+    y: Tensor2D;
+    probabilities: Tensor2D;
+    accuracy: Scalar;
+    confusionMatrix: Tensor2D;
+    loss: Scalar;
+};
 
 export class LogisticLiveMetrics
     implements LiveMetrics<OptimizerCallbackParameters, LogisticTrainingReport>
@@ -59,12 +68,10 @@ export class LogisticLiveMetrics
         const predictionData = this.datasetManager.getPredictionData();
         const numClasses = this.datasetManager.getNumClasses();
 
+        const train = createTensorContainer<Tensors>();
+        const test = createTensorContainer<Tensors, 'partial'>();
+
         let yPredictions: Tensor2D | undefined;
-        let yTesting: Tensor2D | undefined;
-        let yTestingProbability: Tensor2D | undefined;
-        let testLoss: Scalar | undefined;
-        let testAccuracy: Scalar | undefined;
-        let testConfusionMatrix: Tensor2D | undefined;
 
         if (predictionData) {
             yPredictions = this.model.predict(predictionData, modelRepresentation);
@@ -75,19 +82,29 @@ export class LogisticLiveMetrics
             trainingData.y,
             modelRepresentation,
         );
-        const trainAccuracy = accuracy(trainingData.y, yTraining!);
-        const trainConfusionMatrix = confusionMatrix(trainingData.y, yTraining, numClasses);
+
+        train.y = yTraining;
+        train.probabilities = yTrainingProbability;
+        train.loss = trainLoss;
+        train.accuracy = accuracy(trainingData.y, yTraining);
+        train.confusionMatrix = confusionMatrix(trainingData.y, yTraining, numClasses);
 
         if (testData) {
-            [yTesting, yTestingProbability, testLoss] = this.model.evaluate(
+            const [yTesting, yTestingProbability, testLoss] = this.model.evaluate(
                 testData.X,
                 testData.y,
                 modelRepresentation,
             );
 
-            testAccuracy = accuracy(testData.y, yTesting!);
-            testConfusionMatrix = confusionMatrix(testData.y, yTesting!, numClasses);
+            test.y = yTesting;
+            test.probabilities = yTestingProbability;
+            test.loss = testLoss;
+            test.accuracy = accuracy(testData.y, yTesting);
+            test.confusionMatrix = confusionMatrix(testData.y, yTesting, numClasses);
         }
+
+        // Transpose theta for speedify rendering on UI side
+        const transposedTheta = modelRepresentation.transpose() as Tensor2D;
 
         const [
             thetaArray,
@@ -105,34 +122,28 @@ export class LogisticLiveMetrics
             testProbabilityValue,
             testLabelValue,
         ] = await Promise.all([
-            getSafeMatrixFromTensor(modelRepresentation.transpose()),
+            getSafeMatrixFromTensor(transposedTheta),
             getSafeMatrixFromTensor(yPredictions),
             // train
-            getSafeMatrixFromTensor(yTraining),
-            getSafeTensorValue(trainAccuracy),
-            getSafeTensorArray(trainConfusionMatrix),
-
-            getSafeMatrixFromTensor(yTrainingProbability),
+            getSafeMatrixFromTensor(train.y),
+            getSafeTensorValue(train.accuracy),
+            getSafeTensorArray(train.confusionMatrix),
+            getSafeMatrixFromTensor(train.probabilities),
             getSafeMatrixFromTensor(trainingData.y),
             // test
-            getSafeMatrixFromTensor(yTesting),
-            getSafeTensorValue(testAccuracy),
-            getSafeTensorArray(testConfusionMatrix),
-            getSafeMatrixFromTensor(yTestingProbability),
+            getSafeMatrixFromTensor(test.y),
+            getSafeTensorValue(test.accuracy),
+            getSafeTensorArray(test.confusionMatrix),
+            getSafeMatrixFromTensor(test.probabilities),
             getSafeMatrixFromTensor(testData?.y),
         ]);
 
         // Dispose of all tensors to free up memory
         yPredictions?.dispose();
-        yTraining?.dispose();
-        yTestingProbability?.dispose();
-        yTesting?.dispose();
-        yTrainingProbability?.dispose();
-        trainLoss?.dispose();
-        testLoss?.dispose();
-        trainConfusionMatrix?.dispose();
-        testConfusionMatrix?.dispose();
-        // modelRepresentation.dispose();
+        modelRepresentation.dispose();
+        transposedTheta.dispose();
+        train.dispose();
+        test.dispose();
 
         return {
             type: 'logistic',

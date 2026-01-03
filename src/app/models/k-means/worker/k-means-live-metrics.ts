@@ -1,4 +1,4 @@
-import type { Tensor2D } from '@tensorflow/tfjs';
+import { variable, type Rank, type Tensor2D, type Variable } from '@tensorflow/tfjs';
 import type { KMeansCallbackParameters, Model, ModelRepresentation } from '@/ml/types';
 import {
     getSafeMatrixFromTensor,
@@ -17,8 +17,8 @@ export class KMeansLiveMetrics
     private model: Model<ModelRepresentation>;
     private datasetManager: DatasetManager;
 
-    private assignments?: Tensor2D;
-    private centroids?: Tensor2D;
+    private assignments?: Variable<Rank.R2>;
+    private centroids?: Variable<Rank.R2>;
 
     static factory(model: Model<Tensor2D>, datasetManager: DatasetManager) {
         return new KMeansLiveMetrics(model, datasetManager);
@@ -32,12 +32,18 @@ export class KMeansLiveMetrics
     updateIteration(params: KMeansCallbackParameters): void {
         const { iteration, assignments, centroids, inertia } = params;
 
-        this.assignments?.dispose();
-
         this.inertiaHistory.push(inertia);
         this.iterationCount = iteration + 1;
-        this.assignments = assignments;
-        this.centroids = centroids;
+
+        if (!this.centroids) {
+            this.centroids = variable(centroids);
+        }
+        this.centroids.assign(centroids);
+
+        if (!this.assignments) {
+            this.assignments = variable(assignments);
+        }
+        this.assignments.assign(assignments);
     }
 
     async calculateMetrics(): Promise<KMeansTrainingReport> {
@@ -65,6 +71,8 @@ export class KMeansLiveMetrics
                 ? kMeansMetricData(testData.X, testAssignments, this.centroids!)
                 : undefined,
         ]);
+
+        testAssignments?.dispose();
 
         return {
             type: 'k-means',

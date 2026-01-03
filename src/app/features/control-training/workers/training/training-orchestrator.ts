@@ -45,6 +45,8 @@ type TrainedModel = PreprocessingModelDecorator<ModelRepresentation>;
 
 const workerRegistry = getWorkerRegistry();
 
+const CONSECUTIVE_TENSOR_INCREASE_THRESHOLD = 5;
+
 export class TrainingOrchestrator {
     private model: TrainedModel;
     private datasetManager: DatasetManager;
@@ -55,6 +57,8 @@ export class TrainingOrchestrator {
 
     private isTraining = false;
     private byStep = false;
+    private previousTensorCount: number | null = null;
+    private consecutiveTensorIncreases = 0;
 
     static async createOrchestrator(
         settings: Settings,
@@ -91,6 +95,7 @@ export class TrainingOrchestrator {
         Randomizer.setSeed(systemSettings.randomSeed);
         // Set up event handling
         this.setupEventHandlers();
+        this.initializeTensorTracking();
     }
 
     async train(byStep: boolean): Promise<void> {
@@ -207,6 +212,8 @@ export class TrainingOrchestrator {
                 'color: inherit',
                 'color: #4caf50',
             );
+
+            this.checkTensorMemory();
         }
 
         callbacks.onReport(report);
@@ -243,6 +250,7 @@ export class TrainingOrchestrator {
         this.trainingEventEmitter.clear();
         this.datasetManager.dispose();
         this.liveMetrics.dispose?.();
+        this.resetTensorTracking();
     }
 
     private handleTrainingError(error: Error): void {
@@ -280,5 +288,40 @@ export class TrainingOrchestrator {
         const worker = workerRegistry.get(settings.modelSettings.type);
 
         return worker.liveMetricsFactory(model, datasetManager, settings.taskType);
+    }
+
+    private initializeTensorTracking(): void {
+        this.previousTensorCount = memory().numTensors;
+        this.consecutiveTensorIncreases = 0;
+    }
+
+    private checkTensorMemory(): void {
+        const currentMemory = memory();
+        const currentTensorCount = currentMemory.numTensors;
+
+        if (this.previousTensorCount !== null) {
+            if (currentTensorCount > this.previousTensorCount) {
+                this.consecutiveTensorIncreases++;
+
+                if (this.consecutiveTensorIncreases >= CONSECUTIVE_TENSOR_INCREASE_THRESHOLD) {
+                    console.warn(
+                        `%c[Worker] %cMemory Leak Warning: %cTensor count has increased for ${this.consecutiveTensorIncreases} consecutive iterations (${this.previousTensorCount} → ${currentTensorCount})`,
+                        'color: #ff9800; font-weight: bold',
+                        'color: #f44336; font-weight: bold',
+                        'color: inherit',
+                    );
+                    console.warn('Current memory:', currentMemory);
+                }
+            } else {
+                this.consecutiveTensorIncreases = 0;
+            }
+        }
+
+        this.previousTensorCount = currentTensorCount;
+    }
+
+    private resetTensorTracking(): void {
+        this.previousTensorCount = null;
+        this.consecutiveTensorIncreases = 0;
     }
 }

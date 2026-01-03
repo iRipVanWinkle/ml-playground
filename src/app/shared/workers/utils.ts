@@ -67,3 +67,42 @@ export async function getSafeTensorValue(tensor?: Scalar): Promise<number | unde
     const data = await tensor.data();
     return data[0];
 }
+
+interface DisposableValue {
+    dispose: () => void;
+}
+
+type MappedValues<T extends object, IsPartial extends 'required' | 'partial' = 'required'> = {
+    [P in keyof T]: IsPartial extends 'partial' ? T[P] | undefined : T[P];
+};
+
+/**
+ * Creates a container for tensors that can be disposed of collectively.
+ * @returns An object containing tensors with a dispose method to free resources.
+ */
+export function createTensorContainer<
+    T extends object,
+    IsPartial extends 'required' | 'partial' = 'required',
+>(): MappedValues<T, IsPartial> & DisposableValue {
+    const container = {
+        dispose(): void {
+            for (const key in container) {
+                const tensor = container[key as keyof typeof container];
+                if (isDisposable(tensor)) {
+                    tensor.dispose();
+                }
+            }
+        },
+    } as MappedValues<T, IsPartial> & DisposableValue;
+
+    return container as MappedValues<T, IsPartial> & DisposableValue;
+}
+
+function isDisposable(value: unknown): value is DisposableValue {
+    return (
+        !!value &&
+        typeof value === 'object' &&
+        'dispose' in value &&
+        typeof value.dispose === 'function'
+    );
+}

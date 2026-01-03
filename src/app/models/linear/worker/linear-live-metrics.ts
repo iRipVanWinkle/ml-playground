@@ -1,9 +1,13 @@
-import type { Scalar, Tensor2D } from '@tensorflow/tfjs';
+import { Rank, variable, Variable, type Scalar, type Tensor2D } from '@tensorflow/tfjs';
 import type { Model, ModelRepresentation, OptimizerCallbackParameters } from '@/ml/types';
 import type { DatasetManager, LiveMetrics } from '@/app/shared/workers';
 import type { LinearTrainingReport } from '../types';
 import { getMatrixFromTensor } from '@/ml/matrix';
-import { getSafeMatrixFromTensor, getSafeTensorValue } from '@/app/shared/workers';
+import {
+    createTensorContainer,
+    getSafeMatrixFromTensor,
+    getSafeTensorValue,
+} from '@/app/shared/workers';
 import {
     meanAbsoluteError,
     meanSquaredError,
@@ -12,12 +16,22 @@ import {
     rootMeanSquaredError,
 } from '@/ml/metrics';
 
+type Tensors = {
+    y: Tensor2D;
+    loss: Scalar;
+    mae: Scalar;
+    mse: Scalar;
+    rmse: Scalar;
+    r2: Scalar;
+    residuals: Tensor2D;
+};
+
 export class LinearLiveMetrics
     implements LiveMetrics<OptimizerCallbackParameters, LinearTrainingReport>
 {
     private lossHistory: number[] = [];
     private iterationCount: number = 0;
-    private theta?: Tensor2D;
+    private theta?: Variable<Rank.R2>;
 
     private model: Model<ModelRepresentation>;
     private datasetManager: DatasetManager;
@@ -37,8 +51,10 @@ export class LinearLiveMetrics
         this.lossHistory.push(loss);
         this.iterationCount = iteration + 1;
 
-        this.theta?.dispose();
-        this.theta = theta.clone();
+        if (!this.theta) {
+            this.theta = variable(theta);
+        }
+        this.theta.assign(theta);
     }
 
     async calculateMetrics(): Promise<LinearTrainingReport> {
@@ -48,43 +64,35 @@ export class LinearLiveMetrics
 
         const theta = this.theta!;
 
+        const train = createTensorContainer<Tensors>();
+        const test = createTensorContainer<Tensors, 'partial'>();
+
         let yPredictions: Tensor2D | undefined;
-        let yTesting: Tensor2D | undefined;
-        let yTestingProbability: Tensor2D | undefined;
-        let testLoss: Scalar | undefined;
-        let testMae: Scalar | undefined;
-        let testMse: Scalar | undefined;
-        let testRmse: Scalar | undefined;
-        let testR2: Scalar | undefined;
-        let testResiduals: Tensor2D | undefined;
 
         if (predictionData) {
             yPredictions = this.model.predict(predictionData, theta);
         }
 
-        const [yTraining, yTrainingProbability, trainLoss] = this.model.evaluate(
-            trainingData.X,
-            trainingData.y,
-            theta,
-        );
-        const trainMae = meanAbsoluteError(trainingData.y, yTraining!);
-        const trainMse = meanSquaredError(trainingData.y, yTraining!);
-        const trainRmse = rootMeanSquaredError(trainingData.y, yTraining!);
-        const trainR2 = r2Score(trainingData.y, yTraining!);
-        const trainResiduals = residuals(trainingData.y, yTraining!);
+        train.y = this.model.predict(trainingData.X, theta);
+        train.mae = meanAbsoluteError(trainingData.y, train.y);
+        train.mse = meanSquaredError(trainingData.y, train.y);
+        train.rmse = rootMeanSquaredError(trainingData.y, train.y);
+        train.r2 = r2Score(trainingData.y, train.y);
+        train.residuals = residuals(trainingData.y, train.y);
 
         if (testData) {
-            [yTesting, yTestingProbability, testLoss] = this.model.evaluate(
-                testData.X,
-                testData.y,
-                theta,
-            );
-            testMae = meanAbsoluteError(testData.y, yTesting!);
-            testMse = meanSquaredError(testData.y, yTesting!);
-            testRmse = rootMeanSquaredError(testData.y, yTesting!);
-            testR2 = r2Score(testData.y, yTesting!);
-            testResiduals = residuals(testData.y, yTesting!);
+            const [yTesting, , testLoss] = this.model.evaluate(testData.X, testData.y, theta);
+            test.y = yTesting;
+            test.loss = testLoss;
+            test.mae = meanAbsoluteError(testData.y, test.y);
+            test.mse = meanSquaredError(testData.y, test.y);
+            test.rmse = rootMeanSquaredError(testData.y, test.y);
+            test.r2 = r2Score(testData.y, test.y);
+            test.residuals = residuals(testData.y, test.y);
         }
+
+        // Transpose theta for speedup rendering on UI side
+        const transposedTheta = theta.transpose() as Tensor2D;
 
         const [
             thetaArray,
@@ -105,43 +113,30 @@ export class LinearLiveMetrics
             testR2Value,
             testResidualsArray,
         ] = await Promise.all([
-            getMatrixFromTensor(theta.transpose()),
+            getMatrixFromTensor(transposedTheta),
             getSafeMatrixFromTensor(yPredictions),
             // train
-            getMatrixFromTensor(yTraining),
-            getSafeTensorValue(trainMae),
-            getSafeTensorValue(trainMse),
-            getSafeTensorValue(trainRmse),
-            getSafeTensorValue(trainR2),
-            getSafeMatrixFromTensor(trainResiduals),
+            getMatrixFromTensor(train.y),
+            getSafeTensorValue(train.mae),
+            getSafeTensorValue(train.mse),
+            getSafeTensorValue(train.rmse),
+            getSafeTensorValue(train.r2),
+            getSafeMatrixFromTensor(train.residuals),
             // test
-            getSafeMatrixFromTensor(yTesting),
-            getSafeTensorValue(testLoss),
-            getSafeTensorValue(testMae),
-            getSafeTensorValue(testMse),
-            getSafeTensorValue(testRmse),
-            getSafeTensorValue(testR2),
-            getSafeMatrixFromTensor(testResiduals),
+            getSafeMatrixFromTensor(test.y),
+            getSafeTensorValue(test.loss),
+            getSafeTensorValue(test.mae),
+            getSafeTensorValue(test.mse),
+            getSafeTensorValue(test.rmse),
+            getSafeTensorValue(test.r2),
+            getSafeMatrixFromTensor(test.residuals),
         ]);
 
         // Dispose of all tensors to free up memory
         yPredictions?.dispose();
-        yTraining?.dispose();
-        yTestingProbability?.dispose();
-        yTesting?.dispose();
-        yTrainingProbability?.dispose();
-        trainLoss?.dispose();
-        testLoss?.dispose();
-        trainResiduals?.dispose();
-        trainMae?.dispose();
-        trainMse?.dispose();
-        trainRmse?.dispose();
-        trainR2?.dispose();
-        testResiduals?.dispose();
-        testMae?.dispose();
-        testMse?.dispose();
-        testRmse?.dispose();
-        testR2?.dispose();
+        transposedTheta.dispose();
+        train.dispose();
+        test.dispose();
 
         const hasTestMetrics =
             testMaeValue !== undefined &&
@@ -159,7 +154,7 @@ export class LinearLiveMetrics
             trainPredictedLabels: trainPredictedLabels!,
             testPredictedLabels: testPredictedLabels,
             predictionPredictedLabels: predictionPredictedLabels,
-            theta: thetaArray!,
+            theta: thetaArray,
             trainMetrics: {
                 mae: trainMaeValue,
                 mse: trainMseValue,

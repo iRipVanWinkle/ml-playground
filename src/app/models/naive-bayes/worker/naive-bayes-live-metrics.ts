@@ -7,10 +7,19 @@ import {
     getSafeMatrixFromTensor,
     getSafeTensorValue,
     getSafeTensorArray,
+    createTensorContainer,
 } from '@/app/shared/workers';
 import type { NaiveBayesTrainingReport } from '../types';
 import { confusionMatrixData } from '@/app/shared/visualization/metrics/confusion-matrix/calculations';
 import { rocCurveData } from '@/app/shared/visualization/plots/roc-curve/calculations';
+
+type Tensors = {
+    y: Tensor2D;
+    probabilities: Tensor2D;
+    accuracy: Scalar;
+    confusionMatrix: Tensor2D;
+    loss: Scalar;
+};
 
 export class NaiveBayesLiveMetrics
     implements LiveMetrics<NaiveBayesCallbackParameters, NaiveBayesTrainingReport>
@@ -40,14 +49,11 @@ export class NaiveBayesLiveMetrics
         const predictionData = this.datasetManager.getPredictionData();
         const numClasses = this.datasetManager.getNumClasses();
 
-        let yPredictions: Tensor2D | undefined;
-        let yTesting: Tensor2D | undefined;
-        let yTestingProbability: Tensor2D | undefined;
-        let testLoss: Scalar | undefined;
-        let testAccuracy: Scalar | undefined;
-        let testConfusionMatrix: Tensor2D | undefined;
+        const train = createTensorContainer<Tensors>();
+        const test = createTensorContainer<Tensors, 'partial'>();
 
-        // Model uses its internal params (no need to pass them)
+        let yPredictions: Tensor2D | undefined;
+
         if (predictionData) {
             yPredictions = this.model.predict(predictionData, this.params);
         }
@@ -57,17 +63,23 @@ export class NaiveBayesLiveMetrics
             trainingData.y,
             this.params,
         );
-        const trainAccuracyMetric = accuracy(trainingData.y, yTraining!);
-        const trainConfusionMatrix = confusionMatrix(trainingData.y, yTraining, numClasses);
+        train.y = yTraining;
+        train.probabilities = yTrainingProbability;
+        train.loss = trainLoss;
+        train.accuracy = accuracy(trainingData.y, yTraining);
+        train.confusionMatrix = confusionMatrix(trainingData.y, yTraining, numClasses);
 
         if (testData) {
-            [yTesting, yTestingProbability, testLoss] = this.model.evaluate(
+            const [yTesting, yTestingProbability, testLoss] = this.model.evaluate(
                 testData.X,
                 testData.y,
                 this.params,
             );
-            testAccuracy = accuracy(testData.y, yTesting!);
-            testConfusionMatrix = confusionMatrix(testData.y, yTesting!, numClasses);
+            test.y = yTesting;
+            test.probabilities = yTestingProbability;
+            test.loss = testLoss;
+            test.accuracy = accuracy(testData.y, yTesting);
+            test.confusionMatrix = confusionMatrix(testData.y, yTesting, numClasses);
         }
 
         const [
@@ -88,28 +100,23 @@ export class NaiveBayesLiveMetrics
         ] = await Promise.all([
             getSafeMatrixFromTensor(yPredictions),
             // train
-            getSafeMatrixFromTensor(yTraining),
-            getSafeTensorValue(trainAccuracyMetric),
-            getSafeTensorArray(trainConfusionMatrix),
-            getSafeMatrixFromTensor(yTrainingProbability),
+            getSafeMatrixFromTensor(train.y),
+            getSafeTensorValue(train.accuracy),
+            getSafeTensorArray(train.confusionMatrix),
+            getSafeMatrixFromTensor(train.probabilities),
             getSafeMatrixFromTensor(trainingData.y),
             // test
-            getSafeMatrixFromTensor(yTesting),
-            getSafeTensorValue(testAccuracy),
-            getSafeTensorArray(testConfusionMatrix),
-            getSafeMatrixFromTensor(yTestingProbability),
+            getSafeMatrixFromTensor(test.y),
+            getSafeTensorValue(test.accuracy),
+            getSafeTensorArray(test.confusionMatrix),
+            getSafeMatrixFromTensor(test.probabilities),
             getSafeMatrixFromTensor(testData?.y),
         ]);
 
         // Dispose of all tensors to free up memory
         yPredictions?.dispose();
-        yTraining?.dispose();
-        yTestingProbability?.dispose();
-        yTesting?.dispose();
-        yTrainingProbability?.dispose();
-        trainLoss?.dispose();
-        testLoss?.dispose();
-        trainAccuracyMetric?.dispose();
+        train.dispose();
+        test.dispose();
 
         return {
             type: 'naive-bayes',
