@@ -9,7 +9,6 @@ import {
     DecisionTreeParameters,
     RegressionMetrics,
     ResidualsPlot,
-    RocCurve,
 } from '@/app/shared/visualization';
 
 export const treeModelDefinition: ModelDefinition<'tree'> = {
@@ -86,10 +85,7 @@ export const treeModelDefinition: ModelDefinition<'tree'> = {
                       { title: 'Metrics', component: RegressionMetrics },
                       { title: 'Residuals', component: ResidualsPlot },
                   ]
-                : [
-                      { title: 'Confusion Matrix', component: ConfusionMatrix },
-                      { title: 'ROC Curve', component: RocCurve },
-                  ],
+                : [{ title: 'Confusion Matrix', component: ConfusionMatrix }],
         parametersComponent: DecisionTreeParameters,
     },
 
