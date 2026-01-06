@@ -32,13 +32,18 @@ export function CentroidInitialization({
     };
 
     return (
-        <Field label="Centroid Initialization" info={CENTROID_INITIALIZATION_INFO}>
+        <Field
+            label="Centroid Initialization"
+            htmlFor="centroidInitializationSelect"
+            info={CENTROID_INITIALIZATION_INFO}
+        >
             <Select
                 disabled={disabled}
                 value={settings.type as string}
                 onValueChange={handleChange}
             >
                 <Select.Trigger
+                    id="centroidInitializationSelect"
                     className="w-full truncate"
                     data-testid="centroid-initialization-select"
                 >

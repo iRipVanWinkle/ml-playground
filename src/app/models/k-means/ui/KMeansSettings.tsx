@@ -42,14 +42,15 @@ export function KMeansSettings({
 
     return (
         <>
-            <Field label="Number of Clusters (K)" info={K_INFO}>
+            <Field label="Number of Clusters (K)" htmlFor="numClustersInput" info={K_INFO}>
                 <Input
                     disabled={disabled}
                     placeholder="Number of Clusters (K)"
                     step={1}
                     min={2}
                     type="number"
-                    data-testid="num-clusters"
+                    id="numClustersInput"
+                    data-testid="num-clusters-input"
                     value={settings.numClusters}
                     onChange={(e) => handleInputChange('numClusters', e.target.value)}
                 />
@@ -68,20 +69,25 @@ export function KMeansSettings({
             />
 
             <div className="grid grid-cols-2 gap-2">
-                <Field label="Max Iterations" info={MAX_ITERATIONS_INFO}>
+                <Field
+                    label="Max Iterations"
+                    htmlFor="maxIterationsInput"
+                    info={MAX_ITERATIONS_INFO}
+                >
                     <Input
                         disabled={disabled}
                         placeholder="Max Iterations"
                         step={1}
                         min={2}
                         type="number"
-                        data-testid="max-iteration"
+                        id="maxIterationsInput"
+                        data-testid="max-iterations-input"
                         value={settings.maxIterations}
                         onChange={(e) => handleInputChange('maxIterations', e.target.value)}
                     />
                 </Field>
 
-                <Field label="Tolerance" info={TOLERANCE_INFO}>
+                <Field label="Tolerance" htmlFor="toleranceInput" info={TOLERANCE_INFO}>
                     <InputGroup>
                         <InputGroup.Addon>
                             <Switch
@@ -98,7 +104,8 @@ export function KMeansSettings({
                             step={0.0001}
                             min={0}
                             type="number"
-                            data-testid="tolerance"
+                            id="toleranceInput"
+                            data-testid="tolerance-input"
                             value={settings.tolerance ?? ''}
                             onChange={(e) => handleToleranceChange(e.target.value)}
                         />

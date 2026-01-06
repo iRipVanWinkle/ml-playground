@@ -96,7 +96,7 @@ export const neuralModelDefinition: ModelDefinition<'neural'> = {
     },
 
     progress: {
-        getProgressInfo: (report, settings) => {
+        getProgressInfo: ({ report, settings }) => {
             const currentIteration = report?.iteration ?? 0;
             const maxIteration = settings.optimizer.maxIterations;
             return {

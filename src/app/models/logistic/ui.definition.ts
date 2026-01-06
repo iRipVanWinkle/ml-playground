@@ -73,7 +73,7 @@ export const logisticModelDefinition: ModelDefinition<'logistic'> = {
     },
 
     progress: {
-        getProgressInfo: (report, settings) => {
+        getProgressInfo: ({ report, settings }) => {
             const current = Math.round(arrayAvg(report?.iterations ?? []));
             const max = settings.optimizer.maxIterations;
             return {

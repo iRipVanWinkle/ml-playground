@@ -28,6 +28,7 @@ export function TrainingSection() {
                     controlsComponent={<Controls hasData={hasData} taskType={taskType} />}
                     modelType={modelType}
                     modelSettings={modelSettings}
+                    dataset={data}
                 />
 
                 <TrainingMetricsGrid modelType={modelType} />

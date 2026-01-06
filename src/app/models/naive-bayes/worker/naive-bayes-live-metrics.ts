@@ -39,7 +39,7 @@ export class NaiveBayesLiveMetrics
     }
 
     updateIteration(params: NaiveBayesCallbackParameters): void {
-        this.iteration = params.iteration;
+        this.iteration = params.iteration + 1;
         this.params = params.params;
     }
 

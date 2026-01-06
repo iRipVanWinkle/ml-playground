@@ -33,13 +33,17 @@ export function Distance({ settings, disabled, onChange }: DistanceProps) {
     };
 
     return (
-        <Field label="Distance" info={DISTANCE_INFO}>
+        <Field label="Distance" htmlFor="distanceSelect" info={DISTANCE_INFO}>
             <Select
                 disabled={disabled}
                 value={settings.type as string}
                 onValueChange={handleChange}
             >
-                <Select.Trigger className="w-full truncate" data-testid="distance-select">
+                <Select.Trigger
+                    id="distanceSelect"
+                    className="w-full truncate"
+                    data-testid="distance-select"
+                >
                     <Select.Value placeholder="Select distance metric" />
                 </Select.Trigger>
                 <Select.Content>

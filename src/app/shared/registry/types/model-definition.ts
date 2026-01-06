@@ -29,10 +29,11 @@ export interface ModelDefinition<TKey extends ModelType = ModelType> {
     };
 
     progress: {
-        getProgressInfo: (
-            report: TrainingReportOf<TKey>,
-            settings: SettingsOf<TKey>,
-        ) => ProgressInfo;
+        getProgressInfo: (params: {
+            report: TrainingReportOf<TKey>;
+            settings: SettingsOf<TKey>;
+            dataset: Dataset;
+        }) => ProgressInfo;
     };
 }
 

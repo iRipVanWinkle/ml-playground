@@ -61,10 +61,15 @@ export const naiveBayesModelDefinition: ModelDefinition<'naive-bayes'> = {
     },
 
     progress: {
-        getProgressInfo: () => {
+        getProgressInfo: ({ report, dataset }) => {
+            const current = report.iteration ?? 0;
+            const max = dataset.categories?.length ?? 0;
+
             return {
-                type: 'indeterminate',
-                label: '',
+                type: 'determinate',
+                label: `${current}/${max}`,
+                current,
+                max,
             };
         },
     },
