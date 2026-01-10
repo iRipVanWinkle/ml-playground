@@ -6,8 +6,8 @@ import { centroidInitializationFactory, distanceFactory } from '@/ml/factories';
 
 export function kMeansModelFactory(
     settings: TrainingSettings<KMeansSettings>,
-    eventEmitter: TrainingEventEmitter,
-    trainingController: TrainingControl,
+    eventEmitter?: TrainingEventEmitter,
+    trainingController?: TrainingControl,
 ) {
     const { modelSettings } = settings;
     const { numClusters, maxIterations, tolerance, centroidInitialization, distance } =

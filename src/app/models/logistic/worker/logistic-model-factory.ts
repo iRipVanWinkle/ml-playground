@@ -15,8 +15,8 @@ import type { LogisticSettings } from '../types';
 
 export function logisticModelFactory(
     settings: TrainingSettings<LogisticSettings>,
-    eventEmitter: TrainingEventEmitter,
-    trainingController: TrainingControl,
+    eventEmitter?: TrainingEventEmitter,
+    trainingController?: TrainingControl,
 ) {
     const { modelSettings } = settings;
     const lossFunc = lossFunctionFactory(modelSettings.lossFunction);

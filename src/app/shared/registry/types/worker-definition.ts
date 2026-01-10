@@ -9,8 +9,8 @@ export interface WorkerDefinition<TKey extends ModelType = ModelType> {
 
     modelFactory: (
         settings: TrainingSettings<SettingsOf<TKey>>,
-        eventEmitter: TrainingEventEmitter,
-        trainingController: TrainingControl,
+        eventEmitter?: TrainingEventEmitter,
+        trainingController?: TrainingControl,
     ) => Model<RepresentationOf<TKey>>;
 
     liveMetricsFactory: (

@@ -15,8 +15,8 @@ import type { TreeSettings } from '../types';
 
 export function treeModelFactory(
     settings: TrainingSettings<TreeSettings>,
-    eventEmitter: TrainingEventEmitter,
-    trainingController: TrainingControl,
+    eventEmitter?: TrainingEventEmitter,
+    trainingController?: TrainingControl,
 ) {
     const { modelSettings, taskType } = settings;
     const {

@@ -11,8 +11,8 @@ import type { LinearSettings } from '../types';
 
 export function linearModelFactory(
     settings: TrainingSettings<LinearSettings>,
-    eventEmitter: TrainingEventEmitter,
-    trainingController: TrainingControl,
+    eventEmitter?: TrainingEventEmitter,
+    trainingController?: TrainingControl,
 ) {
     const { modelSettings } = settings;
     const lossFunc = lossFunctionFactory(modelSettings.lossFunction);

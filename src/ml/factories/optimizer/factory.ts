@@ -19,8 +19,8 @@ export function learningRateFactory(
 
 export function optimizerFactory(
     optimizerConfig: OptimizerConfig,
-    eventEmitter: EventEmitter,
-    trainingController: TrainingControl,
+    eventEmitter?: EventEmitter,
+    trainingController?: TrainingControl,
 ) {
     const { scheduler, schedulerConfig, maxIterations, tolerance } = optimizerConfig;
 

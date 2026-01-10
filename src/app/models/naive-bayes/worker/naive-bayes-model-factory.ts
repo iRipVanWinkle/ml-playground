@@ -5,8 +5,8 @@ import type { NaiveBayesSettings } from '../types';
 
 export function naiveBayesModelFactory(
     settings: TrainingSettings<NaiveBayesSettings>,
-    eventEmitter: TrainingEventEmitter,
-    trainingController: TrainingControl,
+    eventEmitter?: TrainingEventEmitter,
+    trainingController?: TrainingControl,
 ) {
     const { modelSettings } = settings;
 

@@ -12,8 +12,8 @@ import type { NeuralSettings } from '../types';
 
 export function neuralModelFactory(
     settings: TrainingSettings<NeuralSettings>,
-    eventEmitter: TrainingEventEmitter,
-    trainingController: TrainingControl,
+    eventEmitter?: TrainingEventEmitter,
+    trainingController?: TrainingControl,
 ) {
     const { modelSettings, dataSettings, data } = settings;
     const lossFunc = lossFunctionFactory(modelSettings.lossFunction);
