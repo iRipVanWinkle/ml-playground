@@ -31,7 +31,7 @@ export type NaiveBayesTrainingReport = {
     testPredictedLabels?: MatrixLike;
     predictionPredictedLabels?: MatrixLike;
     iteration: number;
-    params?: NaiveBayesParams;
+    params: NaiveBayesParams;
 
     trainConfusionMatrix: ConfusionMatrixData;
     testConfusionMatrix?: ConfusionMatrixData;

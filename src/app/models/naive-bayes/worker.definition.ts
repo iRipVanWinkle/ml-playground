@@ -6,4 +6,6 @@ export const naiveBayesWorkerDefinition: WorkerDefinition<'naive-bayes'> = {
     key: 'naive-bayes',
     modelFactory: naiveBayesModelFactory,
     liveMetricsFactory: NaiveBayesLiveMetrics.factory,
+
+    extractParameters: (report) => report.params,
 };

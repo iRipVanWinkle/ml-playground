@@ -27,6 +27,13 @@ export const naiveBayesModelDefinition: ModelDefinition<'naive-bayes'> = {
         trainAccuracy: 0,
         trainPredictedLabels: EMPTY_MATRIX_LIKE,
         iteration: 0,
+        params: {
+            type: 'gaussian',
+            classes: [],
+            classPriors: new Float32Array(),
+            classMeans: EMPTY_MATRIX_LIKE,
+            classVariances: EMPTY_MATRIX_LIKE,
+        },
         trainConfusionMatrix: {
             matrix: [],
             metrics: {

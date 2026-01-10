@@ -103,9 +103,6 @@ export class LogisticLiveMetrics
             test.confusionMatrix = confusionMatrix(testData.y, yTesting, numClasses);
         }
 
-        // Transpose theta for speedify rendering on UI side
-        const transposedTheta = modelRepresentation.transpose() as Tensor2D;
-
         const [
             thetaArray,
             predictionPredictedLabels,
@@ -122,7 +119,7 @@ export class LogisticLiveMetrics
             testProbabilityValue,
             testLabelValue,
         ] = await Promise.all([
-            getSafeMatrixFromTensor(transposedTheta),
+            getSafeMatrixFromTensor(modelRepresentation),
             getSafeMatrixFromTensor(yPredictions),
             // train
             getSafeMatrixFromTensor(train.y),
@@ -141,7 +138,6 @@ export class LogisticLiveMetrics
         // Dispose of all tensors to free up memory
         yPredictions?.dispose();
         modelRepresentation.dispose();
-        transposedTheta.dispose();
         train.dispose();
         test.dispose();
 

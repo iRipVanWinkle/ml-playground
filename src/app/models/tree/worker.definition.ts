@@ -14,4 +14,6 @@ export const treeWorkerDefinition: WorkerDefinition<'tree'> = {
             return TreeRegressionLiveMetrics.factory(model, datasetManager);
         }
     },
+
+    extractParameters: (report) => report.params,
 };

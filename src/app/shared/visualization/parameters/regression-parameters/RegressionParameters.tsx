@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import type { TrainingReport } from '@/app/models/types';
 import type { ParametersVisualizationProps } from '@/app/shared/registry';
 import type { Dataset, Transformation } from '@/app/shared/types';
-import type { MatrixLike } from '@/app/shared/helpers';
+import { transposeMatrix, type MatrixLike } from '@/app/shared/helpers';
 import { useAllFeatureLabels } from './hooks';
 import {
     BinaryParameters,
@@ -73,6 +73,8 @@ function RegressionParametersContent({
     const allFeatureLabels = useAllFeatureLabels(dataset.headers, transformations);
     const categories = dataset.categories ?? [];
 
+    const colBasedTheta = useMemo(() => transposeMatrix(theta), [theta]);
+
     // Parse the view value
     const isRawView = view === 'raw';
     const isAllClassesView = view === 'all';
@@ -80,13 +82,13 @@ function RegressionParametersContent({
 
     const renderContent = () => {
         if (isRawView) {
-            return <RawParameters theta={theta} />;
+            return <RawParameters theta={colBasedTheta} />;
         }
 
         if (isImage) {
             return (
                 <ImageParameters
-                    theta={theta}
+                    theta={colBasedTheta}
                     categories={categories}
                     selectedClassIndex={selectedClassIndex}
                 />
@@ -96,7 +98,7 @@ function RegressionParametersContent({
         if (isBinary) {
             return (
                 <BinaryParameters
-                    theta={theta}
+                    theta={colBasedTheta}
                     featureLabels={allFeatureLabels}
                     isLinearRegression={isLinearRegression}
                 />
@@ -105,7 +107,7 @@ function RegressionParametersContent({
 
         return (
             <MulticlassParameters
-                theta={theta}
+                theta={colBasedTheta}
                 featureLabels={allFeatureLabels}
                 categories={categories}
                 selectedClassIndex={selectedClassIndex}

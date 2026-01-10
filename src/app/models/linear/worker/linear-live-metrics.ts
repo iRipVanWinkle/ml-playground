@@ -91,9 +91,6 @@ export class LinearLiveMetrics
             test.residuals = residuals(testData.y, test.y);
         }
 
-        // Transpose theta for speedup rendering on UI side
-        const transposedTheta = theta.transpose() as Tensor2D;
-
         const [
             thetaArray,
             predictionPredictedLabels,
@@ -113,7 +110,7 @@ export class LinearLiveMetrics
             testR2Value,
             testResidualsArray,
         ] = await Promise.all([
-            getMatrixFromTensor(transposedTheta),
+            getMatrixFromTensor(theta),
             getSafeMatrixFromTensor(yPredictions),
             // train
             getMatrixFromTensor(train.y),
@@ -134,7 +131,6 @@ export class LinearLiveMetrics
 
         // Dispose of all tensors to free up memory
         yPredictions?.dispose();
-        transposedTheta.dispose();
         train.dispose();
         test.dispose();
 
