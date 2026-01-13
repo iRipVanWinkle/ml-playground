@@ -1,19 +1,18 @@
 import { useEffect, useRef } from 'react';
 import { toast } from 'sonner';
-import { useSystemStore } from '../../configure-system';
-import { useTransformationStore } from '../../transform-data';
-import { useDatasetStore } from '../../load-dataset';
-import { useModelSettingsStore } from '../../configure-model';
 import { setPendingAction, setTrainingStatus } from '../store/actions';
 import type { TrainingWorkerManager, UIToWorkerMessage } from '../workers/types';
 import { WorkerManager } from '@/app/shared/workers/manager';
-import type { TrainingReport } from '@/app/models/types';
+import type { TrainingReport, TrainingSettings } from '@/app/models/types';
 import { setTrainingReport } from '@/app/features/visualize-training/store/actions';
-import type { TaskType } from '@/app/shared/types';
 
 import TrainingWorker from '../workers/trainingOrchestrator.worker.ts?worker';
 
-export const useModel = ({ taskType }: { taskType: TaskType }) => {
+type UseModelProps = {
+    snapshotTrainingSettings: () => TrainingSettings;
+};
+
+export const useModel = ({ snapshotTrainingSettings }: UseModelProps) => {
     const workerRef = useRef<TrainingWorkerManager | null>(null);
 
     const terminateWorker = () => {
@@ -85,13 +84,7 @@ export const useModel = ({ taskType }: { taskType: TaskType }) => {
 
         workerManager.postMessage({
             type: byStep ? 'train-by-step' : 'train',
-            payload: {
-                taskType,
-                systemSettings: useSystemStore.getState(),
-                dataSettings: useTransformationStore.getState(),
-                data: useDatasetStore.getState().dataset,
-                modelSettings: useModelSettingsStore.getState(),
-            },
+            payload: snapshotTrainingSettings(),
         });
 
         workerRef.current = workerManager;

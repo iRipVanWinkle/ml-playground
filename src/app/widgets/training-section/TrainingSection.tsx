@@ -1,8 +1,8 @@
 import { Card, Separator } from '@/app/shared/ui';
-import { useTaskType } from '@/app/features/switch-task';
+import { useTaskSwitcherStore } from '@/app/features/switch-task';
 import { useModelSettingsStore } from '@/app/features/configure-model';
-import { useDataset, useHasData } from '@/app/features/load-dataset';
-import { useTransformations } from '@/app/features/transform-data';
+import { useDataset, useDatasetStore, useHasData } from '@/app/features/load-dataset';
+import { useTransformationStore, useTransformations } from '@/app/features/transform-data';
 import { Controls } from '@/app/features/control-training';
 import {
     ModelDataPlot,
@@ -11,13 +11,30 @@ import {
     TrainingMetricsGrid,
     TrainingProgress,
 } from '@/app/features/visualize-training';
+import { useSystemStore } from '@/app/features/configure-system';
+import type { TrainingSettings } from '@/app/models/types';
+
+function snapshotTrainingSettings(): TrainingSettings {
+    const { taskType } = useTaskSwitcherStore.getState();
+    const { dataset } = useDatasetStore.getState();
+    const modelSettings = useModelSettingsStore.getState();
+    const systemSettings = useSystemStore.getState();
+    const dataSettings = useTransformationStore.getState();
+
+    return {
+        taskType,
+        modelSettings,
+        systemSettings,
+        dataSettings,
+        dataset,
+    };
+}
 
 export function TrainingSection() {
     const hasData = useHasData();
     const modelSettings = useModelSettingsStore();
     const transformations = useTransformations();
-    const data = useDataset();
-    const taskType = useTaskType();
+    const dataset = useDataset();
 
     const modelType = modelSettings.type;
 
@@ -25,26 +42,31 @@ export function TrainingSection() {
         <Card key={modelType}>
             <Card.Content className="flex flex-col gap-4">
                 <TrainingProgress
-                    controlsComponent={<Controls hasData={hasData} taskType={taskType} />}
                     modelType={modelType}
                     modelSettings={modelSettings}
-                    dataset={data}
+                    dataset={dataset}
+                    controlsComponent={
+                        <Controls
+                            hasData={hasData}
+                            snapshotTrainingSettings={snapshotTrainingSettings}
+                        />
+                    }
                 />
 
                 <TrainingMetricsGrid modelType={modelType} />
 
                 <div className="flex flex-col gap-4">
-                    <ModelDataPlot modelType={modelType} dataset={data} />
+                    <ModelDataPlot modelType={modelType} dataset={dataset} />
 
                     <Separator />
 
-                    <TabbedVisualizations dataset={data} modelType={modelType} />
+                    <TabbedVisualizations modelType={modelType} dataset={dataset} />
 
                     <ParametersVisualization
-                        dataset={data}
                         modelType={modelType}
                         modelSettings={modelSettings}
                         transformations={transformations}
+                        dataset={dataset}
                     />
                 </div>
             </Card.Content>

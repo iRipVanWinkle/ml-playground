@@ -81,5 +81,5 @@ export type TrainingSettings<TModelSettings extends ModelSettings = ModelSetting
     modelSettings: TModelSettings;
     systemSettings: SystemSettings;
     dataSettings: TransformationSettings;
-    data: Dataset;
+    dataset: Dataset;
 };

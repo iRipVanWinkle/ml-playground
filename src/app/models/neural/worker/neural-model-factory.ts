@@ -15,7 +15,7 @@ export function neuralModelFactory(
     eventEmitter?: TrainingEventEmitter,
     trainingController?: TrainingControl,
 ) {
-    const { modelSettings, dataSettings, data } = settings;
+    const { modelSettings, dataSettings, dataset } = settings;
     const lossFunc = lossFunctionFactory(modelSettings.lossFunction);
 
     const { optimizer: optimizerConfig, layers } = modelSettings;
@@ -24,7 +24,7 @@ export function neuralModelFactory(
     const regularization = regularizationFactory(modelSettings.regularization);
     const thetaInitializer = thetaInitializerFactory(modelSettings.thetaInitialization);
 
-    const numFeatures = data.trainInputFeatures[0].length;
+    const numFeatures = dataset.trainInputFeatures[0].length;
     const unitsOfInputLayer = dataSettings.transformations.reduce((acc, { type, degree }) => {
         return acc + calculateOutputFeatures(type, degree, numFeatures);
     }, numFeatures);

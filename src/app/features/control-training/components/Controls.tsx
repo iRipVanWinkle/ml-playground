@@ -3,17 +3,17 @@ import { StartButton } from './StartButton';
 import { Button, DelayedLoader } from '@/app/shared/ui';
 import { useModel } from '../hooks/useModel';
 import { useTrainingState, usePendingAction } from '../store';
-import type { TaskType } from '@/app/shared/types';
+import type { TrainingSettings } from '@/app/models/types';
 
 type ControlsProps = {
     hasData: boolean;
-    taskType: TaskType;
+    snapshotTrainingSettings: () => TrainingSettings;
 };
 
-export function Controls({ hasData, taskType }: ControlsProps) {
+export function Controls({ hasData, snapshotTrainingSettings }: ControlsProps) {
     const state = useTrainingState();
     const pendingAction = usePendingAction();
-    const model = useModel({ taskType });
+    const model = useModel({ snapshotTrainingSettings });
     const isPendingStop = pendingAction === 'stop';
     const isPendingPause = pendingAction === 'pause';
     const isPendingResume = pendingAction === 'resume';

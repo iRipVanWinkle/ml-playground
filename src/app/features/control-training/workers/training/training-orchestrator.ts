@@ -12,26 +12,15 @@ import type {
     TrainingState,
 } from '@/ml/types';
 import { PreprocessingModelDecorator } from '@/ml/models';
-import type { Dataset, TaskType } from '@/app/shared/types';
 import { DatasetManager } from '@/app/shared/workers';
 import { createPreprocessingPipeline } from '../../helpers';
-import type { SystemSettings } from '@/app/features/configure-system';
-import type { TransformationSettings } from '@/app/features/transform-data';
-import type { ModelSettings, TrainingReport } from '@/app/models/types';
+import type { TrainingReport } from '@/app/models/types';
 import { getWorkerRegistry } from '@/app/models/worker-registry';
 import type { TrainingSettings } from '@/app/models/types';
 import { EventEmitter } from '@/ml/events/EventEmitter';
 import { TrainingController } from '@/ml/controllers/TrainingController';
 import type { LiveMetrics } from '@/app/shared/workers';
 import { Randomizer } from '@/ml/random/Randomizer';
-
-type Settings = {
-    taskType: TaskType;
-    systemSettings: SystemSettings;
-    dataSettings: TransformationSettings;
-    data: Dataset;
-    modelSettings: ModelSettings;
-};
 
 type TrainingCallbacks = {
     onReport: (report: TrainingReport) => void;
@@ -61,7 +50,7 @@ export class TrainingOrchestrator {
     private consecutiveTensorIncreases = 0;
 
     static async createOrchestrator(
-        settings: Settings,
+        settings: TrainingSettings,
         callbacks: TrainingCallbacks,
     ): Promise<TrainingOrchestrator> {
         const { systemSettings } = settings;
@@ -82,12 +71,12 @@ export class TrainingOrchestrator {
     }
 
     private constructor(settings: TrainingSettings, callbacks: TrainingCallbacks) {
-        const { systemSettings, data } = settings;
+        const { systemSettings, dataset } = settings;
 
         [this.model, this.trainingEventEmitter, this.trainingController] =
             this.createModel(settings);
 
-        this.datasetManager = new DatasetManager(data);
+        this.datasetManager = new DatasetManager(dataset);
         this.liveMetrics = this.createLiveMetrics(settings, this.model, this.datasetManager);
 
         this.callbacks = callbacks;
