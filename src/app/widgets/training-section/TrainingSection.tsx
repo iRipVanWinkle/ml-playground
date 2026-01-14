@@ -10,6 +10,7 @@ import {
     TabbedVisualizations,
     TrainingMetricsGrid,
     TrainingProgress,
+    useSetTrainingReport,
 } from '@/app/features/visualize-training';
 import { useSystemStore } from '@/app/features/configure-system';
 import type { TrainingSettings } from '@/app/models/types';
@@ -36,6 +37,8 @@ export function TrainingSection() {
     const transformations = useTransformations();
     const dataset = useDataset();
 
+    const setTrainingReport = useSetTrainingReport();
+
     const modelType = modelSettings.type;
 
     return (
@@ -49,6 +52,7 @@ export function TrainingSection() {
                         <Controls
                             hasData={hasData}
                             snapshotTrainingSettings={snapshotTrainingSettings}
+                            setTrainingReport={setTrainingReport}
                         />
                     }
                 />

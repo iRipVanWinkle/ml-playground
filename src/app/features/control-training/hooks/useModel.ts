@@ -4,15 +4,15 @@ import { setPendingAction, setTrainingStatus } from '../store/actions';
 import type { TrainingWorkerManager, UIToWorkerMessage } from '../workers/types';
 import { WorkerManager } from '@/app/shared/workers/manager';
 import type { TrainingReport, TrainingSettings } from '@/app/models/types';
-import { setTrainingReport } from '@/app/features/visualize-training/store/actions';
 
 import TrainingWorker from '../workers/trainingOrchestrator.worker.ts?worker';
 
 type UseModelProps = {
     snapshotTrainingSettings: () => TrainingSettings;
+    setTrainingReport: (report: TrainingReport) => void;
 };
 
-export const useModel = ({ snapshotTrainingSettings }: UseModelProps) => {
+export const useModel = ({ snapshotTrainingSettings, setTrainingReport }: UseModelProps) => {
     const workerRef = useRef<TrainingWorkerManager | null>(null);
 
     const terminateWorker = () => {
