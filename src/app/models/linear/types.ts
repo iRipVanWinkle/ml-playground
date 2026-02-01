@@ -32,8 +32,9 @@ export type LinearTrainingReport = {
     taskType: 'regression';
     trainLossHistory: number[][];
     iteration: number;
+    optimizerLoss: number; // optimizer loss
     trainLoss: number;
-    testLoss: number;
+    testLoss?: number;
     trainPredictedLabels: MatrixLike;
     testPredictedLabels?: MatrixLike;
     predictionPredictedLabels?: MatrixLike;

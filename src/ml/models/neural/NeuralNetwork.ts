@@ -9,6 +9,8 @@ import {
     onesLike,
 } from '@tensorflow/tfjs';
 import { BaseEstimator, type ModelOptions } from '../base/BaseEstimator';
+import type { PredictionMetadata } from '../../types';
+import { assertModelTrained } from '../../utils';
 
 type NeuralNetworkOptions = ModelOptions & {
     layers: Array<{
@@ -81,12 +83,12 @@ export class NeuralNetwork extends BaseEstimator {
     }
 
     predict(X: Tensor2D, theta?: Tensor2D): Tensor2D {
-        if (!(theta ?? this.theta)) {
-            throw new Error('Model has not been trained yet. Please call train() first.');
-        }
+        const resolvedTheta = theta ?? this.theta;
+
+        assertModelTrained(resolvedTheta);
 
         const result = tidy(() => {
-            const unpackedTheta = this.unpackParameters(theta ?? this.theta!);
+            const unpackedTheta = this.unpackParameters(resolvedTheta);
 
             const rawOutput = this.forwardPropagation(X, unpackedTheta);
 
@@ -94,6 +96,43 @@ export class NeuralNetwork extends BaseEstimator {
         });
 
         return result;
+    }
+
+    predictWithMetadata(X: Tensor2D, theta?: Tensor2D): PredictionMetadata {
+        const resolvedTheta = theta ?? this.theta;
+
+        assertModelTrained(resolvedTheta);
+
+        const [probabilities, predictions] = tidy(() => {
+            const unpackedTheta = this.unpackParameters(resolvedTheta);
+
+            const probabilities = this.forwardPropagation(X, unpackedTheta);
+
+            const predictions = this.probabilityToClassIndex(probabilities);
+
+            return [probabilities, predictions];
+        });
+
+        const isClassification = this.isMultiClassClassification() || this.isBinaryClassification();
+
+        return isClassification
+            ? {
+                  type: 'classification',
+                  predictions,
+                  probabilities,
+                  dispose() {
+                      predictions.dispose();
+                      probabilities.dispose();
+                  },
+              }
+            : {
+                  type: 'regression',
+                  predictions,
+                  dispose() {
+                      predictions.dispose();
+                      probabilities.dispose();
+                  },
+              };
     }
 
     evaluate(X: Tensor2D, y: Tensor2D, theta?: Tensor2D): [Tensor2D, Tensor2D, Scalar] {

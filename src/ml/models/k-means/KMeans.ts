@@ -7,7 +7,7 @@ import {
     Variable,
     Rank,
 } from '@tensorflow/tfjs';
-import type { Model, TrainingControl, TrainingEventEmitter } from '../../types';
+import type { Model, PredictionMetadata, TrainingControl, TrainingEventEmitter } from '../../types';
 import { EPSILON } from '../../constants';
 import { assert, assertModelTrained } from '../../utils';
 import { euclideanDistance } from '../../distance';
@@ -110,7 +110,23 @@ export class KMeans implements Model<Tensor2D> {
 
         const usedCentroids = centroids ?? this.centroids!;
         const assignments = this.findClosestCentroids(X, usedCentroids);
-        return assignments.expandDims(1);
+
+        return assignments;
+    }
+
+    predictWithMetadata(X: Tensor2D, centroids?: Tensor2D | undefined): PredictionMetadata {
+        assertModelTrained(centroids ?? this.centroids);
+        const usedCentroids = centroids ?? this.centroids!;
+
+        const assignments = this.findClosestCentroids(X, usedCentroids);
+
+        return {
+            type: 'clustering',
+            assignments: assignments,
+            dispose() {
+                assignments.dispose();
+            },
+        };
     }
 
     evaluate(

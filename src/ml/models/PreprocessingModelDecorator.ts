@@ -1,5 +1,10 @@
 import { concat, oneHot, tidy, type Scalar, type Tensor1D, type Tensor2D } from '@tensorflow/tfjs';
-import type { Model, ModelRepresentation, TrainingEventEmitter } from '../types';
+import type {
+    Model,
+    ModelRepresentation,
+    PredictionMetadata,
+    TrainingEventEmitter,
+} from '../types';
 import type { NormalizatorFn } from '../data-processing/normalization';
 import type { TransformationFn } from '../data-processing/transformation';
 
@@ -47,6 +52,16 @@ export class PreprocessingModelDecorator<T extends ModelRepresentation> implemen
         X = this.prepareFeatures(X);
 
         const result = this.model.predict(X, theta);
+
+        X.dispose();
+
+        return result;
+    }
+
+    predictWithMetadata(X: Tensor2D, theta?: T): PredictionMetadata {
+        X = this.prepareFeatures(X);
+
+        const result = this.model.predictWithMetadata(X, theta);
 
         X.dispose();
 

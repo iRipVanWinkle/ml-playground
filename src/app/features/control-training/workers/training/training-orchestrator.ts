@@ -189,10 +189,10 @@ export class TrainingOrchestrator {
     private async handleTrainingIteration(params: CallbackParameters): Promise<void> {
         const { liveMetrics, callbacks } = this;
 
-        liveMetrics.updateIteration(params);
-
         const startTime = import.meta.env.DEV ? performance.now() : 0;
-        const report = await liveMetrics.calculateMetrics();
+
+        const report = await liveMetrics.calculateMetrics(params);
+
         if (import.meta.env.DEV) {
             const duration = performance.now() - startTime;
             console.log(
@@ -276,7 +276,7 @@ export class TrainingOrchestrator {
     ) {
         const worker = workerRegistry.get(settings.modelSettings.type);
 
-        return worker.liveMetricsFactory(model, datasetManager, settings.taskType);
+        return worker.liveMetricsFactory(model, datasetManager, settings);
     }
 
     private initializeTensorTracking(): void {

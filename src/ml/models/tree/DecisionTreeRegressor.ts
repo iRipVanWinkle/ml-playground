@@ -1,6 +1,6 @@
 import { tensor2d, tidy, type Scalar, type Tensor2D } from '@tensorflow/tfjs';
 import { BaseDecisionTree } from '../base/BaseDecisionTree';
-import type { EnsembleTree } from '../../types';
+import type { EnsembleTree, PredictionMetadata } from '../../types';
 import { computeMeanValue, findLeafNode, StandardSplitStrategy } from '../../tree-builders';
 import { assertModelTrained } from '../../utils';
 
@@ -29,20 +29,33 @@ export class DecisionTreeRegressor extends BaseDecisionTree {
     }
 
     predict(X: Tensor2D, trees?: EnsembleTree): Tensor2D {
-        assertModelTrained(trees ?? this.trees);
+        const ensembleTrees = trees ?? this.trees;
+        assertModelTrained(ensembleTrees);
 
-        const [rootNode] = trees ?? this.trees!; // Use the first tree
+        const [rootNode] = ensembleTrees; // Use the first tree
 
-        const XArray = X.arraySync();
+        const samplesArray = X.arraySync();
 
         const predictions = [];
-        for (const sampleFeatures of XArray) {
+        for (const sampleFeatures of samplesArray) {
             const leafNode = findLeafNode(sampleFeatures, rootNode);
 
             predictions.push([leafNode.value]);
         }
 
         return tensor2d(predictions);
+    }
+
+    predictWithMetadata(X: Tensor2D, trees?: EnsembleTree): PredictionMetadata {
+        const prediction = this.predict(X, trees);
+
+        return {
+            type: 'regression',
+            predictions: prediction,
+            dispose() {
+                prediction.dispose();
+            },
+        };
     }
 
     evaluate(X: Tensor2D, y: Tensor2D, trees?: EnsembleTree): [Tensor2D, Tensor2D, Scalar] {

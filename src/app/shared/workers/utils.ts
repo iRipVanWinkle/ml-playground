@@ -76,6 +76,11 @@ type MappedValues<T extends object, IsPartial extends 'required' | 'partial' = '
     [P in keyof T]: IsPartial extends 'partial' ? T[P] | undefined : T[P];
 };
 
+export type TensorContainer<
+    T extends object,
+    IsPartial extends 'required' | 'partial' = 'required',
+> = MappedValues<T, IsPartial> & DisposableValue;
+
 /**
  * Creates a container for tensors that can be disposed of collectively.
  * @returns An object containing tensors with a dispose method to free resources.
@@ -83,7 +88,7 @@ type MappedValues<T extends object, IsPartial extends 'required' | 'partial' = '
 export function createTensorContainer<
     T extends object,
     IsPartial extends 'required' | 'partial' = 'required',
->(): MappedValues<T, IsPartial> & DisposableValue {
+>(): TensorContainer<T, IsPartial> {
     const container = {
         dispose(): void {
             for (const key in container) {
@@ -93,9 +98,9 @@ export function createTensorContainer<
                 }
             }
         },
-    } as MappedValues<T, IsPartial> & DisposableValue;
+    } as TensorContainer<T, IsPartial>;
 
-    return container as MappedValues<T, IsPartial> & DisposableValue;
+    return container as TensorContainer<T, IsPartial>;
 }
 
 function isDisposable(value: unknown): value is DisposableValue {

@@ -1,7 +1,8 @@
 import type { Scalar, Tensor2D } from '@tensorflow/tfjs';
 import type { Model, OptimizerCallbackParameters } from '@/ml/types';
-import type { DatasetManager, LiveMetrics } from '@/app/shared/workers';
-import type { NeuralRegressionTrainingReport } from '../types';
+import type { DatasetManager, LiveMetrics, TensorContainer } from '@/app/shared/workers';
+import type { NeuralRegressionTrainingReport, NeuralSettings } from '../types';
+import type { TrainingSettings } from '../../types';
 import { getMatrixFromTensor } from '@/ml/matrix';
 import {
     createTensorContainer,
@@ -15,8 +16,9 @@ import {
     residuals,
     rootMeanSquaredError,
 } from '@/ml/metrics';
+import { lossFunctionFactory } from '@/ml/factories';
 
-type Tensors = {
+type MetricsTensors = {
     y: Tensor2D;
     loss: Scalar;
     mae: Scalar;
@@ -29,39 +31,47 @@ type Tensors = {
 export class NeuralRegressionLiveMetrics
     implements LiveMetrics<OptimizerCallbackParameters, NeuralRegressionTrainingReport>
 {
-    private lossHistory: number[] = [];
-    private iterationCount = 0;
-    private theta?: Tensor2D;
-
     private model: Model<Tensor2D>;
     private datasetManager: DatasetManager;
+    private modelSettings: NeuralSettings;
 
-    static factory(model: Model<Tensor2D>, datasetManager: DatasetManager) {
-        return new NeuralRegressionLiveMetrics(model, datasetManager);
+    private lossHistory: number[] = [];
+
+    static factory(
+        model: Model<Tensor2D>,
+        datasetManager: DatasetManager,
+        settings: TrainingSettings,
+    ) {
+        const { modelSettings } = settings;
+
+        if (modelSettings.type !== 'neural') {
+            throw new Error(
+                `Invalid settings type: expected 'neural', got '${modelSettings.type}'`,
+            );
+        }
+
+        return new NeuralRegressionLiveMetrics(modelSettings, model, datasetManager);
     }
 
-    private constructor(model: Model<Tensor2D>, datasetManager: DatasetManager) {
+    private constructor(
+        modelSettings: NeuralSettings,
+        model: Model<Tensor2D>,
+        datasetManager: DatasetManager,
+    ) {
         this.model = model;
         this.datasetManager = datasetManager;
+        this.modelSettings = modelSettings;
     }
 
-    updateIteration(params: OptimizerCallbackParameters): void {
-        const { iteration, theta, loss } = params;
-
-        this.lossHistory.push(loss);
-        this.iterationCount = iteration + 1;
-        this.theta = theta;
-    }
-
-    async calculateMetrics(): Promise<NeuralRegressionTrainingReport> {
+    async calculateMetrics(
+        params: OptimizerCallbackParameters,
+    ): Promise<NeuralRegressionTrainingReport> {
         const trainingData = this.datasetManager.getTrainingData();
         const testData = this.datasetManager.getTestData();
         const predictionData = this.datasetManager.getPredictionData();
 
-        const theta = this.theta!;
-
-        const train = createTensorContainer<Tensors>();
-        const test = createTensorContainer<Tensors, 'partial'>();
+        const { iteration, theta, loss } = params;
+        this.lossHistory.push(loss);
 
         let yPredictions: Tensor2D | undefined;
 
@@ -69,31 +79,17 @@ export class NeuralRegressionLiveMetrics
             yPredictions = this.model.predict(predictionData, theta);
         }
 
-        const [yTraining, , trainLoss] = this.model.evaluate(trainingData.X, trainingData.y, theta);
-        train.y = yTraining;
-        train.loss = trainLoss;
-        train.mae = meanAbsoluteError(trainingData.y, yTraining);
-        train.mse = meanSquaredError(trainingData.y, yTraining);
-        train.rmse = rootMeanSquaredError(trainingData.y, yTraining);
-        train.r2 = r2Score(trainingData.y, yTraining);
-        train.residuals = residuals(trainingData.y, yTraining);
-
-        if (testData) {
-            const [yTesting, , testLoss] = this.model.evaluate(testData.X, testData.y, theta);
-            test.y = yTesting;
-            test.loss = testLoss;
-            test.mae = meanAbsoluteError(testData.y, yTesting);
-            test.mse = meanSquaredError(testData.y, yTesting);
-            test.rmse = rootMeanSquaredError(testData.y, yTesting);
-            test.r2 = r2Score(testData.y, yTesting);
-            test.residuals = residuals(testData.y, yTesting);
-        }
+        const train = this.evaluateMetrics(trainingData.X, trainingData.y, theta);
+        const test = testData
+            ? this.evaluateMetrics(testData.X, testData.y, theta)
+            : createTensorContainer<MetricsTensors, 'partial'>();
 
         const [
             thetaArray,
             predictionPredictedLabels,
             // train
             trainPredictedLabels,
+            trainLossValue,
             trainMaeValue,
             trainMseValue,
             trainRmseValue,
@@ -112,6 +108,7 @@ export class NeuralRegressionLiveMetrics
             getSafeMatrixFromTensor(yPredictions),
             // train
             getMatrixFromTensor(train.y),
+            getSafeTensorValue(train.loss),
             getSafeTensorValue(train.mae),
             getSafeTensorValue(train.mse),
             getSafeTensorValue(train.rmse),
@@ -142,8 +139,9 @@ export class NeuralRegressionLiveMetrics
             type: 'neural',
             taskType: 'regression',
             trainLossHistory: [this.lossHistory],
-            iteration: this.iterationCount,
-            trainLoss: this.lossHistory?.at(-1) ?? 0,
+            iteration: iteration + 1,
+            optimizerLoss: this.lossHistory?.at(-1) ?? 0,
+            trainLoss: trainLossValue,
             testLoss: testLossValue!,
             trainPredictedLabels: trainPredictedLabels!,
             testPredictedLabels: testPredictedLabels!,
@@ -168,7 +166,23 @@ export class NeuralRegressionLiveMetrics
         };
     }
 
-    dispose(): void {
-        this.theta?.dispose();
+    private evaluateMetrics(
+        X: Tensor2D,
+        yTrue: Tensor2D,
+        theta: Tensor2D,
+    ): TensorContainer<MetricsTensors> {
+        const metrics = createTensorContainer<MetricsTensors>();
+
+        metrics.y = this.model.predict(X, theta);
+        metrics.mae = meanAbsoluteError(yTrue, metrics.y);
+        metrics.mse = meanSquaredError(yTrue, metrics.y);
+        metrics.rmse = rootMeanSquaredError(yTrue, metrics.y);
+        metrics.r2 = r2Score(yTrue, metrics.y);
+        metrics.residuals = residuals(yTrue, metrics.y);
+
+        const lossFunc = lossFunctionFactory(this.modelSettings.lossFunction);
+        metrics.loss = lossFunc.compute(yTrue, metrics.y);
+
+        return metrics;
     }
 }

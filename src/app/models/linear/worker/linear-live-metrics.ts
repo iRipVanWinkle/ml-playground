@@ -1,8 +1,8 @@
-import { Rank, variable, Variable, type Scalar, type Tensor2D } from '@tensorflow/tfjs';
+import { type Scalar, type Tensor2D } from '@tensorflow/tfjs';
 import type { Model, ModelRepresentation, OptimizerCallbackParameters } from '@/ml/types';
-import type { DatasetManager, LiveMetrics } from '@/app/shared/workers';
-import type { LinearTrainingReport } from '../types';
-import { getMatrixFromTensor } from '@/ml/matrix';
+import type { DatasetManager, LiveMetrics, TensorContainer } from '@/app/shared/workers';
+import type { LinearSettings, LinearTrainingReport } from '../types';
+import type { TrainingSettings } from '../../types';
 import {
     createTensorContainer,
     getSafeMatrixFromTensor,
@@ -15,8 +15,9 @@ import {
     residuals,
     rootMeanSquaredError,
 } from '@/ml/metrics';
+import { lossFunctionFactory } from '@/ml/factories';
 
-type Tensors = {
+type MetricsTensors = {
     y: Tensor2D;
     loss: Scalar;
     mae: Scalar;
@@ -29,73 +30,65 @@ type Tensors = {
 export class LinearLiveMetrics
     implements LiveMetrics<OptimizerCallbackParameters, LinearTrainingReport>
 {
-    private lossHistory: number[] = [];
-    private iterationCount: number = 0;
-    private theta?: Variable<Rank.R2>;
-
     private model: Model<ModelRepresentation>;
     private datasetManager: DatasetManager;
+    private modelSettings: LinearSettings;
 
-    static factory(model: Model<Tensor2D>, datasetManager: DatasetManager) {
-        return new LinearLiveMetrics(model, datasetManager);
+    private lossHistory: number[] = [];
+    private theta?: Tensor2D;
+
+    static factory(
+        model: Model<Tensor2D>,
+        datasetManager: DatasetManager,
+        settings: TrainingSettings,
+    ) {
+        const { modelSettings } = settings;
+
+        if (modelSettings.type !== 'linear') {
+            throw new Error(
+                `Invalid settings type: expected 'linear', got '${modelSettings.type}'`,
+            );
+        }
+
+        return new LinearLiveMetrics(modelSettings, model, datasetManager);
     }
 
-    private constructor(model: Model<Tensor2D>, datasetManager: DatasetManager) {
+    private constructor(
+        modelSettings: LinearSettings,
+        model: Model<Tensor2D>,
+        datasetManager: DatasetManager,
+    ) {
         this.model = model;
         this.datasetManager = datasetManager;
+        this.modelSettings = modelSettings;
     }
 
-    updateIteration(params: OptimizerCallbackParameters): void {
-        const { iteration, theta, loss } = params;
-
-        this.lossHistory.push(loss);
-        this.iterationCount = iteration + 1;
-
-        if (!this.theta) {
-            this.theta = variable(theta);
-        }
-        this.theta.assign(theta);
-    }
-
-    async calculateMetrics(): Promise<LinearTrainingReport> {
+    async calculateMetrics(params: OptimizerCallbackParameters): Promise<LinearTrainingReport> {
         const trainingData = this.datasetManager.getTrainingData();
         const testData = this.datasetManager.getTestData();
         const predictionData = this.datasetManager.getPredictionData();
 
-        const theta = this.theta!;
+        const { iteration, theta, loss } = params;
 
-        const train = createTensorContainer<Tensors>();
-        const test = createTensorContainer<Tensors, 'partial'>();
+        this.theta = theta;
+        this.lossHistory.push(loss);
 
         let yPredictions: Tensor2D | undefined;
-
         if (predictionData) {
             yPredictions = this.model.predict(predictionData, theta);
         }
 
-        train.y = this.model.predict(trainingData.X, theta);
-        train.mae = meanAbsoluteError(trainingData.y, train.y);
-        train.mse = meanSquaredError(trainingData.y, train.y);
-        train.rmse = rootMeanSquaredError(trainingData.y, train.y);
-        train.r2 = r2Score(trainingData.y, train.y);
-        train.residuals = residuals(trainingData.y, train.y);
-
-        if (testData) {
-            const [yTesting, , testLoss] = this.model.evaluate(testData.X, testData.y, theta);
-            test.y = yTesting;
-            test.loss = testLoss;
-            test.mae = meanAbsoluteError(testData.y, test.y);
-            test.mse = meanSquaredError(testData.y, test.y);
-            test.rmse = rootMeanSquaredError(testData.y, test.y);
-            test.r2 = r2Score(testData.y, test.y);
-            test.residuals = residuals(testData.y, test.y);
-        }
+        const train = this.evaluateMetrics(trainingData.X, trainingData.y, theta);
+        const test = testData
+            ? this.evaluateMetrics(testData.X, testData.y, theta)
+            : createTensorContainer<MetricsTensors, 'partial'>();
 
         const [
             thetaArray,
             predictionPredictedLabels,
             // train
             trainPredictedLabels,
+            trainLossValue,
             trainMaeValue,
             trainMseValue,
             trainRmseValue,
@@ -110,10 +103,11 @@ export class LinearLiveMetrics
             testR2Value,
             testResidualsArray,
         ] = await Promise.all([
-            getMatrixFromTensor(theta),
+            getSafeMatrixFromTensor(theta),
             getSafeMatrixFromTensor(yPredictions),
             // train
-            getMatrixFromTensor(train.y),
+            getSafeMatrixFromTensor(train.y),
+            getSafeTensorValue(train.loss),
             getSafeTensorValue(train.mae),
             getSafeTensorValue(train.mse),
             getSafeTensorValue(train.rmse),
@@ -144,8 +138,9 @@ export class LinearLiveMetrics
             type: 'linear',
             taskType: 'regression',
             trainLossHistory: [this.lossHistory],
-            iteration: this.iterationCount,
-            trainLoss: this.lossHistory.at(-1) ?? 0,
+            iteration: iteration + 1,
+            optimizerLoss: loss,
+            trainLoss: trainLossValue,
             testLoss: testLossValue!,
             trainPredictedLabels: trainPredictedLabels!,
             testPredictedLabels: testPredictedLabels,
@@ -172,5 +167,25 @@ export class LinearLiveMetrics
 
     dispose(): void {
         this.theta?.dispose();
+    }
+
+    private evaluateMetrics(
+        X: Tensor2D,
+        yTrue: Tensor2D,
+        theta: Tensor2D,
+    ): TensorContainer<MetricsTensors> {
+        const metrics = createTensorContainer<MetricsTensors>();
+
+        metrics.y = this.model.predict(X, theta);
+        metrics.mae = meanAbsoluteError(yTrue, metrics.y);
+        metrics.mse = meanSquaredError(yTrue, metrics.y);
+        metrics.rmse = rootMeanSquaredError(yTrue, metrics.y);
+        metrics.r2 = r2Score(yTrue, metrics.y);
+        metrics.residuals = residuals(yTrue, metrics.y);
+
+        const lossFunc = lossFunctionFactory(this.modelSettings.lossFunction);
+        metrics.loss = lossFunc.compute(yTrue, metrics.y);
+
+        return metrics;
     }
 }

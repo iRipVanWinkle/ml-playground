@@ -1,6 +1,6 @@
 import { tensor2d, tidy, type Scalar, type Tensor2D } from '@tensorflow/tfjs';
 import { BaseDecisionTree } from '../base/BaseDecisionTree';
-import type { EnsembleTree } from '../../types';
+import type { EnsembleTree, PredictionMetadata } from '../../types';
 import {
     computeClassProbabilities,
     findLeafNode,
@@ -38,24 +38,56 @@ export class DecisionTreeClassifier extends BaseDecisionTree {
     }
 
     predict(X: Tensor2D, trees?: EnsembleTree): Tensor2D {
-        assertModelTrained(trees ?? this.trees);
+        const resolvedTrees = trees ?? this.trees;
 
-        const [rootNode] = trees ?? this.trees!; // Use the first tree
+        assertModelTrained(resolvedTrees);
 
-        const XArray = X.arraySync();
+        const [rootNode] = resolvedTrees; // Use the first tree
 
-        const predictions: number[][] = [];
-        for (const sampleFeatures of XArray) {
+        const samplesArray = X.arraySync();
+
+        const treeProbabilitiesArray: number[][] = [];
+        for (const sampleFeatures of samplesArray) {
             const leafNode = findLeafNode(sampleFeatures, rootNode);
 
-            predictions.push(leafNode.probabilities!);
+            treeProbabilitiesArray.push(leafNode.probabilities!);
         }
 
         return tidy(() => {
-            const probabilities = tensor2d(predictions);
+            const probabilities = tensor2d(treeProbabilitiesArray);
 
             return probabilityToClassIndex(probabilities);
         });
+    }
+
+    predictWithMetadata(X: Tensor2D, trees?: EnsembleTree): PredictionMetadata {
+        const resolvedTrees = trees ?? this.trees;
+
+        assertModelTrained(resolvedTrees);
+
+        const [rootNode] = resolvedTrees; // Use the first tree
+
+        const samplesArray = X.arraySync();
+
+        const treeProbabilitiesArray: number[][] = [];
+        for (const sampleFeatures of samplesArray) {
+            const leafNode = findLeafNode(sampleFeatures, rootNode);
+
+            treeProbabilitiesArray.push(leafNode.probabilities!);
+        }
+
+        const classProbabilities = tensor2d(treeProbabilitiesArray);
+        const predictedClassIndices = probabilityToClassIndex(classProbabilities);
+
+        return {
+            type: 'classification',
+            predictions: predictedClassIndices,
+            probabilities: classProbabilities,
+            dispose() {
+                predictedClassIndices.dispose();
+                classProbabilities.dispose();
+            },
+        };
     }
 
     evaluate(X: Tensor2D, y: Tensor2D, trees?: EnsembleTree): [Tensor2D, Tensor2D, Scalar] {

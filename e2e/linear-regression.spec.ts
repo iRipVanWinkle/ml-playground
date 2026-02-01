@@ -26,7 +26,7 @@ const EXPECTED_RESULTS = {
         testLoss: 'Test Loss: 1.1603',
     },
     withSGD: {
-        trainLoss: 'Train Loss: 5.3875',
+        trainLoss: 'Train Loss: 3.8976',
         testLoss: 'Test Loss: 4.0784',
     },
     withScheduler: {
@@ -38,7 +38,7 @@ const EXPECTED_RESULTS = {
         testLoss: 'Test Loss: 10.4284',
     },
     withL2Regularization: {
-        trainLoss: 'Train Loss: 7.5552',
+        trainLoss: 'Train Loss: 3.4449',
         testLoss: 'Test Loss: 3.7214',
     },
     withCustomWeightInitialization: {

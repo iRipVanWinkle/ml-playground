@@ -1,5 +1,6 @@
 import type { Scalar, Tensor2D } from '@tensorflow/tfjs';
 import type { Model, NaiveBayesParams, NaiveBayesCallbackParameters } from '@/ml/types';
+import type { NaiveBayesTrainingReport } from '../types';
 import { accuracy, confusionMatrix } from '@/ml/metrics';
 import {
     type DatasetManager,
@@ -8,12 +9,12 @@ import {
     getSafeTensorValue,
     getSafeTensorArray,
     createTensorContainer,
+    type TensorContainer,
 } from '@/app/shared/workers';
-import type { NaiveBayesTrainingReport } from '../types';
 import { confusionMatrixData } from '@/app/shared/visualization/metrics/confusion-matrix/calculations';
 import { rocCurveData } from '@/app/shared/visualization/plots/roc-curve/calculations';
 
-type Tensors = {
+type MetricsTensors = {
     y: Tensor2D;
     probabilities: Tensor2D;
     accuracy: Scalar;
@@ -26,8 +27,6 @@ export class NaiveBayesLiveMetrics
 {
     private model: Model<NaiveBayesParams>;
     private datasetManager: DatasetManager;
-    private iteration = 0;
-    private params?: NaiveBayesParams;
 
     static factory(model: Model<NaiveBayesParams>, datasetManager: DatasetManager) {
         return new NaiveBayesLiveMetrics(model, datasetManager);
@@ -38,49 +37,26 @@ export class NaiveBayesLiveMetrics
         this.datasetManager = datasetManager;
     }
 
-    updateIteration(params: NaiveBayesCallbackParameters): void {
-        this.iteration = params.iteration + 1;
-        this.params = params.params;
-    }
-
-    async calculateMetrics(): Promise<NaiveBayesTrainingReport> {
+    async calculateMetrics(
+        params: NaiveBayesCallbackParameters,
+    ): Promise<NaiveBayesTrainingReport> {
         const trainingData = this.datasetManager.getTrainingData();
         const testData = this.datasetManager.getTestData();
         const predictionData = this.datasetManager.getPredictionData();
         const numClasses = this.datasetManager.getNumClasses();
 
-        const train = createTensorContainer<Tensors>();
-        const test = createTensorContainer<Tensors, 'partial'>();
+        const { iteration, params: modelParams } = params;
 
         let yPredictions: Tensor2D | undefined;
-
         if (predictionData) {
-            yPredictions = this.model.predict(predictionData, this.params);
+            yPredictions = this.model.predict(predictionData, modelParams);
         }
 
-        const [yTraining, yTrainingProbability, trainLoss] = this.model.evaluate(
-            trainingData.X,
-            trainingData.y,
-            this.params,
-        );
-        train.y = yTraining;
-        train.probabilities = yTrainingProbability;
-        train.loss = trainLoss;
-        train.accuracy = accuracy(trainingData.y, yTraining);
-        train.confusionMatrix = confusionMatrix(trainingData.y, yTraining, numClasses);
+        const train = this.evaluateMetrics(trainingData.X, trainingData.y, modelParams);
 
-        if (testData) {
-            const [yTesting, yTestingProbability, testLoss] = this.model.evaluate(
-                testData.X,
-                testData.y,
-                this.params,
-            );
-            test.y = yTesting;
-            test.probabilities = yTestingProbability;
-            test.loss = testLoss;
-            test.accuracy = accuracy(testData.y, yTesting);
-            test.confusionMatrix = confusionMatrix(testData.y, yTesting, numClasses);
-        }
+        const test = testData
+            ? this.evaluateMetrics(testData.X, testData.y, modelParams)
+            : createTensorContainer<MetricsTensors>();
 
         const [
             predictionPredictedLabels,
@@ -126,8 +102,8 @@ export class NaiveBayesLiveMetrics
             trainPredictedLabels: trainPredictedLabels,
             testPredictedLabels: testPredictedLabels,
             predictionPredictedLabels: predictionPredictedLabels,
-            iteration: this.iteration,
-            params: this.params!,
+            iteration: iteration + 1,
+            params: modelParams,
 
             trainConfusionMatrix: confusionMatrixData(trainConfusionMatrixValue, numClasses),
             testConfusionMatrix: testConfusionMatrixValue
@@ -146,7 +122,24 @@ export class NaiveBayesLiveMetrics
         };
     }
 
-    dispose(): void {
-        // No tensors to dispose
+    private evaluateMetrics(
+        X: Tensor2D,
+        yTrue: Tensor2D,
+        params: NaiveBayesParams,
+    ): TensorContainer<MetricsTensors> {
+        const numClasses = this.datasetManager.getNumClasses();
+
+        const trainPredictWithProbs = this.model.predictWithMetadata(X, params);
+        if (trainPredictWithProbs.type !== 'classification') {
+            throw new Error('Model is not a classification model');
+        }
+
+        const metrics = createTensorContainer<MetricsTensors>();
+        metrics.y = trainPredictWithProbs.predictions;
+        metrics.probabilities = trainPredictWithProbs.probabilities;
+        metrics.accuracy = accuracy(yTrue, metrics.y);
+        metrics.confusionMatrix = confusionMatrix(yTrue, metrics.y, numClasses);
+
+        return metrics;
     }
 }

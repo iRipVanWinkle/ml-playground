@@ -3,6 +3,7 @@ import type {
     CriterionFunction,
     EnsembleTree,
     Model,
+    PredictionMetadata,
     TrainingControl,
     TrainingEventEmitter,
 } from '../../types';
@@ -44,6 +45,8 @@ export abstract class BaseDecisionTree implements Model<EnsembleTree> {
     abstract predict(X: Tensor2D, trees?: EnsembleTree): Tensor2D;
 
     abstract evaluate(X: Tensor2D, y: Tensor2D, trees?: EnsembleTree): [Tensor2D, Tensor2D, Scalar];
+
+    abstract predictWithMetadata(X: Tensor2D, trees?: EnsembleTree): PredictionMetadata;
 
     dispose(): void {
         this.trees = [];

@@ -1,5 +1,11 @@
 import { concat, ones, tidy, type Scalar, type Tensor2D } from '@tensorflow/tfjs';
-import type { LossFunction, Optimizer, Model, Regularization } from '../../types';
+import type {
+    LossFunction,
+    Optimizer,
+    Model,
+    Regularization,
+    PredictionMetadata,
+} from '../../types';
 import { NoRegularization } from '../../regularization';
 import {
     zerosInitializer,
@@ -34,9 +40,7 @@ export abstract class BaseEstimator implements Model<Tensor2D> {
 
     abstract evaluate(X: Tensor2D, y: Tensor2D, theta?: Tensor2D): [Tensor2D, Tensor2D, Scalar];
 
-    getTheta(): Tensor2D | null {
-        return this.theta;
-    }
+    abstract predictWithMetadata(X: Tensor2D, theta?: Tensor2D): PredictionMetadata;
 
     dispose(withDependencies = false): void {
         this.theta?.dispose();

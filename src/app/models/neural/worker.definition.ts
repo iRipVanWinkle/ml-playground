@@ -7,11 +7,11 @@ import { tensor2d } from '@tensorflow/tfjs';
 export const neuralWorkerDefinition: WorkerDefinition<'neural'> = {
     key: 'neural',
     modelFactory: neuralModelFactory,
-    liveMetricsFactory: (model, datasetManager, taskType) => {
-        if (taskType === 'classification') {
+    liveMetricsFactory: (model, datasetManager, settings) => {
+        if (settings.taskType === 'classification') {
             return NeuralClassificationLiveMetrics.factory(model, datasetManager);
         } else {
-            return NeuralRegressionLiveMetrics.factory(model, datasetManager);
+            return NeuralRegressionLiveMetrics.factory(model, datasetManager, settings);
         }
     },
 

@@ -1,5 +1,5 @@
 import { tidy, tensor2d, type Scalar, type Tensor2D, scalar } from '@tensorflow/tfjs';
-import type { QuadraticNaiveBayesParams } from '../../types';
+import type { PredictionMetadata, QuadraticNaiveBayesParams } from '../../types';
 import { assertModelTrained } from '../../utils';
 import { EPSILON } from '../../constants';
 import { BaseNaiveBayes, type BaseNaiveBayesOptions } from '../base/BaseNaiveBayes';
@@ -149,21 +149,61 @@ export class QuadraticNaiveBayes extends BaseNaiveBayes<QuadraticNaiveBayesParam
      * @returns Tensor of predicted class indices of shape [n_samples, 1]
      */
     predict(X: Tensor2D, params?: QuadraticNaiveBayesParams): Tensor2D {
-        const modelParams = params ?? this.params;
-        assertModelTrained(modelParams);
+        const resolvedParams = params ?? this.params;
 
-        const XArray = X.arraySync();
-        const numSamples = XArray.length;
+        assertModelTrained(resolvedParams);
+
+        const samplesArray = X.arraySync();
+        const numSamples = samplesArray.length;
         const predictions = new Float32Array(numSamples);
 
-        for (let i = 0; i < numSamples; i++) {
-            const sample = XArray[i];
-            const scores = this.calculateDiscriminantScores(sample, modelParams);
-            const maxIdx = scores.indexOf(Math.max(...scores));
-            predictions[i] = modelParams.classes[maxIdx];
+        for (let sampleIndex = 0; sampleIndex < numSamples; sampleIndex++) {
+            const sampleFeatures = samplesArray[sampleIndex];
+            const classScores = this.calculateDiscriminantScores(sampleFeatures, resolvedParams);
+            const predictedClassIndex = this.probabilityToClassIndex(classScores);
+            predictions[sampleIndex] = resolvedParams.classes[predictedClassIndex];
         }
 
         return tensor2d(predictions, [numSamples, 1]);
+    }
+
+    /**
+     * Predicts class labels and log-probabilities for input features.
+     *
+     * @param X - Input features tensor of shape [n_samples, n_features]
+     * @param params - Optional model parameters (uses trained params if not provided)
+     * @returns Object containing predictions and log-probabilities
+     */
+    predictWithMetadata(X: Tensor2D, params?: QuadraticNaiveBayesParams): PredictionMetadata {
+        const resolvedParams = params ?? this.params;
+
+        assertModelTrained(resolvedParams);
+
+        const samplesArray = X.arraySync();
+        const numSamples = samplesArray.length;
+        const classLogScoresArray: number[][] = [];
+        const predictedClassesArray: number[][] = [];
+
+        for (let sampleIndex = 0; sampleIndex < numSamples; sampleIndex++) {
+            const sampleFeatures = samplesArray[sampleIndex];
+            const classScores = this.calculateDiscriminantScores(sampleFeatures, resolvedParams);
+            const predictedClassIndex = this.probabilityToClassIndex(classScores);
+
+            predictedClassesArray.push([resolvedParams.classes[predictedClassIndex]]);
+            classLogScoresArray.push([...classScores]);
+        }
+
+        const scoresTensor = tensor2d(classLogScoresArray);
+        const predictionsTensor = tensor2d(predictedClassesArray);
+        return {
+            type: 'classification',
+            predictions: predictionsTensor,
+            probabilities: scoresTensor,
+            dispose() {
+                predictionsTensor.dispose();
+                scoresTensor.dispose();
+            },
+        };
     }
 
     /**

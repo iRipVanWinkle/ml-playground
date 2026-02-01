@@ -34,7 +34,6 @@ export const treeModelDefinition: ModelDefinition<'tree'> = {
                 return {
                     type: 'tree',
                     taskType: 'classification',
-                    iterations: [],
                     testAccuracy: 0,
                     trainAccuracy: 0,
                     trainPredictedLabels: EMPTY_MATRIX_LIKE,
@@ -65,8 +64,7 @@ export const treeModelDefinition: ModelDefinition<'tree'> = {
                 return {
                     type: 'tree',
                     taskType: 'regression',
-                    iterations: [],
-                    testLoss: 0,
+                    trainLoss: 0,
                     trainPredictedLabels: EMPTY_MATRIX_LIKE,
                     trainMetrics: null,
                     trainResiduals: EMPTY_MATRIX_LIKE,

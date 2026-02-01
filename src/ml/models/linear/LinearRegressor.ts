@@ -1,6 +1,7 @@
 import { type Scalar, type Tensor2D, tidy } from '@tensorflow/tfjs';
 import { BaseEstimator } from '../base/BaseEstimator';
 import { assertModelTrained } from '../../utils';
+import type { PredictionMetadata } from '@/ml/types';
 
 export class LinearRegressor extends BaseEstimator {
     async train(X: Tensor2D, y: Tensor2D): Promise<Tensor2D> {
@@ -54,6 +55,18 @@ export class LinearRegressor extends BaseEstimator {
         const result = this.hypothesis(X, theta ?? this.theta!);
 
         return result;
+    }
+
+    predictWithMetadata(X: Tensor2D, theta?: Tensor2D): PredictionMetadata {
+        const result = this.predict(X, theta);
+
+        return {
+            type: 'regression',
+            predictions: result,
+            dispose() {
+                result.dispose();
+            },
+        };
     }
 
     evaluate(X: Tensor2D, y: Tensor2D, theta?: Tensor2D): [Tensor2D, Tensor2D, Scalar] {

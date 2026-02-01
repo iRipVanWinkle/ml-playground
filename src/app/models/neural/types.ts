@@ -56,8 +56,9 @@ export type NeuralRegressionTrainingReport = {
     taskType: 'regression';
     trainLossHistory: number[][];
     iteration: number;
+    optimizerLoss: number;
     trainLoss: number;
-    testLoss: number;
+    testLoss?: number;
     trainPredictedLabels: MatrixLike;
     testPredictedLabels?: MatrixLike;
     predictionPredictedLabels?: MatrixLike;

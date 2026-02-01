@@ -1,6 +1,7 @@
 import { tidy, type Scalar, type Tensor2D } from '@tensorflow/tfjs';
 import { LogisticRegressor } from './LogisticRegressor';
 import { assertModelTrained } from '../../utils';
+import type { PredictionMetadata } from '../../types';
 
 export class SoftmaxLogisticRegressor extends LogisticRegressor {
     private _initTheta: Tensor2D | null = null; // for testing purposes
@@ -52,15 +53,43 @@ export class SoftmaxLogisticRegressor extends LogisticRegressor {
     }
 
     predict(X: Tensor2D, theta?: Tensor2D): Tensor2D {
-        assertModelTrained(theta ?? this.theta);
+        const resolvedTheta = theta ?? this.theta;
+
+        assertModelTrained(resolvedTheta);
 
         const result = tidy(() => {
             // Compute probabilities for each class
-            const probability = this.hypothesis(X, theta ?? this.theta!);
+            const probability = this.hypothesis(X, resolvedTheta);
+            // Convert probabilities to class indices
             return this.probabilityToClassIndex(probability);
         });
 
         return result;
+    }
+
+    predictWithMetadata(X: Tensor2D, theta?: Tensor2D): PredictionMetadata {
+        const resolvedTheta = theta ?? this.theta;
+
+        assertModelTrained(resolvedTheta);
+
+        const [probabilities, predictions] = tidy(() => {
+            // Compute probabilities for each class
+            const probability = this.hypothesis(X, resolvedTheta);
+            // Convert probabilities to class indices
+            const predictions = this.probabilityToClassIndex(probability) as Tensor2D;
+
+            return [probability, predictions];
+        });
+
+        return {
+            type: 'classification',
+            predictions,
+            probabilities,
+            dispose() {
+                predictions.dispose();
+                probabilities.dispose();
+            },
+        };
     }
 
     evaluate(X: Tensor2D, y: Tensor2D, theta?: Tensor2D): [Tensor2D, Tensor2D, Scalar] {

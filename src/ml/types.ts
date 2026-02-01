@@ -304,6 +304,15 @@ export interface Model<T extends ModelRepresentation> {
     predict(X: Tensor2D, theta?: T): Tensor2D;
 
     /**
+     * Makes predictions using the trained model and provides additional metadata.
+     *
+     * @param X - The input features.
+     * @param theta - The model parameters (optional).
+     * @returns An object containing the predictions and additional metadata.
+     */
+    predictWithMetadata(X: Tensor2D, theta?: T): PredictionMetadata;
+
+    /**
      * Evaluates the model on the provided data.
      *
      * @param X - The input features.
@@ -327,3 +336,24 @@ export interface Model<T extends ModelRepresentation> {
      */
     usesOneHotLabels?(): boolean;
 }
+
+export type ClassificationMetadata = {
+    type: 'classification';
+    predictions: Tensor2D;
+    probabilities: Tensor2D;
+    dispose(): void;
+};
+
+export type RegressionMetadata = {
+    type: 'regression';
+    predictions: Tensor2D;
+    dispose(): void;
+};
+
+export type ClusteringMetadata = {
+    type: 'clustering';
+    assignments: Tensor2D;
+    dispose(): void;
+};
+
+export type PredictionMetadata = ClassificationMetadata | RegressionMetadata | ClusteringMetadata;

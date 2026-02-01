@@ -5,7 +5,6 @@ export interface LiveMetrics<
     TCallbackParameters extends CallbackParameters,
     TTrainingReport extends TrainingReport,
 > {
-    updateIteration(params: TCallbackParameters): void;
-    calculateMetrics(): Promise<TTrainingReport>;
+    calculateMetrics(params: TCallbackParameters): Promise<TTrainingReport>;
     dispose?(): void;
 }

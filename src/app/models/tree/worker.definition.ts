@@ -7,11 +7,11 @@ export const treeWorkerDefinition: WorkerDefinition<'tree'> = {
     key: 'tree',
     modelFactory: treeModelFactory,
 
-    liveMetricsFactory: (model, datasetManager, taskType) => {
-        if (taskType === 'classification') {
+    liveMetricsFactory: (model, datasetManager, settings) => {
+        if (settings.taskType === 'classification') {
             return TreeClassificationLiveMetrics.factory(model, datasetManager);
         } else {
-            return TreeRegressionLiveMetrics.factory(model, datasetManager);
+            return TreeRegressionLiveMetrics.factory(model, datasetManager, settings);
         }
     },
 

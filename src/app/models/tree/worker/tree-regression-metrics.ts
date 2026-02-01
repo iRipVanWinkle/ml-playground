@@ -6,6 +6,7 @@ import {
     getSafeTensorValue,
     type DatasetManager,
     type LiveMetrics,
+    type TensorContainer,
 } from '@/app/shared/workers';
 import { getMatrixFromTensor } from '@/ml/matrix';
 import {
@@ -15,9 +16,11 @@ import {
     residuals,
     rootMeanSquaredError,
 } from '@/ml/metrics';
-import type { TreeRegressionTrainingReport } from '../types';
+import type { TreeRegressionTrainingReport, TreeSettings } from '../types';
+import type { TrainingSettings } from '../../types';
+import { criterionFactory } from '@/ml/factories';
 
-type Tensors = {
+type MetricsTensors = {
     y: Tensor2D;
     loss: Scalar;
     mae: Scalar;
@@ -30,84 +33,60 @@ type Tensors = {
 export class TreeRegressionLiveMetrics
     implements LiveMetrics<TreeCallbackParameters, TreeRegressionTrainingReport>
 {
-    private iterationCounts: number[] = [];
-    private thetaArray: Tensor2D[] = [];
+    private model: Model<EnsembleTree>;
+    private datasetManager: DatasetManager;
+    private modelSettings: TreeSettings;
 
     private trees: TreeNode[] = [];
 
-    private model: Model<EnsembleTree>;
-    private datasetManager: DatasetManager;
+    static factory(
+        model: Model<EnsembleTree>,
+        datasetManager: DatasetManager,
+        settings: TrainingSettings,
+    ) {
+        const { modelSettings } = settings;
 
-    static factory(model: Model<EnsembleTree>, datasetManager: DatasetManager) {
-        return new TreeRegressionLiveMetrics(model, datasetManager);
+        if (modelSettings.type !== 'tree') {
+            throw new Error(`Invalid settings type: expected 'tree', got '${modelSettings.type}'`);
+        }
+
+        return new TreeRegressionLiveMetrics(modelSettings, model, datasetManager);
     }
 
-    private constructor(model: Model<EnsembleTree>, datasetManager: DatasetManager) {
+    private constructor(
+        modelSettings: TreeSettings,
+        model: Model<EnsembleTree>,
+        datasetManager: DatasetManager,
+    ) {
         this.model = model;
         this.datasetManager = datasetManager;
+        this.modelSettings = modelSettings;
     }
 
-    updateIteration(params: TreeCallbackParameters): void {
-        const { threadId, iteration, tree } = params;
-
-        this.trees[threadId] = tree;
-
-        this.iterationCounts[threadId] = this.iterationCounts[threadId] ?? 0;
-        this.iterationCounts[threadId] = iteration + 1;
-    }
-
-    getModelRepresentation(): EnsembleTree {
-        return this.trees;
-    }
-
-    async calculateMetrics(): Promise<TreeRegressionTrainingReport> {
-        const modelRepresentation = this.getModelRepresentation();
-
+    async calculateMetrics(params: TreeCallbackParameters): Promise<TreeRegressionTrainingReport> {
         const trainingData = this.datasetManager.getTrainingData();
         const testData = this.datasetManager.getTestData();
         const predictionData = this.datasetManager.getPredictionData();
 
-        const train = createTensorContainer<Tensors>();
-        const test = createTensorContainer<Tensors, 'partial'>();
+        const { threadId, tree } = params;
+
+        this.trees[threadId] = tree;
 
         let yPredictions: Tensor2D | undefined;
-
         if (predictionData) {
-            yPredictions = this.model.predict(predictionData, modelRepresentation);
+            yPredictions = this.model.predict(predictionData, this.trees);
         }
 
-        const [yTraining, , trainLoss] = this.model.evaluate(
-            trainingData.X,
-            trainingData.y,
-            modelRepresentation,
-        );
-        train.y = yTraining;
-        train.loss = trainLoss;
-        train.mae = meanAbsoluteError(trainingData.y, yTraining);
-        train.mse = meanSquaredError(trainingData.y, yTraining);
-        train.rmse = rootMeanSquaredError(trainingData.y, yTraining);
-        train.r2 = r2Score(trainingData.y, yTraining);
-        train.residuals = residuals(trainingData.y, yTraining);
-
-        if (testData) {
-            const [yTesting, , testLoss] = this.model.evaluate(
-                testData.X,
-                testData.y,
-                modelRepresentation,
-            );
-            test.y = yTesting;
-            test.loss = testLoss;
-            test.mae = meanAbsoluteError(testData.y, yTesting);
-            test.mse = meanSquaredError(testData.y, yTesting);
-            test.rmse = rootMeanSquaredError(testData.y, yTesting);
-            test.r2 = r2Score(testData.y, yTesting);
-            test.residuals = residuals(testData.y, yTesting);
-        }
+        const train = this.evaluateMetrics(trainingData.X, trainingData.y, this.trees);
+        const test = testData
+            ? this.evaluateMetrics(testData.X, testData.y, this.trees)
+            : createTensorContainer<MetricsTensors, 'partial'>();
 
         const [
             predictionPredictedLabels,
             // train
             trainPredictedLabels,
+            trainLossValue,
             trainMaeValue,
             trainMseValue,
             trainRmseValue,
@@ -125,6 +104,7 @@ export class TreeRegressionLiveMetrics
             getSafeMatrixFromTensor(yPredictions),
             // train
             getMatrixFromTensor(train.y),
+            getSafeTensorValue(train.loss),
             getSafeTensorValue(train.mae),
             getSafeTensorValue(train.mse),
             getSafeTensorValue(train.rmse),
@@ -154,12 +134,12 @@ export class TreeRegressionLiveMetrics
         return {
             type: 'tree',
             taskType: 'regression',
-            iterations: this.iterationCounts,
-            testLoss: testLossValue!,
-            trainPredictedLabels: trainPredictedLabels!,
-            testPredictedLabels: testPredictedLabels!,
+            trainLoss: trainLossValue,
+            testLoss: testLossValue,
+            trainPredictedLabels: trainPredictedLabels,
+            testPredictedLabels: testPredictedLabels,
             predictionPredictedLabels: predictionPredictedLabels,
-            params: modelRepresentation,
+            params: this.trees,
             trainMetrics: {
                 mae: trainMaeValue,
                 mse: trainMseValue,
@@ -179,7 +159,23 @@ export class TreeRegressionLiveMetrics
         };
     }
 
-    dispose(): void {
-        this.thetaArray.forEach((theta) => theta.dispose());
+    private evaluateMetrics(
+        X: Tensor2D,
+        yTrue: Tensor2D,
+        trees: EnsembleTree,
+    ): TensorContainer<MetricsTensors> {
+        const metrics = createTensorContainer<MetricsTensors>();
+
+        metrics.y = this.model.predict(X, trees);
+        metrics.mae = meanAbsoluteError(yTrue, metrics.y);
+        metrics.mse = meanSquaredError(yTrue, metrics.y);
+        metrics.rmse = rootMeanSquaredError(yTrue, metrics.y);
+        metrics.r2 = r2Score(yTrue, metrics.y);
+        metrics.residuals = residuals(yTrue, metrics.y);
+
+        const criterion = criterionFactory(this.modelSettings.criterion);
+        metrics.loss = criterion.loss(yTrue, metrics.y);
+
+        return metrics;
     }
 }

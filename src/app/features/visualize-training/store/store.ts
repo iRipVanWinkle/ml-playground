@@ -9,7 +9,7 @@ export const initState: TrainingStore = {
         trainLossHistory: [],
         iteration: 0,
         trainLoss: 0,
-        testLoss: 0,
+        optimizerLoss: 0,
         trainPredictedLabels: EMPTY_MATRIX_LIKE,
         testPredictedLabels: EMPTY_MATRIX_LIKE,
         theta: EMPTY_MATRIX_LIKE,

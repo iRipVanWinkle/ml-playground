@@ -1,5 +1,5 @@
 import { tidy, tensor2d, type Scalar, type Tensor2D, scalar } from '@tensorflow/tfjs';
-import type { GaussianNaiveBayesParams } from '../../types';
+import type { GaussianNaiveBayesParams, PredictionMetadata } from '../../types';
 import { assertModelTrained } from '../../utils';
 import { BaseNaiveBayes, type BaseNaiveBayesOptions } from '../base/BaseNaiveBayes';
 import { Matrix } from '../../matrix';
@@ -127,21 +127,61 @@ export class GaussianNaiveBayes extends BaseNaiveBayes<GaussianNaiveBayesParams>
      * @returns Tensor of predicted class indices of shape [n_samples, 1]
      */
     predict(X: Tensor2D, params?: GaussianNaiveBayesParams): Tensor2D {
-        const modelParams = params ?? this.params;
-        assertModelTrained(modelParams);
+        const resolvedParams = params ?? this.params;
 
-        const XArray = X.arraySync();
-        const numSamples = XArray.length;
-        const predictions: number[][] = [];
+        assertModelTrained(resolvedParams);
 
-        for (let i = 0; i < numSamples; i++) {
-            const sample = XArray[i];
-            const logProbs = this.calculateLogProbabilities(sample, modelParams);
-            const maxIdx = logProbs.indexOf(Math.max(...logProbs));
-            predictions.push([modelParams.classes[maxIdx]]);
+        const samplesArray = X.arraySync();
+        const numSamples = samplesArray.length;
+        const predictions = new Float32Array(numSamples);
+
+        for (let sampleIndex = 0; sampleIndex < numSamples; sampleIndex++) {
+            const sampleFeatures = samplesArray[sampleIndex];
+            const classLogProbs = this.calculateLogProbabilities(sampleFeatures, resolvedParams);
+            const predictedClassIndex = this.probabilityToClassIndex(classLogProbs);
+            predictions[sampleIndex] = resolvedParams.classes[predictedClassIndex];
         }
 
-        return tensor2d(predictions);
+        return tensor2d(predictions, [numSamples, 1]);
+    }
+
+    /**
+     * Predicts class labels and log-probabilities for input features.
+     *
+     * @param X - Input features tensor of shape [n_samples, n_features]
+     * @param params - Optional model parameters (uses trained params if not provided)
+     * @returns Object containing predictions and log-probabilities
+     */
+    predictWithMetadata(X: Tensor2D, params?: GaussianNaiveBayesParams): PredictionMetadata {
+        const resolvedParams = params ?? this.params;
+
+        assertModelTrained(resolvedParams);
+
+        const samplesArray = X.arraySync();
+        const numSamples = samplesArray.length;
+        const logProbabilitiesArray: number[][] = [];
+        const predictedClassesArray: number[][] = [];
+
+        for (let sampleIndex = 0; sampleIndex < numSamples; sampleIndex++) {
+            const sampleFeatures = samplesArray[sampleIndex];
+            const classLogProbs = this.calculateLogProbabilities(sampleFeatures, resolvedParams);
+            const predictedClassIndex = this.probabilityToClassIndex(classLogProbs);
+
+            predictedClassesArray.push([resolvedParams.classes[predictedClassIndex]]);
+            logProbabilitiesArray.push([...classLogProbs]);
+        }
+
+        const probabilitiesTensor = tensor2d(logProbabilitiesArray);
+        const predictionsTensor = tensor2d(predictedClassesArray);
+        return {
+            type: 'classification',
+            predictions: predictionsTensor,
+            probabilities: probabilitiesTensor,
+            dispose() {
+                predictionsTensor.dispose();
+                probabilitiesTensor.dispose();
+            },
+        };
     }
 
     /**

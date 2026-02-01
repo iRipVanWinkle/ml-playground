@@ -37,7 +37,6 @@ export type TreeCallbackParameters = {
 export type TreeClassificationTrainingReport = {
     type: 'tree';
     taskType: 'classification';
-    iterations: number[];
     testAccuracy: number;
     trainAccuracy: number;
     trainPredictedLabels: MatrixLike;
@@ -55,8 +54,8 @@ export type TreeClassificationTrainingReport = {
 export type TreeRegressionTrainingReport = {
     type: 'tree';
     taskType: 'regression';
-    iterations: number[];
-    testLoss: number;
+    trainLoss: number;
+    testLoss?: number;
     trainPredictedLabels: MatrixLike;
     testPredictedLabels?: MatrixLike;
     predictionPredictedLabels?: MatrixLike;

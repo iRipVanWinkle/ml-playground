@@ -1,5 +1,5 @@
 import { tensor2d, tidy, type Scalar, type Tensor2D } from '@tensorflow/tfjs';
-import type { EnsembleTree } from '../../types';
+import type { EnsembleTree, PredictionMetadata } from '../../types';
 import { avgPreds } from '../../aggregators';
 import { BaseEnsembleTree, type BaseEnsembleOptions } from '../base/BaseEnsembleTree';
 import { computeMeanValue, findLeafNode, StandardSplitStrategy } from '../../tree-builders';
@@ -53,6 +53,18 @@ export class BaggingRegressor extends BaseEnsembleTree {
         }
 
         return this.aggregator(tensor2d(predictions));
+    }
+
+    predictWithMetadata(X: Tensor2D, trees?: EnsembleTree): PredictionMetadata {
+        const prediction = this.predict(X, trees);
+
+        return {
+            type: 'regression',
+            predictions: prediction,
+            dispose() {
+                prediction.dispose();
+            },
+        };
     }
 
     evaluate(X: Tensor2D, y: Tensor2D, trees?: EnsembleTree): [Tensor2D, Tensor2D, Scalar] {

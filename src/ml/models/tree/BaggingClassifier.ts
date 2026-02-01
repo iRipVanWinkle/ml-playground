@@ -1,5 +1,5 @@
 import { tensor3d, tidy, type Scalar, type Tensor2D } from '@tensorflow/tfjs';
-import type { EnsembleTree } from '../../types';
+import type { EnsembleTree, PredictionMetadata } from '../../types';
 import { softVoting } from '../../aggregators';
 import { BaseEnsembleTree, type BaseEnsembleOptions } from '../base/BaseEnsembleTree';
 import {
@@ -42,30 +42,49 @@ export class BaggingClassifier extends BaseEnsembleTree {
     }
 
     predict(X: Tensor2D, trees?: EnsembleTree): Tensor2D {
-        assertModelTrained(trees ?? this.trees);
+        const ensembleTrees = trees ?? this.trees;
 
-        const ensembleTrees = trees ?? this.trees!;
+        assertModelTrained(ensembleTrees);
 
-        const XArray = X.arraySync();
+        const samplesArray = X.arraySync();
 
-        const predictions: number[][][] = [];
-        for (const sampleFeatures of XArray) {
-            const rowPrediction: number[][] = [];
-            for (const rootNode of ensembleTrees) {
-                const leafNode = findLeafNode(sampleFeatures, rootNode);
-
-                rowPrediction.push(leafNode.probabilities!);
-            }
-
-            predictions.push(rowPrediction);
-        }
+        const treeProbabilitiesArray = this.calculatePrediction(samplesArray, ensembleTrees);
 
         return tidy(() => {
-            const predictionsMatrix = tensor3d(predictions);
-            const probabilities = this.aggregator(predictionsMatrix);
+            const predictionsMatrix = tensor3d(treeProbabilitiesArray);
+            const classProbabilities = this.aggregator(predictionsMatrix);
 
-            return probabilityToClassIndex(probabilities);
+            return probabilityToClassIndex(classProbabilities);
         });
+    }
+
+    predictWithMetadata(X: Tensor2D, trees?: EnsembleTree): PredictionMetadata {
+        const ensembleTrees = trees ?? this.trees;
+
+        assertModelTrained(ensembleTrees);
+
+        const samplesArray = X.arraySync();
+
+        const treeProbabilitiesArray = this.calculatePrediction(samplesArray, ensembleTrees);
+
+        const [classProbabilities, predictedClassIndices] = tidy(() => {
+            const predictionsMatrix = tensor3d(treeProbabilitiesArray);
+            const classProbabilities = this.aggregator(predictionsMatrix);
+
+            const predictedClassIndices = probabilityToClassIndex(classProbabilities);
+
+            return [classProbabilities, predictedClassIndices];
+        });
+
+        return {
+            type: 'classification',
+            predictions: predictedClassIndices,
+            probabilities: classProbabilities,
+            dispose() {
+                predictedClassIndices.dispose();
+                classProbabilities.dispose();
+            },
+        };
     }
 
     evaluate(X: Tensor2D, y: Tensor2D, trees?: EnsembleTree): [Tensor2D, Tensor2D, Scalar] {
@@ -100,5 +119,21 @@ export class BaggingClassifier extends BaseEnsembleTree {
         });
 
         return result;
+    }
+
+    protected calculatePrediction(XArray: number[][], ensembleTrees: EnsembleTree): number[][][] {
+        const predictions: number[][][] = [];
+        for (const sampleFeatures of XArray) {
+            const rowPrediction: number[][] = [];
+            for (const rootNode of ensembleTrees) {
+                const leafNode = findLeafNode(sampleFeatures, rootNode);
+
+                rowPrediction.push(leafNode.probabilities!);
+            }
+
+            predictions.push(rowPrediction);
+        }
+
+        return predictions;
     }
 }

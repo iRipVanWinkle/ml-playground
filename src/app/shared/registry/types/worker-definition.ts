@@ -1,7 +1,6 @@
 import type { ModelType, TrainingSettings } from '@/app/models/types';
 import type { Model, TrainingControl, TrainingEventEmitter } from '@/ml/types';
 import type { DatasetManager, LiveMetrics } from '../../workers';
-import type { TaskType } from '../../types';
 import type { CallbackParametersOf, RepresentationOf, SettingsOf, TrainingReportOf } from './utils';
 
 export interface WorkerDefinition<TKey extends ModelType = ModelType> {
@@ -18,7 +17,7 @@ export interface WorkerDefinition<TKey extends ModelType = ModelType> {
     liveMetricsFactory: (
         model: Model<RepresentationOf<TKey>>,
         datasetManager: DatasetManager,
-        taskType?: TaskType,
+        settings: TrainingSettings<SettingsOf<TKey>>,
     ) => LiveMetrics<CallbackParametersOf<TKey>, TrainingReportOf<TKey>>;
 
     /* Extract the model parameters from the training report */

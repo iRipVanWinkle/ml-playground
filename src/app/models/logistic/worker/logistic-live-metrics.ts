@@ -1,6 +1,6 @@
 import { concat, type Scalar, type Tensor2D } from '@tensorflow/tfjs';
 import type { Model, OptimizerCallbackParameters } from '@/ml/types';
-import type { DatasetManager, LiveMetrics } from '@/app/shared/workers';
+import type { DatasetManager, LiveMetrics, TensorContainer } from '@/app/shared/workers';
 import type { LogisticTrainingReport } from '../types';
 import {
     createTensorContainer,
@@ -17,12 +17,11 @@ function fixLength(matrix: number[][]): number[][] {
     return matrix.map((m) => m.slice(0, minLength));
 }
 
-type Tensors = {
+type MetricsTensors = {
     y: Tensor2D;
     probabilities: Tensor2D;
     accuracy: Scalar;
     confusionMatrix: Tensor2D;
-    loss: Scalar;
 };
 
 export class LogisticLiveMetrics
@@ -44,64 +43,28 @@ export class LogisticLiveMetrics
         this.datasetManager = datasetManager;
     }
 
-    updateIteration(params: OptimizerCallbackParameters): void {
-        const { threadId, iteration, theta, loss } = params;
-
-        this.thetaArray[threadId] = theta;
-
-        for (let i = 0; i <= threadId; i++) {
-            this.lossHistory[i] = this.lossHistory[i] ?? [];
-        }
-        this.lossHistory[threadId].push(loss);
-
-        for (let i = 0; i <= threadId; i++) {
-            this.iterationCounts[i] = this.iterationCounts[i] ?? 0;
-        }
-        this.iterationCounts[threadId] = iteration + 1;
-    }
-
-    async calculateMetrics(): Promise<LogisticTrainingReport> {
-        const modelRepresentation = concat(this.thetaArray.filter(Boolean), 1) as Tensor2D;
-
+    async calculateMetrics(params: OptimizerCallbackParameters): Promise<LogisticTrainingReport> {
         const trainingData = this.datasetManager.getTrainingData();
         const testData = this.datasetManager.getTestData();
         const predictionData = this.datasetManager.getPredictionData();
         const numClasses = this.datasetManager.getNumClasses();
 
-        const train = createTensorContainer<Tensors>();
-        const test = createTensorContainer<Tensors, 'partial'>();
+        const { threadId, iteration, theta, loss } = params;
+
+        this.updateIteration(threadId, iteration);
+        this.updateLossHistory(threadId, loss);
+        const combinedTheta = this.storeAndMergeThreadTheta(threadId, theta);
 
         let yPredictions: Tensor2D | undefined;
 
         if (predictionData) {
-            yPredictions = this.model.predict(predictionData, modelRepresentation);
+            yPredictions = this.model.predict(predictionData, combinedTheta);
         }
 
-        const [yTraining, yTrainingProbability, trainLoss] = this.model.evaluate(
-            trainingData.X,
-            trainingData.y,
-            modelRepresentation,
-        );
-
-        train.y = yTraining;
-        train.probabilities = yTrainingProbability;
-        train.loss = trainLoss;
-        train.accuracy = accuracy(trainingData.y, yTraining);
-        train.confusionMatrix = confusionMatrix(trainingData.y, yTraining, numClasses);
-
-        if (testData) {
-            const [yTesting, yTestingProbability, testLoss] = this.model.evaluate(
-                testData.X,
-                testData.y,
-                modelRepresentation,
-            );
-
-            test.y = yTesting;
-            test.probabilities = yTestingProbability;
-            test.loss = testLoss;
-            test.accuracy = accuracy(testData.y, yTesting);
-            test.confusionMatrix = confusionMatrix(testData.y, yTesting, numClasses);
-        }
+        const train = this.evaluateMetrics(trainingData.X, trainingData.y, combinedTheta);
+        const test = testData
+            ? this.evaluateMetrics(testData.X, testData.y, combinedTheta)
+            : createTensorContainer<MetricsTensors, 'partial'>();
 
         const [
             thetaArray,
@@ -119,7 +82,7 @@ export class LogisticLiveMetrics
             testProbabilityValue,
             testLabelValue,
         ] = await Promise.all([
-            getSafeMatrixFromTensor(modelRepresentation),
+            getSafeMatrixFromTensor(combinedTheta),
             getSafeMatrixFromTensor(yPredictions),
             // train
             getSafeMatrixFromTensor(train.y),
@@ -137,7 +100,7 @@ export class LogisticLiveMetrics
 
         // Dispose of all tensors to free up memory
         yPredictions?.dispose();
-        modelRepresentation.dispose();
+        combinedTheta.dispose();
         train.dispose();
         test.dispose();
 
@@ -171,5 +134,45 @@ export class LogisticLiveMetrics
 
     dispose(): void {
         this.thetaArray.forEach((theta) => theta.dispose());
+    }
+
+    private updateIteration(threadId: number, iteration: number): void {
+        for (let i = 0; i <= threadId; i++) {
+            this.iterationCounts[i] = this.iterationCounts[i] ?? 0;
+        }
+        this.iterationCounts[threadId] = iteration + 1;
+    }
+
+    private updateLossHistory(threadId: number, loss: number): void {
+        for (let i = 0; i <= threadId; i++) {
+            this.lossHistory[i] = this.lossHistory[i] ?? [];
+        }
+        this.lossHistory[threadId].push(loss);
+    }
+
+    private storeAndMergeThreadTheta(threadId: number, theta: Tensor2D): Tensor2D {
+        this.thetaArray[threadId] = theta;
+        return concat(this.thetaArray.filter(Boolean), 1) as Tensor2D;
+    }
+
+    private evaluateMetrics(
+        X: Tensor2D,
+        yTrue: Tensor2D,
+        theta: Tensor2D,
+    ): TensorContainer<MetricsTensors> {
+        const numClasses = this.datasetManager.getNumClasses();
+
+        const trainPredictWithProbs = this.model.predictWithMetadata(X, theta);
+        if (trainPredictWithProbs.type !== 'classification') {
+            throw new Error('Model is not a classification model');
+        }
+
+        const metrics = createTensorContainer<MetricsTensors>();
+        metrics.y = trainPredictWithProbs.predictions;
+        metrics.probabilities = trainPredictWithProbs.probabilities;
+        metrics.accuracy = accuracy(yTrue, metrics.y);
+        metrics.confusionMatrix = confusionMatrix(yTrue, metrics.y, numClasses);
+
+        return metrics;
     }
 }
