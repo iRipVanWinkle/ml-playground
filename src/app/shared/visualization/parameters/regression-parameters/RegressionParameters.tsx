@@ -64,7 +64,7 @@ function RegressionParametersContent({
     transformations,
     isLinearRegression,
 }: RegressionParametersContentProps) {
-    const [numClasses] = theta.shape;
+    const [, numClasses] = theta.shape;
     const isBinary = numClasses === 1;
     const isImage = dataset.isImage;
 

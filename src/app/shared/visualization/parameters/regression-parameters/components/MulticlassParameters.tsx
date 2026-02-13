@@ -47,16 +47,6 @@ export function MulticlassParameters({
                     />
                 );
             })}
-
-            <div className="rounded-lg border bg-muted/50 p-4">
-                <div className="mb-2 text-sm font-medium text-muted-foreground">Model Equation</div>
-                <div className="overflow-x-auto font-mono text-sm">
-                    <div>P(y=k) = softmax(z₁, z₂, ..., zₖ)</div>
-                    <div className="mt-2 text-muted-foreground">
-                        where zₖ = biasₖ + Σ(weightₖᵢ × featureᵢ)
-                    </div>
-                </div>
-            </div>
         </div>
     );
 }
