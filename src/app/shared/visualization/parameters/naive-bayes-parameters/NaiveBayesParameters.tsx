@@ -89,7 +89,7 @@ function NaiveBayesParametersContent({
     };
 
     return (
-        <div className="w-full grid grid-cols-1 gap-3 p-4">
+        <div className="w-full grid grid-cols-1 gap-3">
             <h3 className="mb-4 text-lg font-semibold">Learned Parameters</h3>
             <div className="flex flex-row justify-end">
                 <div className="flex flex-row gap-2">

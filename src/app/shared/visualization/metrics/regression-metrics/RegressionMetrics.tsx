@@ -49,7 +49,7 @@ export function RegressionMetrics({ report, dataset }: RegressionMetricsProps) {
         selectedDataset === 'test' && testMetrics !== null ? testMetrics : trainMetrics;
 
     return (
-        <div className="w-full min-h-80 py-4">
+        <div className="w-full py-4">
             {report.testMetrics && (
                 <div className="flex flex-row justify-end px-4">
                     <TrainTestSelector value={selectedDataset} onChange={setSelectedDataset} />
