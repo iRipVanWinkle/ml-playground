@@ -9,7 +9,7 @@ type RocCurveMetricsProps = {
 
 export function RocCurveMetrics({ rocCurveData, categories }: RocCurveMetricsProps) {
     return (
-        <div className="p-4 rounded-lg bg-muted flex flex-col gap-3">
+        <div className="p-4 rounded-lg bg-muted/30 flex flex-col gap-3">
             {rocCurveData.type === 'binary' ? (
                 <BinaryAUCDisplay rocCurveData={rocCurveData} />
             ) : (

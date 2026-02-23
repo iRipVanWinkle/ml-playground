@@ -32,7 +32,7 @@ export function MultiAUCDisplay({ rocCurveData, categories }: MultiAUCDisplayPro
         <>
             <div className="grid grid-cols-2 gap-3">
                 {AUC_CONFIG.map((config) => (
-                    <div key={config.value} className="p-4 rounded-lg bg-primary-foreground">
+                    <div key={config.value} className="p-4 rounded-lg bg-card">
                         <AUCCard
                             label={config.label}
                             value={rocCurveData[config.value]}
@@ -43,7 +43,7 @@ export function MultiAUCDisplay({ rocCurveData, categories }: MultiAUCDisplayPro
                 ))}
             </div>
             <div className="text-sm font-semibold text-foreground">AUC per Class</div>
-            <div className="p-4 rounded-lg bg-primary-foreground">
+            <div className="p-4 rounded-lg bg-card">
                 <div className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-5 gap-3 text-sm">
                     {rocCurveData.curves.map((_, index) => {
                         const classIndex = rocCurveData.classIndices[index];
