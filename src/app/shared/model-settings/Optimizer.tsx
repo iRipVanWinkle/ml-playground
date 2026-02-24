@@ -157,8 +157,9 @@ export default function Optimizer({ optimizer, disabled, onChange }: OptimizerPr
 
             {optimizer.type === 'adam' && (
                 <div className="grid grid-cols-2 gap-2">
-                    <Field label="Beta 1">
+                    <Field label="Beta 1" htmlFor="adamBeta1Input">
                         <Input
+                            id="adamBeta1Input"
                             className="w-full"
                             disabled={disabled}
                             type="number"
@@ -170,8 +171,9 @@ export default function Optimizer({ optimizer, disabled, onChange }: OptimizerPr
                             onChange={(e) => handleInputChange('beta1', e.target.value)}
                         />
                     </Field>
-                    <Field label="Beta 2">
+                    <Field label="Beta 2" htmlFor="adamBeta2Input">
                         <Input
+                            id="adamBeta2Input"
                             className="w-full"
                             disabled={disabled}
                             type="number"

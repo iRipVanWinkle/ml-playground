@@ -40,7 +40,13 @@ export function TabbedVisualizations({ dataset, modelType }: TabbedVisualization
             {plots.map(({ title, component: PlotComponent }, index) => (
                 <EnhancedTabs.Content key={index} value={title}>
                     <div className="min-h-40 bg-muted/30 rounded-lg flex items-center justify-center">
-                        {hasDataset ? <PlotComponent dataset={dataset} report={report} /> : null}
+                        {hasDataset ? (
+                            <PlotComponent dataset={dataset} report={report} />
+                        ) : (
+                            <p className="text-sm text-muted-foreground">
+                                Load a dataset to see visualizations
+                            </p>
+                        )}
                     </div>
                 </EnhancedTabs.Content>
             ))}

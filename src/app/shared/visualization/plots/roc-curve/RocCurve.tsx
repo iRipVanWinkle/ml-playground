@@ -45,8 +45,8 @@ export function RocCurve({ dataset, report }: RocCurveProps) {
             {hasData ? (
                 <RocCurveMetrics rocCurveData={rocCurveData} categories={categories} />
             ) : (
-                <div className="w-full h-full p-4 flex items-center justify-center bg-muted rounded-lg">
-                    <div className="text-center text-muted-foreground">
+                <div className="w-full h-full p-4 flex items-center justify-center bg-muted/30 rounded-lg">
+                    <div className="text-sm text-center text-muted-foreground">
                         Run training to see AUC scores
                     </div>
                 </div>

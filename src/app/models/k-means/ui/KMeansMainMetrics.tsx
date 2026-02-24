@@ -13,10 +13,12 @@ export function KMeansMainMetrics({ report }: MainMetricsProps<KMeansTrainingRep
     return (
         <>
             <div>
-                Train Silhouette: <div className="font-bold">{trainSilhouetteScoreValue}</div>
+                Train Silhouette:{' '}
+                <div className="font-bold tabular-nums">{trainSilhouetteScoreValue}</div>
             </div>
             <div>
-                Test Silhouette: <div className="font-bold">{testSilhouetteScoreValue}</div>
+                Test Silhouette:{' '}
+                <div className="font-bold tabular-nums">{testSilhouetteScoreValue}</div>
             </div>
         </>
     );

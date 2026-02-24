@@ -137,7 +137,7 @@ function TabsList({
 }
 
 const tabsVariants = cva(
-    'relative px-4 py-2 font-medium text-sm transition-all duration-300 cursor-pointer inline-flex items-center justify-center gap-2 whitespace-nowrap disabled:pointer-events-none disabled:opacity-50 focus:outline-none',
+    'relative px-4 py-2 font-medium text-sm transition-all duration-300 cursor-pointer inline-flex items-center justify-center gap-2 whitespace-nowrap disabled:pointer-events-none disabled:opacity-50 outline-none focus-visible:ring-ring/50 focus-visible:ring-[3px] rounded-md',
     {
         variants: {
             variant: {

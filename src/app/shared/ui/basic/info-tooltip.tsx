@@ -6,8 +6,15 @@ export const InfoTooltip = ({ children }: { children: ReactNode }) => {
     return (
         <HoverCard>
             <HoverCard.Trigger>
-                <button type="button" className="inline-flex items-center justify-center">
-                    <InfoIcon className="h-3 w-3 text-muted-foreground hover:text-primary transition-colors" />
+                <button
+                    type="button"
+                    className="inline-flex items-center justify-center focus-visible:ring-ring/50 focus-visible:ring-[3px] rounded-sm outline-none"
+                    aria-label="More information"
+                >
+                    <InfoIcon
+                        className="h-3 w-3 text-muted-foreground hover:text-primary transition-colors"
+                        aria-hidden="true"
+                    />
                 </button>
             </HoverCard.Trigger>
 

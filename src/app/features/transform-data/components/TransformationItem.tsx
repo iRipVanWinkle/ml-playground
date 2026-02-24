@@ -56,6 +56,7 @@ export function TransformationItem({
                     <Select.Trigger
                         className="w-full bg-white"
                         data-testid="transformation-type-select"
+                        aria-label="Transformation type"
                     >
                         <Select.Value placeholder="Transform" />
                     </Select.Trigger>
@@ -71,11 +72,13 @@ export function TransformationItem({
                     data-testid="degree-input"
                     className="bg-white"
                     type="number"
+                    name="degree"
                     min={1}
                     placeholder="Degree"
                     disabled={disabled}
                     value={transformation.degree}
                     onChange={handleDegreeChange}
+                    aria-label="Transformation degree"
                 />
                 <Button
                     size="sm"

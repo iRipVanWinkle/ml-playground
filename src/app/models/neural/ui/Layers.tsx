@@ -96,6 +96,7 @@ export default function Layers({ layers, onChange, disabled }: LayersProps) {
                                 disabled={disabled}
                                 value={layer.units}
                                 onChange={(e) => handleUpdateUnits(index, e)}
+                                aria-label={`Layer ${index + 1} units`}
                             />
 
                             <Select
@@ -106,6 +107,7 @@ export default function Layers({ layers, onChange, disabled }: LayersProps) {
                                 <Select.Trigger
                                     className="w-full bg-white"
                                     data-testid="activation-select"
+                                    aria-label={`Layer ${index + 1} activation function`}
                                 >
                                     <Select.Value placeholder="Activation" />
                                 </Select.Trigger>

@@ -52,6 +52,7 @@ export default function ClassificationType({
                 onValueChange={(value) => onChange(value as ClassificationTypeName)}
                 disabled={disabled}
                 className="w-full justify-between gap-3 rounded-lg border p-3 transition-colors"
+                aria-label="Classification Type"
             >
                 {DEFAULT_CLASSIFICATION_TYPES.map((model) => {
                     const disabledBinary = model.onlyBinary && isMulticlass;

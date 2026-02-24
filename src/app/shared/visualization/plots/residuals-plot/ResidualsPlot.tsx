@@ -38,7 +38,7 @@ export function ResidualsPlot({ report, dataset }: ResidualsPlotProps) {
     if (!hasResiduals) {
         return (
             <div className="w-full h-full p-4 flex items-center justify-center">
-                <div className="text-center text-muted-foreground">
+                <div className="text-sm text-center text-muted-foreground">
                     Run training to see residuals plot
                 </div>
             </div>

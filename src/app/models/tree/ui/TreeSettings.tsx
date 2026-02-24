@@ -78,6 +78,7 @@ export function TreeSettings({
                     onValueChange={handleModelVariantChange}
                     disabled={disabled}
                     className="w-full justify-between gap-3 rounded-lg border p-3 transition-colors"
+                    aria-label="Model Variant"
                 >
                     {DEFAULT_MODEL_VARIANTS.map((model) => {
                         return (
@@ -101,8 +102,9 @@ export function TreeSettings({
                 disabled={disabled}
                 onChange={(criterion) => onChange({ ...settings, criterion })}
             />
-            <Field label="Max Depth" info={MAX_DEPTH_INFO}>
+            <Field label="Max Depth" info={MAX_DEPTH_INFO} htmlFor="maxDepthInput">
                 <Input
+                    id="maxDepthInput"
                     disabled={disabled}
                     placeholder="Max Depth"
                     step={1}
@@ -114,8 +116,13 @@ export function TreeSettings({
                 />
             </Field>
             <div className="grid gap-2 grid-cols-2">
-                <Field label="Min Samples Split" info={MIN_SAMPLES_SPLIT_INFO}>
+                <Field
+                    label="Min Samples Split"
+                    info={MIN_SAMPLES_SPLIT_INFO}
+                    htmlFor="minSamplesSplitInput"
+                >
                     <Input
+                        id="minSamplesSplitInput"
                         disabled={disabled}
                         placeholder="Min Samples Split"
                         step={1}
@@ -126,8 +133,13 @@ export function TreeSettings({
                         onChange={(e) => handleInputChange('minSamplesSplit', e.target.value)}
                     />
                 </Field>
-                <Field label="Min Samples Leaf" info={MIN_SAMPLES_LEAF_INFO}>
+                <Field
+                    label="Min Samples Leaf"
+                    info={MIN_SAMPLES_LEAF_INFO}
+                    htmlFor="minSamplesLeafInput"
+                >
                     <Input
+                        id="minSamplesLeafInput"
                         disabled={disabled}
                         placeholder="Min Samples Leaf"
                         step={1}
@@ -141,8 +153,9 @@ export function TreeSettings({
             </div>
             {needsEstimators && (
                 <>
-                    <Field label="Estimators" info={ESTIMATORS_INFO}>
+                    <Field label="Estimators" info={ESTIMATORS_INFO} htmlFor="estimatorsInput">
                         <Input
+                            id="estimatorsInput"
                             disabled={disabled}
                             placeholder="Estimators"
                             step={1}
@@ -157,8 +170,9 @@ export function TreeSettings({
             )}
             <div className="grid gap-2 grid-cols-2">
                 {needsMaxFeatures && (
-                    <Field label="Max Features" info={MAX_FEATURES_INFO}>
+                    <Field label="Max Features" info={MAX_FEATURES_INFO} htmlFor="maxFeaturesInput">
                         <Input
+                            id="maxFeaturesInput"
                             disabled={disabled}
                             placeholder="Max Features"
                             step={1}
@@ -171,8 +185,13 @@ export function TreeSettings({
                     </Field>
                 )}
                 {needsRandomThresholds && (
-                    <Field label="Random Thresholds" info={NUM_RANDOM_THRESHOLDS_INFO}>
+                    <Field
+                        label="Random Thresholds"
+                        info={NUM_RANDOM_THRESHOLDS_INFO}
+                        htmlFor="randomThresholdsInput"
+                    >
                         <Input
+                            id="randomThresholdsInput"
                             disabled={disabled}
                             placeholder="Random Thresholds"
                             step={1}

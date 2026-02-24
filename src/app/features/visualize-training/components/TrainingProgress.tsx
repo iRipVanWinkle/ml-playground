@@ -32,7 +32,11 @@ export function TrainingProgress({
             <div className="grid grid-cols-2 gap-4 text-sm">
                 <div className="flex gap-4">{controlsComponent}</div>
 
-                <div className="flex items-center justify-end" data-testid="training-progress">
+                <div
+                    className="flex items-center justify-end"
+                    data-testid="training-progress"
+                    aria-live="polite"
+                >
                     {progressInfo.label}
                 </div>
             </div>

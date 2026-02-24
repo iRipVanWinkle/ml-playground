@@ -34,7 +34,7 @@ export function Controls({ hasData, snapshotTrainingSettings, setTrainingReport 
         buttons = (
             <Button disabled>
                 <Loader className="animate-spin" />
-                Dataset Preparing...
+                Dataset Preparing…
             </Button>
         );
     }

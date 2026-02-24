@@ -9,7 +9,7 @@ type DelayedLoaderProps = {
 export function DelayedLoader({ flag, children }: DelayedLoaderProps) {
     const [showLoader, setShowLoader] = useState(false);
     useEffect(() => {
-        let timer: NodeJS.Timeout | undefined;
+        let timer: ReturnType<typeof setTimeout> | undefined;
         if (flag) {
             timer = setTimeout(() => setShowLoader(true), 100);
         } else {
@@ -17,5 +17,9 @@ export function DelayedLoader({ flag, children }: DelayedLoaderProps) {
         }
         return () => clearTimeout(timer);
     }, [flag]);
-    return <>{flag && showLoader ? <Loader className="animate-spin" /> : children}</>;
+    return (
+        <>
+            {flag && showLoader ? <Loader className="animate-spin" aria-hidden="true" /> : children}
+        </>
+    );
 }

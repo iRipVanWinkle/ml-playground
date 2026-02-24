@@ -21,10 +21,15 @@ function NeuralRegressionMainMetrics({ report }: MainMetricsProps<NeuralRegressi
         <>
             <div>
                 Train Loss:{' '}
-                <div className="font-bold">{trainLoss ? trainLoss.toFixed(4) : '--'}</div>
+                <div className="font-bold tabular-nums">
+                    {trainLoss ? trainLoss.toFixed(4) : '--'}
+                </div>
             </div>
             <div>
-                Test Loss: <div className="font-bold">{testLoss ? testLoss.toFixed(4) : '--'}</div>
+                Test Loss:{' '}
+                <div className="font-bold tabular-nums">
+                    {testLoss ? testLoss.toFixed(4) : '--'}
+                </div>
             </div>
         </>
     );
@@ -41,10 +46,10 @@ function NeuralClassificationMainMetrics({
     return (
         <>
             <div>
-                Train Accuracy: <div className="font-bold">{trainAccuracyValue}</div>
+                Train Accuracy: <div className="font-bold tabular-nums">{trainAccuracyValue}</div>
             </div>
             <div>
-                Test Accuracy: <div className="font-bold">{testAccuracyValue}</div>
+                Test Accuracy: <div className="font-bold tabular-nums">{testAccuracyValue}</div>
             </div>
         </>
     );

@@ -25,7 +25,7 @@ export function NaiveBayesParameters({
     if (report.params === undefined) {
         return (
             <div className="w-full h-full p-4 flex items-center justify-center">
-                <div className="text-center text-muted-foreground">
+                <div className="text-sm text-center text-muted-foreground">
                     Run training to see learned parameters.
                 </div>
             </div>

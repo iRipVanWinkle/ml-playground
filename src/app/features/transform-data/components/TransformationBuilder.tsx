@@ -60,7 +60,7 @@ export function TransformationBuilder({
     };
 
     return (
-        <Field label="Transformations" htmlFor="transformationBuilder">
+        <Field label="Transformations">
             {localTransformations.map((transformation, index) => (
                 <TransformationItem
                     key={index}

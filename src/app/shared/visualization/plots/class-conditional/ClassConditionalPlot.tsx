@@ -34,7 +34,12 @@ export function ClassConditionalPlot({ dataset, report }: PlotProps<NaiveBayesTr
                     value={selectedFeatureIndex.toString()}
                     onValueChange={(value: string) => setSelectedFeatureIndex(parseInt(value))}
                 >
-                    <Select.Trigger id="feature-select" size="xs" variant="transparent">
+                    <Select.Trigger
+                        id="feature-select"
+                        size="xs"
+                        variant="transparent"
+                        aria-label="Select feature"
+                    >
                         <Select.Value placeholder="Select feature" />
                     </Select.Trigger>
                     <Select.Content>

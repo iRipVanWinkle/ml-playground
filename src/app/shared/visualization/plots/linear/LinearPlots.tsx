@@ -26,7 +26,9 @@ export function LinearPlots({ dataset, report }: LinerPlotsProps) {
     const is2DPlot = dataset.trainInputFeatures[0]?.length === 1;
     const is3DPlot = dataset.trainInputFeatures[0]?.length === 2;
 
-    let plot = null;
+    let plot = (
+        <p className="text-sm text-muted-foreground p-4">Plotting requires 1 or 2 input features</p>
+    );
 
     if (is2DPlot) {
         plot = (

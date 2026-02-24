@@ -276,5 +276,7 @@ export function KMeansPlots({ dataset, report }: KMeansPlotsProps) {
         );
     }
 
-    return null;
+    return (
+        <p className="text-sm text-muted-foreground p-4">Plotting requires 2 or 3 input features</p>
+    );
 }

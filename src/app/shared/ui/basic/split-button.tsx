@@ -58,6 +58,7 @@ function SplitButton<T extends ElementType = 'button'>({
                         className="rounded-l-none px-2"
                         aria-haspopup="menu"
                         aria-controls={menuId}
+                        aria-label="More options"
                     >
                         <ChevronDown className="size-4" aria-hidden />
                     </Button>
@@ -73,7 +74,7 @@ function SplitButton<T extends ElementType = 'button'>({
                         <DropdownMenu.Item
                             key={it.key ?? idx}
                             className={cn(
-                                'cursor-pointer select-none rounded-sm px-3 py-2 text-sm outline-none data-[disabled]:opacity-50',
+                                'cursor-pointer select-none rounded-sm px-3 py-2 text-sm outline-none focus-visible:ring-ring/50 focus-visible:ring-[3px] data-[disabled]:opacity-50',
                             )}
                             onSelect={it.onSelect}
                             disabled={it.disabled}

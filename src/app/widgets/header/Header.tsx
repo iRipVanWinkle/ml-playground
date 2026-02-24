@@ -9,8 +9,10 @@ export function Header() {
                 style={{ maxWidth: '1280px', margin: '0 auto' }}
             >
                 <div className="flex items-center gap-2">
-                    <ML className="size-6" />
-                    <h1 className="text-lg font-semibold text-foreground">ML Playground</h1>
+                    <ML className="size-6" aria-hidden="true" />
+                    <h1 className="text-lg font-semibold text-foreground text-pretty">
+                        ML Playground
+                    </h1>
                 </div>
 
                 <ThemeToggle />

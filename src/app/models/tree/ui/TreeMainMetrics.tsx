@@ -20,10 +20,13 @@ function TreeRegressionMainMetrics({ report }: MainMetricsProps<TreeRegressionTr
     return (
         <>
             <div>
-                Train Loss: <div className="font-bold">--</div>
+                Train Loss: <div className="font-bold tabular-nums">--</div>
             </div>
             <div>
-                Test Loss: <div className="font-bold">{testLoss ? testLoss.toFixed(4) : '--'}</div>
+                Test Loss:{' '}
+                <div className="font-bold tabular-nums">
+                    {testLoss ? testLoss.toFixed(4) : '--'}
+                </div>
             </div>
         </>
     );
@@ -40,10 +43,10 @@ function TreeClassificationMainMetrics({
     return (
         <>
             <div>
-                Train Accuracy: <div className="font-bold">{trainAccuracyValue}</div>
+                Train Accuracy: <div className="font-bold tabular-nums">{trainAccuracyValue}</div>
             </div>
             <div>
-                Test Accuracy: <div className="font-bold">{testAccuracyValue}</div>
+                Test Accuracy: <div className="font-bold tabular-nums">{testAccuracyValue}</div>
             </div>
         </>
     );

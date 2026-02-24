@@ -8,10 +8,15 @@ export function LinearMainMetrics({ report }: MainMetricsProps<LinearTrainingRep
         <>
             <div>
                 Train Loss:{' '}
-                <div className="font-bold">{trainLoss ? trainLoss.toFixed(4) : '--'}</div>
+                <div className="font-bold tabular-nums">
+                    {trainLoss ? trainLoss.toFixed(4) : '--'}
+                </div>
             </div>
             <div>
-                Test Loss: <div className="font-bold">{testLoss ? testLoss.toFixed(4) : '--'}</div>
+                Test Loss:{' '}
+                <div className="font-bold tabular-nums">
+                    {testLoss ? testLoss.toFixed(4) : '--'}
+                </div>
             </div>
         </>
     );

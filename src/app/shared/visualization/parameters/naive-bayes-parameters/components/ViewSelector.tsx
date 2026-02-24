@@ -8,8 +8,13 @@ interface ViewSelectorProps {
 export function ViewSelector({ value, onChange, classLabels }: ViewSelectorProps) {
     return (
         <Select value={value} onValueChange={onChange}>
-            <Select.Trigger id="selectedClass" size="xs" variant="transparent">
-                <Select.Value placeholder="Select a class" />
+            <Select.Trigger
+                id="selectedClass"
+                size="xs"
+                variant="transparent"
+                aria-label="Select class"
+            >
+                <Select.Value placeholder="Select class" />
             </Select.Trigger>
             <Select.Content>
                 <Select.Item value="all">All Classes</Select.Item>

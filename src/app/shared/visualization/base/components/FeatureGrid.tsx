@@ -72,8 +72,9 @@ function FeatureGridRoot({
                     <Collapsible.Trigger className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors mt-2">
                         <ChevronDown
                             className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                            aria-hidden="true"
                         />
-                        {isOpen ? 'Show less' : `Show ${hiddenItems.length} more...`}
+                        {isOpen ? 'Show less' : `Show ${hiddenItems.length} more…`}
                     </Collapsible.Trigger>
                 </>
             )}
@@ -110,7 +111,7 @@ export function FeatureGridRow({
             </div>
             <div className="ml-3 flex shrink-0 items-center gap-2">
                 <div className="h-2 w-12 overflow-hidden rounded-full bg-muted">
-                    <div className="h-full rounded-full transition-all" style={progressStyle} />
+                    <div className="h-full rounded-full transition-[width]" style={progressStyle} />
                 </div>
                 <div className={`w-20 text-right text-sm font-medium tabular-nums`}>
                     {formattedValue}

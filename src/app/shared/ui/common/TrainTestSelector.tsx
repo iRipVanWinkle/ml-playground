@@ -8,7 +8,12 @@ interface TrainTestSelectorProps {
 export function TrainTestSelector({ value, onChange }: TrainTestSelectorProps) {
     return (
         <Select value={value} onValueChange={onChange}>
-            <Select.Trigger id="datasetSplit" size="xs" variant="transparent">
+            <Select.Trigger
+                id="datasetSplit"
+                size="xs"
+                variant="transparent"
+                aria-label="Select dataset split"
+            >
                 <Select.Value placeholder="Select a dataset split" />
             </Select.Trigger>
             <Select.Content>

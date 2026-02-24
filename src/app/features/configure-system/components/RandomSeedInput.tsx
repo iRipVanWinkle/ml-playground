@@ -19,6 +19,7 @@ export function RandomSeedInput({ disabled }: RandomSeedInputProps) {
         <Field label="Random Seed" htmlFor="randomSeedInput">
             <Input
                 id="randomSeedInput"
+                name="randomSeed"
                 data-testid="random-seed-input"
                 className="w-50"
                 type="number"

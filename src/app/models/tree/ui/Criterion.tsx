@@ -69,13 +69,17 @@ export default function Criterion({ taskType, criterion, disabled, onChange }: C
 
     return (
         <div className={containerClass}>
-            <Field label="Criterion" info={CRITERION_INFO}>
+            <Field label="Criterion" info={CRITERION_INFO} htmlFor="criterionSelect">
                 <Select
                     disabled={disabled}
                     value={criterion.type as string}
                     onValueChange={(value) => handleFunctionChange(value as CriterionType)}
                 >
-                    <Select.Trigger className="w-full truncate" data-testid="criterion-select">
+                    <Select.Trigger
+                        id="criterionSelect"
+                        className="w-full truncate"
+                        data-testid="criterion-select"
+                    >
                         <Select.Value placeholder="Select loss function" />
                     </Select.Trigger>
                     <Select.Content>
@@ -88,8 +92,9 @@ export default function Criterion({ taskType, criterion, disabled, onChange }: C
                 </Select>
             </Field>
             {criterion.type === 'huber' && (
-                <Field label="Delta">
+                <Field label="Delta" htmlFor="huberDeltaInput">
                     <Input
+                        id="huberDeltaInput"
                         disabled={disabled}
                         placeholder="Delta (for Huber)"
                         step={0.1}

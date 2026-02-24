@@ -12,7 +12,7 @@ export function Footer() {
                         aria-label="View source code on GitHub"
                         title="View source code on GitHub"
                     >
-                        <GitHub className="size-8" />
+                        <GitHub className="size-8" aria-hidden="true" />
                     </a>
                 </Button>
             </div>

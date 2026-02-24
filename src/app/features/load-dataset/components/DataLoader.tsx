@@ -124,8 +124,10 @@ export function DataLoader({ disabled, taskType, randomSeed, onChange }: DataLoa
                     <Input
                         data-testid="custom-dataset-input"
                         type="file"
+                        name="customDataset"
                         accept=".csv"
                         disabled={disabled}
+                        aria-label="Upload custom dataset"
                         onChange={(e) =>
                             handleChange({ file: e.target.files ? e.target.files[0] : null })
                         }
@@ -157,7 +159,7 @@ export function DataLoader({ disabled, taskType, randomSeed, onChange }: DataLoa
                     />
                 </Label>
             </div>
-            <Field label="Train/Test Split">
+            <Field label="Train/Test Split" htmlFor="trainTestSplitSlider">
                 <div className="flex justify-between">
                     <span className="text-xs text-muted-foreground">
                         Train ({state.trainTestSplit}%)
@@ -167,6 +169,8 @@ export function DataLoader({ disabled, taskType, randomSeed, onChange }: DataLoa
                     </span>
                 </div>
                 <Slider
+                    id="trainTestSplitSlider"
+                    aria-label="Train/Test split percentage"
                     defaultValue={[state.trainTestSplit]}
                     max={100}
                     min={1}

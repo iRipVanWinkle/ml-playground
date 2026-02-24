@@ -58,7 +58,11 @@ export function LogisticPlots({ dataset, report }: LogisticPlotsProps) {
         }
     }
 
-    let plot = null;
+    let plot = (
+        <p className="text-sm text-muted-foreground p-4">
+            Plotting requires 2 input features or image data
+        </p>
+    );
 
     if (is2DPlot) {
         const plotData = [

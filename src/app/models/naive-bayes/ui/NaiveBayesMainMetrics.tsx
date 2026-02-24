@@ -10,10 +10,10 @@ export function NaiveBayesMainMetrics({ report }: MainMetricsProps<NaiveBayesTra
     return (
         <>
             <div>
-                Train Accuracy: <div className="font-bold">{trainAccuracyValue}</div>
+                Train Accuracy: <div className="font-bold tabular-nums">{trainAccuracyValue}</div>
             </div>
             <div>
-                Test Accuracy: <div className="font-bold">{testAccuracyValue}</div>
+                Test Accuracy: <div className="font-bold tabular-nums">{testAccuracyValue}</div>
             </div>
         </>
     );
