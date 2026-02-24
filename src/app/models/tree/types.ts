@@ -1,10 +1,5 @@
-import type {
-    ConfusionMatrixData,
-    RegressionMetricsData,
-    RocCurveData,
-} from '@/app/shared/visualization';
 import type { CriterionConfig } from '@/ml/factories';
-import type { MatrixLike } from '@/app/shared/helpers';
+import type { BaseClassificationReport, BaseRegressionReport } from '@/app/shared/types';
 import type {
     EnsembleTree,
     TreeCallbackParameters as TreeCallbackParametersType,
@@ -34,34 +29,12 @@ export type TreeCallbackParameters = {
     callbackParameters: TreeCallbackParametersType;
 };
 
-export type TreeClassificationTrainingReport = {
+export type TreeClassificationTrainingReport = BaseClassificationReport & {
     type: 'tree';
-    taskType: 'classification';
-    testAccuracy: number;
-    trainAccuracy: number;
-    trainPredictedLabels: MatrixLike;
-    testPredictedLabels?: MatrixLike;
-    predictionPredictedLabels?: MatrixLike;
     params: EnsembleTree;
-
-    trainConfusionMatrix: ConfusionMatrixData;
-    testConfusionMatrix?: ConfusionMatrixData;
-
-    trainRocCurve: RocCurveData;
-    testRocCurve?: RocCurveData;
 };
 
-export type TreeRegressionTrainingReport = {
+export type TreeRegressionTrainingReport = BaseRegressionReport & {
     type: 'tree';
-    taskType: 'regression';
-    trainLoss: number;
-    testLoss?: number;
-    trainPredictedLabels: MatrixLike;
-    testPredictedLabels?: MatrixLike;
-    predictionPredictedLabels?: MatrixLike;
-    trainMetrics: RegressionMetricsData | null;
-    testMetrics?: RegressionMetricsData | null;
-    trainResiduals: MatrixLike;
-    testResiduals?: MatrixLike;
     params: EnsembleTree;
 };

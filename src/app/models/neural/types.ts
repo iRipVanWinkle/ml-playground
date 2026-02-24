@@ -7,11 +7,7 @@ import type {
     ThetaInitializationConfig,
 } from '@/ml/factories';
 import type { MatrixLike } from '@/app/shared/helpers';
-import type {
-    ConfusionMatrixData,
-    RegressionMetricsData,
-    RocCurveData,
-} from '@/app/shared/visualization';
+import type { BaseClassificationReport, BaseRegressionReport } from '@/app/shared/types';
 
 export type NeuralSettings = {
     type: 'neural';
@@ -32,39 +28,17 @@ export type NeuralCallbackParameters = {
     callbackParameters: OptimizerCallbackParameters;
 };
 
-export type NeuralClassificationTrainingReport = {
+export type NeuralClassificationTrainingReport = BaseClassificationReport & {
     type: 'neural';
-    taskType: 'classification';
     trainLossHistory: number[][];
     iteration: number;
-    testAccuracy: number;
-    trainAccuracy: number;
-    trainPredictedLabels: MatrixLike;
-    testPredictedLabels?: MatrixLike;
-    predictionPredictedLabels?: MatrixLike;
     theta: MatrixLike;
-
-    trainConfusionMatrix: ConfusionMatrixData;
-    testConfusionMatrix?: ConfusionMatrixData;
-
-    trainRocCurve: RocCurveData;
-    testRocCurve?: RocCurveData;
 };
 
-export type NeuralRegressionTrainingReport = {
+export type NeuralRegressionTrainingReport = BaseRegressionReport & {
     type: 'neural';
-    taskType: 'regression';
     trainLossHistory: number[][];
     iteration: number;
     optimizerLoss: number;
-    trainLoss: number;
-    testLoss?: number;
-    trainPredictedLabels: MatrixLike;
-    testPredictedLabels?: MatrixLike;
-    predictionPredictedLabels?: MatrixLike;
     theta: MatrixLike;
-    trainMetrics: RegressionMetricsData | null;
-    testMetrics?: RegressionMetricsData | null;
-    trainResiduals: MatrixLike;
-    testResiduals?: MatrixLike;
 };

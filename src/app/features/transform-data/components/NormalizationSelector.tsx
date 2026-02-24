@@ -5,6 +5,9 @@ import { NORMALIZATION_METHODS } from '../constants';
 import { type NormalizationMethod, useNormalization } from '../store';
 import { resetNormalization, updateNormalization } from '../store/actions';
 
+const NORMALIZATION_INFO =
+    'Scales features to a standard range. Applied before and after transformation (if present) for numerical stability.';
+
 export type NormalizationSelectorProps = {
     disabled?: boolean;
     taskType: TaskType;
@@ -22,7 +25,7 @@ export function NormalizationSelector({ disabled, taskType }: NormalizationSelec
     };
 
     return (
-        <Field label="Normalization" htmlFor="normalizationSelect">
+        <Field label="Normalization" htmlFor="normalizationSelect" info={NORMALIZATION_INFO}>
             <Select disabled={disabled} value={normalization} onValueChange={handleChange}>
                 <Select.Trigger
                     id="normalizationSelect"

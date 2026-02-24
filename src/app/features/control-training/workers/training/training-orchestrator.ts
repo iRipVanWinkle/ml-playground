@@ -2,16 +2,15 @@ import { Tensor, memory, ready, setBackend } from '@tensorflow/tfjs';
 import '@tensorflow/tfjs-backend-webgpu';
 import '@tensorflow/tfjs-backend-wasm';
 import { setWasmPaths } from '@tensorflow/tfjs-backend-wasm';
-
 import type {
     CallbackParameters,
-    Model,
     ModelRepresentation,
     TrainingControl,
     TrainingEventEmitter,
     TrainingState,
+    ScalerState,
 } from '@/ml/types';
-import { PreprocessingModelDecorator } from '@/ml/models';
+import { PipelineModel } from '@/ml/models';
 import { DatasetManager } from '@/app/shared/workers';
 import { createPreprocessingPipeline } from '../../helpers';
 import type { TrainingReport } from '@/app/models/types';
@@ -30,7 +29,7 @@ type TrainingCallbacks = {
     onFinished: () => void;
 };
 
-type TrainedModel = PreprocessingModelDecorator<ModelRepresentation>;
+type TrainedModel = PipelineModel<ModelRepresentation>;
 
 const workerRegistry = getWorkerRegistry();
 
@@ -48,6 +47,9 @@ export class TrainingOrchestrator {
     private byStep = false;
     private previousTensorCount: number | null = null;
     private consecutiveTensorIncreases = 0;
+
+    private scalerParams?: ScalerState;
+    private hasExtractedScalerParams = false;
 
     static async createOrchestrator(
         settings: TrainingSettings,
@@ -191,7 +193,16 @@ export class TrainingOrchestrator {
 
         const startTime = import.meta.env.DEV ? performance.now() : 0;
 
+        if (!this.hasExtractedScalerParams) {
+            this.scalerParams = await this.model.extractScalerParams();
+            this.hasExtractedScalerParams = true;
+        }
+
         const report = await liveMetrics.calculateMetrics(params);
+
+        if (this.scalerParams) {
+            report.scaler = this.scalerParams;
+        }
 
         if (import.meta.env.DEV) {
             const duration = performance.now() - startTime;
@@ -220,15 +231,19 @@ export class TrainingOrchestrator {
     private handleStateChange(state: TrainingState, datasetManager: DatasetManager): void {
         if (state === 'transforming') {
             // Pre-cache transformed data
+            const trainingData = datasetManager.getTrainingData();
             const testData = datasetManager.getTestData();
             const predictionData = datasetManager.getPredictionData();
 
-            if (this.model && testData) {
+            this.model.prepareFeatures(trainingData.X, true);
+            this.model.prepareLabels(trainingData.y);
+
+            if (testData) {
                 this.model.prepareFeatures(testData.X);
                 this.model.prepareLabels(testData.y);
             }
 
-            if (this.model && predictionData) {
+            if (predictionData) {
                 this.model.prepareFeatures(predictionData);
             }
         }
@@ -240,6 +255,8 @@ export class TrainingOrchestrator {
         this.datasetManager.dispose();
         this.liveMetrics.dispose?.();
         this.resetTensorTracking();
+        this.scalerParams = undefined;
+        this.hasExtractedScalerParams = false;
     }
 
     private handleTrainingError(error: Error): void {
@@ -249,7 +266,7 @@ export class TrainingOrchestrator {
 
     private createModel(
         settings: TrainingSettings,
-    ): [PreprocessingModelDecorator<ModelRepresentation>, TrainingEventEmitter, TrainingControl] {
+    ): [PipelineModel<ModelRepresentation>, TrainingEventEmitter, TrainingControl] {
         try {
             const worker = workerRegistry.get(settings.modelSettings.type);
             const eventEmitter = new EventEmitter();
@@ -271,7 +288,7 @@ export class TrainingOrchestrator {
 
     private createLiveMetrics(
         settings: TrainingSettings,
-        model: Model<ModelRepresentation>,
+        model: TrainedModel,
         datasetManager: DatasetManager,
     ) {
         const worker = workerRegistry.get(settings.modelSettings.type);

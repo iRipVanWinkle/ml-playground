@@ -1,13 +1,13 @@
 import type { Tensor2D } from '@tensorflow/tfjs';
 import type { OptimizerCallbackParameters } from '@/ml/types';
-import type { MatrixLike } from '@/app/shared/helpers';
 import type {
     LossFunctionConfig,
     OptimizerConfig,
     RegularizationConfig,
     ThetaInitializationConfig,
 } from '@/ml/factories';
-import type { ConfusionMatrixData, RocCurveData } from '@/app/shared/visualization';
+import type { BaseClassificationReport } from '@/app/shared/types';
+import type { MatrixLike } from '@/app/shared/helpers';
 
 export type ClassificationType = 'binary' | 'softmax' | 'ovr';
 
@@ -30,21 +30,9 @@ export type LogisticCallbackParameters = {
     callbackParameters: OptimizerCallbackParameters;
 };
 
-export type LogisticTrainingReport = {
+export type LogisticTrainingReport = BaseClassificationReport & {
     type: 'logistic';
-    taskType: 'classification';
     trainLossHistory: number[][];
     iterations: number[];
-    testAccuracy: number;
-    trainAccuracy: number;
-    trainPredictedLabels: MatrixLike;
-    testPredictedLabels?: MatrixLike;
-    predictionPredictedLabels?: MatrixLike;
     theta: MatrixLike;
-
-    trainConfusionMatrix: ConfusionMatrixData;
-    testConfusionMatrix?: ConfusionMatrixData;
-
-    trainRocCurve: RocCurveData;
-    testRocCurve?: RocCurveData;
 };

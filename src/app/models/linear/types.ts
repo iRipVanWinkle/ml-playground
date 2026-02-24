@@ -1,4 +1,3 @@
-import type { RegressionMetricsData } from '@/app/shared/visualization';
 import type {
     LossFunctionConfig,
     OptimizerConfig,
@@ -8,6 +7,7 @@ import type {
 import type { MatrixLike } from '@/app/shared/helpers';
 import type { OptimizerCallbackParameters } from '@/ml/types';
 import type { Tensor2D } from '@tensorflow/tfjs';
+import type { BaseRegressionReport } from '@/app/shared/types';
 
 export type LinearSettings = {
     type: 'linear';
@@ -27,20 +27,10 @@ export type LinearCallbackParameters = {
     callbackParameters: OptimizerCallbackParameters;
 };
 
-export type LinearTrainingReport = {
+export type LinearTrainingReport = BaseRegressionReport & {
     type: 'linear';
-    taskType: 'regression';
     trainLossHistory: number[][];
     iteration: number;
     optimizerLoss: number; // optimizer loss
-    trainLoss: number;
-    testLoss?: number;
-    trainPredictedLabels: MatrixLike;
-    testPredictedLabels?: MatrixLike;
-    predictionPredictedLabels?: MatrixLike;
     theta: MatrixLike;
-    trainMetrics: RegressionMetricsData | null;
-    testMetrics?: RegressionMetricsData | null;
-    trainResiduals: MatrixLike;
-    testResiduals?: MatrixLike;
 };

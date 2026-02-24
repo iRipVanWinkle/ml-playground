@@ -3,6 +3,7 @@ import type { KMeansMetricsData } from '@/app/shared/visualization';
 import type { CentroidInitializationConfig, DistanceConfig } from '@/ml/factories';
 import type { KMeansCallbackParameters as KMeansCallbackParametersMl } from '@/ml/types';
 import type { Tensor2D } from '@tensorflow/tfjs';
+import type { BaseClusteringReport } from '@/app/shared/types';
 
 export type KMeansSettings = {
     type: 'k-means';
@@ -23,9 +24,8 @@ export type KMeansCallbackParameters = {
     callbackParameters: KMeansCallbackParametersMl;
 };
 
-export type KMeansTrainingReport = {
+export type KMeansTrainingReport = BaseClusteringReport & {
     type: 'k-means';
-    taskType: 'clustering';
     iteration: number;
     centroids: MatrixLike;
     trainAssignments: MatrixLike;

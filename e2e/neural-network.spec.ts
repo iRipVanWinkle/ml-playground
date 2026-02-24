@@ -18,11 +18,11 @@ test.describe('Neural Network Training', () => {
             },
             withTransformation: {
                 trainLoss: 'Train Loss: 1.1848',
-                testLoss: 'Test Loss: 19.9749',
+                testLoss: 'Test Loss: 1.0362',
             },
             withLayers: {
                 trainLoss: 'Train Loss: 18.8793',
-                testLoss: 'Test Loss: 1.1578',
+                testLoss: 'Test Loss: 9.9741',
             },
         } as const;
 

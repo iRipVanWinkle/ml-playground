@@ -1,4 +1,3 @@
-import type { NormalizatorFn } from '../normalization';
 import { concat, ones, pow, tidy, type Tensor2D } from '@tensorflow/tfjs';
 
 /**
@@ -12,11 +11,7 @@ import { concat, ones, pow, tidy, type Tensor2D } from '@tensorflow/tfjs';
  * @param normalizeData - Flag that indicates whether polynomials need to normalized or not.
  * @returns The new tf.Tensor2D with the polynomial features added.
  */
-export function generateFullPolynomialFeatures(
-    data: Tensor2D,
-    degree: number,
-    normalizeFunction: NormalizatorFn,
-): Tensor2D | null {
+export function generateFullPolynomialFeatures(data: Tensor2D, degree: number): Tensor2D | null {
     if (degree < 2) {
         return null; // No polynomial features generated for degree < 2;
     }
@@ -67,8 +62,6 @@ export function generateFullPolynomialFeatures(
         }
 
         // Concatenate all generated features along the columns (axis=1)
-        const concatenatedFeatures = concat(polynomialFeatures, 1) as Tensor2D;
-
-        return normalizeFunction(concatenatedFeatures);
+        return concat(polynomialFeatures, 1) as Tensor2D;
     });
 }

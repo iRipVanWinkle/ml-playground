@@ -15,7 +15,7 @@ const EXPECTED_RESULTS = {
     },
     withNormalization: {
         trainLoss: 'Train Loss: 48.9290',
-        testLoss: 'Test Loss: 6.6557',
+        testLoss: 'Test Loss: 27.9256',
     },
     withMAELoss: {
         trainLoss: 'Train Loss: 2.0015',

@@ -1,28 +1,34 @@
 import { describe, it, expect } from 'vitest';
 import * as tf from '@tensorflow/tfjs';
-import { logScaling } from './logScaling';
+import { LogScaler } from './logScaling';
 
 describe('logScaling', () => {
     it('returns empty tensor for empty matrix', () => {
         const input = tf.tensor2d([], [0, 0]);
-        const result = logScaling(input);
+        const scaler = new LogScaler();
+        scaler.fit();
+        const result = scaler.transform(input);
         expect(result.shape).toEqual([0, 0]);
         expect(result.arraySync()).toEqual([]);
     });
 
     it('returns empty tensor for matrix with empty row', () => {
         const input = tf.tensor2d([[]]);
-        const result = logScaling(input);
+        const scaler = new LogScaler();
+        scaler.fit();
+        const result = scaler.transform(input);
         expect(result.shape).toEqual([0, 0]);
         expect(result.arraySync()).toEqual([]);
     });
 
     it('throws error for matrix with zero', () => {
-        expect(() => logScaling(tf.tensor2d([[0]]))).toThrow(
+        const scaler = new LogScaler();
+        scaler.fit();
+        expect(() => scaler.transform(tf.tensor2d([[0]]))).toThrow(
             `Log scaling requires all values to be positive. Found minimum value: 0`,
         );
         expect(() =>
-            logScaling(
+            scaler.transform(
                 tf.tensor2d([
                     [1, 2],
                     [3, 0],
@@ -32,11 +38,13 @@ describe('logScaling', () => {
     });
 
     it('throws error for matrix with negative value', () => {
-        expect(() => logScaling(tf.tensor2d([[-1]]))).toThrow(
+        const scaler = new LogScaler();
+        scaler.fit();
+        expect(() => scaler.transform(tf.tensor2d([[-1]]))).toThrow(
             `Log scaling requires all values to be positive. Found minimum value: -1`,
         );
         expect(() =>
-            logScaling(
+            scaler.transform(
                 tf.tensor2d([
                     [1, 2],
                     [3, -5],
@@ -48,7 +56,9 @@ describe('logScaling', () => {
     it('scales a matrix with one positive element', () => {
         const input = tf.tensor2d([[5]]);
         const expected = tf.tensor2d([[Math.log(5)]]);
-        const result = logScaling(input);
+        const scaler = new LogScaler();
+        scaler.fit();
+        const result = scaler.transform(input);
         expect(result.arraySync()).toEqual(expected.arraySync());
     });
 
@@ -61,7 +71,9 @@ describe('logScaling', () => {
             [Math.log(1), Math.log(2)],
             [Math.log(3), Math.log(4)],
         ]);
-        const result = logScaling(input);
+        const scaler = new LogScaler();
+        scaler.fit();
+        const result = scaler.transform(input);
         expect(result.arraySync()).toEqual(expected.arraySync());
     });
 
@@ -74,7 +86,9 @@ describe('logScaling', () => {
             [Math.log(2), Math.log(4), Math.log(8)],
             [Math.log(16), Math.log(32), Math.log(64)],
         ]);
-        const result = logScaling(input);
+        const scaler = new LogScaler();
+        scaler.fit();
+        const result = scaler.transform(input);
         expect(result.arraySync()).toEqual(expected.arraySync());
     });
 
@@ -87,7 +101,9 @@ describe('logScaling', () => {
             [Math.log(1000), Math.log(10000)],
             [Math.log(100000), Math.log(1000000)],
         ]);
-        const result = logScaling(input);
+        const scaler = new LogScaler();
+        scaler.fit();
+        const result = scaler.transform(input);
         expect(result.arraySync()).toEqual(expected.arraySync());
     });
 
@@ -97,7 +113,9 @@ describe('logScaling', () => {
             [3, 4],
         ]);
         const inputCopy = input.clone();
-        logScaling(input);
+        const scaler = new LogScaler();
+        scaler.fit();
+        scaler.transform(input);
         expect(input.arraySync()).toEqual(inputCopy.arraySync());
     });
 });

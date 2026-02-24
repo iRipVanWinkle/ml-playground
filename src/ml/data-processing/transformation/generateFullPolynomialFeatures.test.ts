@@ -7,13 +7,11 @@ const sortArray = (array: number[][]): number[][] => {
 };
 
 describe('generatePolynomialFeatures', () => {
-    const normalizeFunction = (x: tf.Tensor2D) => x; // No normalization for simplicity
-
     it('should generate polynomial features of degree 2', () => {
         const data = tf.tensor2d([[1, 2, 3, 4]]);
         const degree = 2;
 
-        const result = generateFullPolynomialFeatures(data, degree, normalizeFunction)!;
+        const result = generateFullPolynomialFeatures(data, degree)!;
         const expectedShape = [1, 10]; // 1 samples, 10 features: x1^2, x2^2, x1*x2
 
         expect(result.shape).toEqual(expectedShape);
@@ -27,7 +25,7 @@ describe('generatePolynomialFeatures', () => {
         ]);
         const degree = 3;
 
-        const result = generateFullPolynomialFeatures(data, degree, normalizeFunction)!;
+        const result = generateFullPolynomialFeatures(data, degree)!;
         const expectedShape = [2, 7]; // 2 samples, 7 features: x1^2, x2^2, x1*x2, x1^3, x2^3, x1^2*x2, x1*x2^2
 
         expect(result.shape).toEqual(expectedShape);
@@ -43,7 +41,7 @@ describe('generatePolynomialFeatures', () => {
 
         const prevNumTensors = tf.memory().numTensors;
 
-        generateFullPolynomialFeatures(data, degree, normalizeFunction);
+        generateFullPolynomialFeatures(data, degree);
         const expectedNumTensors = prevNumTensors + 1;
 
         expect(tf.memory().numTensors).toEqual(expectedNumTensors);

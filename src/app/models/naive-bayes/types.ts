@@ -1,5 +1,4 @@
-import type { ConfusionMatrixData, RocCurveData } from '@/app/shared/visualization';
-import type { MatrixLike } from '@/app/shared/helpers';
+import type { BaseClassificationReport } from '@/app/shared/types';
 import type {
     NaiveBayesCallbackParameters as NaiveBayesCallbackParametersType,
     NaiveBayesParams,
@@ -22,20 +21,8 @@ export type NaiveBayesCallbackParameters = {
     callbackParameters: NaiveBayesCallbackParametersType;
 };
 
-export type NaiveBayesTrainingReport = {
+export type NaiveBayesTrainingReport = BaseClassificationReport & {
     type: 'naive-bayes';
-    taskType: 'classification';
-    testAccuracy: number;
-    trainAccuracy: number;
-    trainPredictedLabels: MatrixLike;
-    testPredictedLabels?: MatrixLike;
-    predictionPredictedLabels?: MatrixLike;
     iteration: number;
     params: NaiveBayesParams;
-
-    trainConfusionMatrix: ConfusionMatrixData;
-    testConfusionMatrix?: ConfusionMatrixData;
-
-    trainRocCurve: RocCurveData;
-    testRocCurve?: RocCurveData;
 };

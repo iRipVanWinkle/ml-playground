@@ -1,4 +1,3 @@
-import type { NormalizatorFn } from '../../data-processing/normalization';
 import {
     cosinusoidGenerator,
     fourierGenerator,
@@ -13,7 +12,6 @@ export function transformationsFactory(
         type: TransformationFunction;
         degree: number;
     }[],
-    normalizeFunction?: NormalizatorFn,
 ): TransformationFn[] {
     const transformations = [];
     for (const transformation of transformationsConfig) {
@@ -29,9 +27,7 @@ export function transformationsFactory(
                 transformations.push(fourierGenerator(degree));
                 break;
             case 'polynomial':
-                transformations.push(
-                    fullPolynomialGenerator(degree, normalizeFunction ?? ((v) => v)),
-                );
+                transformations.push(fullPolynomialGenerator(degree));
                 break;
             default:
                 console.warn(`Unknown transformation type: ${transformation.type}`);

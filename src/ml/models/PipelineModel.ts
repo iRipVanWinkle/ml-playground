@@ -4,18 +4,19 @@ import type {
     ModelRepresentation,
     PredictionMetadata,
     TrainingEventEmitter,
+    Scaler,
+    ScalerParams,
+    ScalerState,
 } from '../types';
-import type { NormalizatorFn } from '../data-processing/normalization';
 import type { TransformationFn } from '../data-processing/transformation';
 
 export type FeatureTransformConfig = {
-    polynomialDegree?: number;
-    sinusoidDegree?: number;
-    normalizeFunction?: NormalizatorFn;
+    preScaler?: Scaler<ScalerParams>;
     transformations?: TransformationFn[];
+    postScaler?: Scaler<ScalerParams>;
 };
 
-export class PreprocessingModelDecorator<T extends ModelRepresentation> implements Model<T> {
+export class PipelineModel<T extends ModelRepresentation> implements Model<T> {
     private model: Model<T>;
     private featureTransform?: FeatureTransformConfig;
     private eventEmitter?: TrainingEventEmitter;
@@ -35,7 +36,7 @@ export class PreprocessingModelDecorator<T extends ModelRepresentation> implemen
     async train(X: Tensor2D, y: Tensor2D): Promise<T> {
         this.eventEmitter?.emit('state', 'transforming');
 
-        X = this.prepareFeatures(X);
+        X = this.prepareFeatures(X, true);
         y = this.prepareLabels(y);
 
         this.eventEmitter?.emit('state', 'training');
@@ -80,32 +81,64 @@ export class PreprocessingModelDecorator<T extends ModelRepresentation> implemen
         return result;
     }
 
+    async extractScalerParams(): Promise<ScalerState> {
+        const { preScaler, postScaler } = this.featureTransform ?? {};
+
+        const prePromise = preScaler?.extractParameters?.();
+        const postPromise = postScaler?.extractParameters?.();
+
+        if (!prePromise && !postPromise) {
+            return {};
+        }
+
+        const [preScalerParams, postScalerParams] = await Promise.all([prePromise, postPromise]);
+
+        return {
+            preScaler: preScalerParams,
+            postScaler: postScalerParams,
+        };
+    }
+
     dispose(withDependencies?: boolean): void {
         this._cachedProcessedData.forEach((tensor) => tensor?.dispose());
         this._cachedProcessedData.clear();
         this.model.dispose(withDependencies);
     }
 
-    prepareFeatures(features: Tensor2D): Tensor2D {
-        const options = this.featureTransform;
-        const transformations = options?.transformations ?? [];
-        const normalizeFunction = options?.normalizeFunction ?? ((x) => x);
+    prepareFeatures(features: Tensor2D, isTraining = false): Tensor2D {
+        const { preScaler, postScaler, transformations = [] } = this.featureTransform ?? {};
 
         if (!this._cachedProcessedData.has(features.id)) {
             const processedFeatures = tidy(() => {
-                // Normalize the data using the normalize function
-                const normalizedFeatures = normalizeFunction(features.clone());
-                let processedFeatures = normalizedFeatures;
-
-                for (const transform of transformations) {
-                    const additionalData = transform(normalizedFeatures);
-
-                    if (additionalData !== null) {
-                        processedFeatures = concat([processedFeatures, additionalData], 1);
+                try {
+                    if (isTraining && preScaler) {
+                        preScaler.fit(features);
                     }
-                }
+                    const preScaledFeatures = preScaler?.transform(features) ?? features;
 
-                return processedFeatures;
+                    let processedFeatures = preScaledFeatures.clone();
+
+                    for (const transform of transformations) {
+                        const additionalFeatures = transform(preScaledFeatures);
+
+                        if (additionalFeatures !== null) {
+                            processedFeatures = concat([processedFeatures, additionalFeatures], 1);
+                        }
+                    }
+
+                    if (isTraining && postScaler) {
+                        postScaler.fit(processedFeatures);
+                    }
+
+                    const normalizedFeatures = postScaler
+                        ? postScaler.transform(processedFeatures)
+                        : processedFeatures;
+
+                    return normalizedFeatures;
+                } catch (error) {
+                    console.error('Error processing features:', error);
+                    throw error;
+                }
             });
 
             this._cachedProcessedData.set(features.id, processedFeatures);

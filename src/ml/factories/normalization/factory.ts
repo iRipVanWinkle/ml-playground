@@ -1,21 +1,17 @@
-import {
-    linearScaling,
-    logScaling,
-    zScoreScaling,
-    type NormalizatorFn,
-} from '../../data-processing/normalization';
+import { MinMaxScaler, LogScaler, ZScoreScaler } from '../../data-processing/normalization';
 import type { NormalizationFunction } from './types';
+import type { Scaler, ScalerParams } from '../../types';
 
 export function normalizeFunctionFactory(
     normalization: NormalizationFunction,
-): NormalizatorFn | undefined {
+): Scaler<ScalerParams> | undefined {
     switch (normalization) {
         case 'zscore':
-            return zScoreScaling;
+            return new ZScoreScaler();
         case 'linear':
-            return linearScaling;
+            return new MinMaxScaler();
         case 'log':
-            return logScaling;
+            return new LogScaler();
         case 'none':
         default:
             return undefined; // No normalization

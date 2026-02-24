@@ -1,4 +1,4 @@
-import { concat, ones, tidy, type Scalar, type Tensor2D } from '@tensorflow/tfjs';
+import { concat, ones, tensor2d, tidy, type Scalar, type Tensor2D } from '@tensorflow/tfjs';
 import type {
     LossFunction,
     Optimizer,
@@ -11,6 +11,8 @@ import {
     zerosInitializer,
     type ThetaInitializer,
 } from '../../factories/theta-initialization/initializers';
+import { getMatrixFromTensor, type MatrixLike } from '../../matrix';
+import { assertModelTrained } from '../../utils';
 
 export type ModelOptions = {
     lossFunc: LossFunction;
@@ -41,6 +43,16 @@ export abstract class BaseEstimator implements Model<Tensor2D> {
     abstract evaluate(X: Tensor2D, y: Tensor2D, theta?: Tensor2D): [Tensor2D, Tensor2D, Scalar];
 
     abstract predictWithMetadata(X: Tensor2D, theta?: Tensor2D): PredictionMetadata;
+
+    async extractParameters(): Promise<MatrixLike> {
+        assertModelTrained(this.theta);
+
+        return getMatrixFromTensor(this.theta);
+    }
+
+    restoreParameters(params: MatrixLike): void {
+        this.theta = tensor2d(params.array, params.shape);
+    }
 
     dispose(withDependencies = false): void {
         this.theta?.dispose();

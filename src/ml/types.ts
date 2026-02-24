@@ -111,6 +111,72 @@ export interface TrainingControl {
     handleControlFlow(isSyncBackend?: boolean): Promise<void>;
 }
 
+export type BaseScalerParams = {
+    type: 'zscore' | 'minmax' | 'log' | 'none';
+};
+
+export type ZScoreScalerParams = BaseScalerParams & {
+    type: 'zscore';
+    mean: Float32Array;
+    std: Float32Array;
+};
+
+export type MinMaxScalerParams = BaseScalerParams & {
+    type: 'minmax';
+    min: Float32Array;
+    max: Float32Array;
+};
+
+export type LogScalerParams = BaseScalerParams & {
+    type: 'log';
+};
+
+export type ScalerParams =
+    | ZScoreScalerParams
+    | MinMaxScalerParams
+    | LogScalerParams
+    | BaseScalerParams;
+
+export type ScalerState<T = ScalerParams> = {
+    preScaler?: T;
+    postScaler?: T;
+};
+
+/**
+ * Interface for scalers.
+ */
+export interface Scaler<T extends ScalerParams> {
+    /**
+     * Fits the scaler to the input tensor.
+     *
+     * @param tensor - The input tensor.
+     */
+    fit(tensor: Tensor2D): void;
+
+    /**
+     * Transforms the input tensor.
+     *
+     * @param tensor - The input tensor.
+     * @returns The transformed tensor.
+     */
+    transform(tensor: Tensor2D): Tensor2D;
+
+    /**
+     * Extracts parameters from GPU memory to CPU memory as typed arrays.
+     */
+    extractParameters?(): Promise<T>;
+
+    /**
+     * Restores parameters from CPU memory back to GPU memory.
+     */
+    restoreParameters?(params: T): void;
+
+    /**
+     * Disposes of any resources used by the scaler.
+     */
+    dispose?(): void;
+}
+
 /**
  * Interface for regularization techniques.
  */
@@ -280,6 +346,18 @@ export type QuadraticNaiveBayesParams = Readonly<{
 export type NaiveBayesParams = GaussianNaiveBayesParams | QuadraticNaiveBayesParams;
 
 export type ModelRepresentation = Tensor2D | EnsembleTree | NaiveBayesParams;
+
+/**
+ * Maps the internal GPU-based model representation (Tensor2D, etc.)
+ * to its CPU-based serialized equivalent (MatrixLike, etc.)
+ */
+export type SerializedModelRepresentation<T extends ModelRepresentation> = T extends Tensor2D
+    ? MatrixLike
+    : T extends EnsembleTree
+      ? EnsembleTree
+      : T extends NaiveBayesParams
+        ? NaiveBayesParams
+        : never;
 
 /**
  * Interface for machine learning models.

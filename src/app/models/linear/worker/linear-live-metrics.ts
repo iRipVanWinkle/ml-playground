@@ -1,5 +1,6 @@
 import { type Scalar, type Tensor2D } from '@tensorflow/tfjs';
-import type { Model, ModelRepresentation, OptimizerCallbackParameters } from '@/ml/types';
+import type { ModelRepresentation, OptimizerCallbackParameters } from '@/ml/types';
+import type { PipelineModel } from '@/ml/models';
 import type { DatasetManager, LiveMetrics, TensorContainer } from '@/app/shared/workers';
 import type { LinearSettings, LinearTrainingReport } from '../types';
 import type { TrainingSettings } from '../../types';
@@ -30,7 +31,7 @@ type MetricsTensors = {
 export class LinearLiveMetrics
     implements LiveMetrics<OptimizerCallbackParameters, LinearTrainingReport>
 {
-    private model: Model<ModelRepresentation>;
+    private model: PipelineModel<ModelRepresentation>;
     private datasetManager: DatasetManager;
     private modelSettings: LinearSettings;
 
@@ -38,7 +39,7 @@ export class LinearLiveMetrics
     private theta?: Tensor2D;
 
     static factory(
-        model: Model<Tensor2D>,
+        model: PipelineModel<Tensor2D>,
         datasetManager: DatasetManager,
         settings: TrainingSettings,
     ) {
@@ -55,7 +56,7 @@ export class LinearLiveMetrics
 
     private constructor(
         modelSettings: LinearSettings,
-        model: Model<Tensor2D>,
+        model: PipelineModel<Tensor2D>,
         datasetManager: DatasetManager,
     ) {
         this.model = model;
