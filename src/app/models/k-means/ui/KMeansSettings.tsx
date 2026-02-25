@@ -89,18 +89,9 @@ export function KMeansSettings({
 
                 <Field label="Tolerance" htmlFor="toleranceInput" info={TOLERANCE_INFO}>
                     <InputGroup>
-                        <InputGroup.Addon>
-                            <Switch
-                                id="tolerance-enabled"
-                                checked={settings.tolerance !== undefined}
-                                onCheckedChange={handleToleranceToggle}
-                                disabled={disabled}
-                                data-testid="tolerance-switch"
-                            />
-                        </InputGroup.Addon>
                         <InputGroup.Input
                             disabled={disabled || settings.tolerance === undefined}
-                            placeholder="Early stopping is off"
+                            placeholder="Off"
                             step={0.0001}
                             min={0}
                             type="number"
@@ -109,6 +100,15 @@ export function KMeansSettings({
                             value={settings.tolerance ?? ''}
                             onChange={(e) => handleToleranceChange(e.target.value)}
                         />
+                        <InputGroup.Addon align="inline-end">
+                            <Switch
+                                id="tolerance-enabled"
+                                checked={settings.tolerance !== undefined}
+                                onCheckedChange={handleToleranceToggle}
+                                disabled={disabled}
+                                data-testid="tolerance-switch"
+                            />
+                        </InputGroup.Addon>
                     </InputGroup>
                 </Field>
             </div>
