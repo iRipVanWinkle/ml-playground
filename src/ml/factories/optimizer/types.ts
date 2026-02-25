@@ -2,7 +2,7 @@ export type OptimizerType = 'batch' | 'sgd' | 'momentum' | 'adam';
 
 type OptimizerBasicConfig = {
     maxIterations: number;
-    tolerance: number;
+    tolerance?: number;
     learningRate: number;
     scheduler: boolean;
     schedulerConfig: { s0: number | undefined; p: number | undefined };

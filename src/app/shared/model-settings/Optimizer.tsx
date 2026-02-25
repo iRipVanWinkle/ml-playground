@@ -1,4 +1,12 @@
-import { Checkbox, Field, InfoTooltip, Input, Label, Select } from '@/app/shared/ui';
+import {
+    Checkbox,
+    Field,
+    InfoTooltip,
+    Input,
+    Label,
+    Select,
+    ToleranceInput,
+} from '@/app/shared/ui';
 import type { OptimizerConfig } from '@/ml/factories';
 
 type OptimizerProps = {
@@ -76,6 +84,11 @@ export default function Optimizer({ optimizer, disabled, onChange }: OptimizerPr
         }
         const newConfig = { ...optimizer, [key]: preperedValue };
         onChange(newConfig as OptimizerConfig);
+    };
+
+    const handleToleranceChange = (value: number | undefined) => {
+        const newConfig = { ...optimizer, tolerance: value };
+        onChange(newConfig);
     };
 
     // Handle scheduler checkbox change
@@ -206,15 +219,11 @@ export default function Optimizer({ optimizer, disabled, onChange }: OptimizerPr
                 </Field>
 
                 <Field label="Tolerance" htmlFor="toleranceInput" info={TOLERANCE_INFO}>
-                    <Input
+                    <ToleranceInput
                         id="toleranceInput"
-                        disabled={disabled}
-                        type="number"
-                        min={0}
-                        step={0.0001}
-                        placeholder="Tolerance"
                         value={optimizer.tolerance}
-                        onChange={(e) => handleInputChange('tolerance', e.target.value)}
+                        disabled={disabled}
+                        onChange={(value) => handleToleranceChange(value)}
                     />
                 </Field>
             </div>

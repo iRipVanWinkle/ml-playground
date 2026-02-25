@@ -46,7 +46,7 @@ export class BatchGD extends BaseOptimizer {
             }
 
             // If the loss is already below the tolerance, we can break early
-            if (lossValue < this.tolerance) {
+            if (this.checkEarlyStopping(lossValue)) {
                 this.info(
                     `[${threadId}] Early stopping at iteration ${iteration} with loss: ${lossValue}`,
                 );

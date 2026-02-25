@@ -25,8 +25,8 @@ export type OptimizerOptions = Readonly<{
 export abstract class BaseOptimizer implements Optimizer {
     protected learningRate: LearningRate;
     protected maxIterations: number;
-    protected tolerance: number;
     protected withBias: boolean;
+    protected tolerance?: number;
     protected eventEmitter?: TrainingEventEmitter;
     protected trainingController?: TrainingControl;
 
@@ -70,6 +70,14 @@ export abstract class BaseOptimizer implements Optimizer {
     }
 
     abstract optimize(params: OptimizeParameters): Promise<Tensor2D>;
+
+    protected checkEarlyStopping(lossValue: number): boolean {
+        if (!this.tolerance) {
+            return false;
+        }
+
+        return lossValue <= this.tolerance;
+    }
 
     protected info(message: string): void {
         this.eventEmitter?.emit('info', message);

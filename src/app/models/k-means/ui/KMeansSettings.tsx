@@ -1,16 +1,14 @@
+import type { CentroidInitializationConfig, DistanceConfig } from '@/ml/factories';
 import type { ModelSettingsComponentProps } from '@/app/shared/registry/types/model-definition';
 import type { KMeansSettings as KMeansSettingsType } from '../types';
-import { Field, Input, InputGroup, Switch } from '@/app/shared/ui';
+import { Field, Input, ToleranceInput } from '@/app/shared/ui';
 import { CentroidInitialization } from './CentroidInitialization';
 import { Distance } from './Distance';
-import type { CentroidInitializationConfig, DistanceConfig } from '@/ml/factories';
 
 const K_INFO = 'The number of clusters to form.';
 const MAX_ITERATIONS_INFO = 'Maximum number of iterations for the algorithm to run';
 const TOLERANCE_INFO =
     'Tolerance for early stopping based on improvement in inertia between iterations.';
-
-const DEFAULT_TOLERANCE = 0.0001;
 
 export function KMeansSettings({
     settings,
@@ -23,14 +21,6 @@ export function KMeansSettings({
 
     const handleInputChange = (key: keyof KMeansSettingsType, value: string) => {
         handleChange({ [key]: parseInt(value) });
-    };
-
-    const handleToleranceChange = (value: string) => {
-        handleChange({ tolerance: value ? parseFloat(value) : undefined });
-    };
-
-    const handleToleranceToggle = (enabled: boolean) => {
-        handleChange({ tolerance: enabled ? DEFAULT_TOLERANCE : undefined });
     };
 
     const handleSelectChange = (
@@ -88,28 +78,12 @@ export function KMeansSettings({
                 </Field>
 
                 <Field label="Tolerance" htmlFor="toleranceInput" info={TOLERANCE_INFO}>
-                    <InputGroup>
-                        <InputGroup.Input
-                            disabled={disabled || settings.tolerance === undefined}
-                            placeholder="Off"
-                            step={0.0001}
-                            min={0}
-                            type="number"
-                            id="toleranceInput"
-                            data-testid="tolerance-input"
-                            value={settings.tolerance ?? ''}
-                            onChange={(e) => handleToleranceChange(e.target.value)}
-                        />
-                        <InputGroup.Addon align="inline-end">
-                            <Switch
-                                id="tolerance-enabled"
-                                checked={settings.tolerance !== undefined}
-                                onCheckedChange={handleToleranceToggle}
-                                disabled={disabled}
-                                data-testid="tolerance-switch"
-                            />
-                        </InputGroup.Addon>
-                    </InputGroup>
+                    <ToleranceInput
+                        id="toleranceInput"
+                        value={settings.tolerance}
+                        disabled={disabled}
+                        onChange={(value) => handleChange({ tolerance: value })}
+                    />
                 </Field>
             </div>
         </>
