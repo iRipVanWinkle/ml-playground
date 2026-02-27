@@ -113,7 +113,7 @@ export function LogisticPlots({ dataset, report }: LogisticPlotsProps) {
     }
 
     if (isMNISTPlot) {
-        const numbersToDisplay = 20; // Display 32 digits in the grid
+        const numbersToDisplay = 18; // Display 32 digits in the grid
         const dataPlot = [
             ...trainInputFeatures.slice(0, numbersToDisplay),
             ...testInputFeatures.slice(0, numbersToDisplay),
