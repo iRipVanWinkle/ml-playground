@@ -44,11 +44,11 @@ export function LogisticPlots({ dataset, report }: LogisticPlotsProps) {
                 const label = predictionPredictedLabels.array[index];
                 const xIndex = Math.floor(Number(index) / predictionsNum);
                 const yIndex = Number(index) % predictionsNum;
-                if (!z[xIndex]) {
-                    z[xIndex] = [];
+                if (!z[yIndex]) {
+                    z[yIndex] = [];
                 }
 
-                z[xIndex][yIndex] = label === cls ? 1 : 0;
+                z[yIndex][xIndex] = label === cls ? 1 : 0;
             }
             predictions.push({
                 x: groupedPredictions.predictionX,
