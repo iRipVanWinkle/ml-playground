@@ -15,5 +15,11 @@ export const treeWorkerDefinition: WorkerDefinition<'tree'> = {
         }
     },
 
-    extractParameters: (report) => report.params,
+    extractParameters: (report) => {
+        if (report.params.length === 0) {
+            return null;
+        }
+
+        return report.params;
+    },
 };

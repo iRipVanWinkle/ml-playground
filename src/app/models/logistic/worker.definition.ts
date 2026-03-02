@@ -10,6 +10,11 @@ export const logisticWorkerDefinition: WorkerDefinition<'logistic'> = {
 
     extractParameters: (report) => {
         const { theta } = report;
+
+        if (theta.array.length === 0) {
+            return null;
+        }
+
         return tensor2d(theta.array, theta.shape);
     },
 };

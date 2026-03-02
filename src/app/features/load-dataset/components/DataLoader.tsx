@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Field, Input, Label, Select, Slider, Switch } from '@/app/shared/ui';
-import type { Dataset, TaskType } from '@/app/shared/types';
+import type { TaskType } from '@/app/shared/types';
 import {
     DEFAULT_STATE,
     PREPARED_CLASSIFICATION_DATASETS,
@@ -16,7 +16,7 @@ type DataLoaderProps = {
     disabled: boolean;
     taskType: TaskType;
     randomSeed?: number;
-    onChange: (data: Dataset) => void;
+    onChange: () => void;
 };
 
 export function DataLoader({ disabled, taskType, randomSeed, onChange }: DataLoaderProps) {
@@ -53,10 +53,11 @@ export function DataLoader({ disabled, taskType, randomSeed, onChange }: DataLoa
 
                 setDataset({
                     ...data,
+                    id: state.datasetPath ?? null,
                     isImage: state.isImageDataset,
                 });
 
-                onChange(data);
+                onChange();
             }
         })();
     }, [randomSeed, state, onChange]);

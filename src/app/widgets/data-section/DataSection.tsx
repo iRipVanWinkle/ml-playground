@@ -4,10 +4,9 @@ import { DataLoader, useNumTrainInputFeatures } from '@/app/features/load-datase
 import { NormalizationSelector, TransformationBuilder } from '@/app/features/transform-data';
 import { useRandomSeed } from '@/app/features/configure-system';
 import { useTaskType } from '@/app/features/switch-task';
-import type { Dataset } from '@/app/shared/types';
 
 type DataSectionProps = {
-    onChange: (data: Dataset) => void;
+    onChange: () => void;
 };
 
 export function DataSection({ onChange }: DataSectionProps) {

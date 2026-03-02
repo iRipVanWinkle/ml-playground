@@ -10,6 +10,7 @@ export type TaskType =
     | 'recommendation';
 
 export type Dataset = {
+    id: string | null;
     trainInputFeatures: number[][];
     trainTargetLabels: number[][];
     testInputFeatures: number[][];

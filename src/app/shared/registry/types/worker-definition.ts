@@ -22,5 +22,5 @@ export interface WorkerDefinition<TKey extends ModelType = ModelType> {
     ) => LiveMetrics<CallbackParametersOf<TKey>, TrainingReportOf<TKey>>;
 
     /* Extract the model parameters from the training report */
-    extractParameters: (report: TrainingReportOf<TKey>) => RepresentationOf<TKey>;
+    extractParameters: (report: TrainingReportOf<TKey>) => RepresentationOf<TKey> | null;
 }

@@ -1,10 +1,4 @@
 import type { ModelDefinition } from '@/app/shared/registry/types';
-import type { TaskType } from '@/app/shared/types';
-import { EMPTY_MATRIX_LIKE } from '@/app/shared/helpers';
-import { DEFAULT_OPTIMIZER } from '../defaults';
-import { NeuralSettings } from './ui/NeuralSettings';
-import { NeuralMainMetrics } from './ui/NeuralMainMetrics';
-import { NeuralModelDataPlots } from './ui/NeuralModelDataPlots';
 import {
     LossHistory,
     ConfusionMatrix,
@@ -12,68 +6,30 @@ import {
     ResidualsPlot,
     RegressionMetrics,
 } from '@/app/shared/visualization';
+import { NeuralSettings } from './ui/NeuralSettings';
+import { NeuralMainMetrics } from './ui/NeuralMainMetrics';
+import { NeuralModelDataPlots } from './ui/NeuralModelDataPlots';
+import {
+    DEFAULT_CLASSIFICATION_REPORT,
+    DEFAULT_CLASSIFICATION_SETTINGS,
+    DEFAULT_REGRESSION_REPORT,
+    DEFAULT_REGRESSION_SETTINGS,
+} from './defaults';
 
 export const neuralModelDefinition: ModelDefinition<'neural'> = {
     key: 'neural',
     label: 'Neural Networks',
     taskTypes: ['regression', 'classification'],
-    defaultSettings: (taskType?: TaskType) => ({
-        type: 'neural',
-        lossFunction: { type: taskType === 'regression' ? 'mse' : 'binaryCrossentropy' },
-        optimizer: DEFAULT_OPTIMIZER,
-        regularization: { type: 'none' },
-        thetaInitialization: { type: 'xavierNormal' },
-        layers: [{ units: 1, activation: 'linear' }],
-    }),
+    defaultSettings: (taskType) =>
+        taskType === 'regression' ? DEFAULT_REGRESSION_SETTINGS : DEFAULT_CLASSIFICATION_SETTINGS,
     settingsComponent: NeuralSettings,
 
-    defaultReport: (taskType: TaskType) => {
+    defaultReport: (taskType) => {
         switch (taskType) {
             case 'classification':
-                return {
-                    type: 'neural',
-                    taskType: 'classification',
-                    trainLossHistory: [],
-                    iteration: 0,
-                    testAccuracy: 0,
-                    trainAccuracy: 0,
-                    trainPredictedLabels: EMPTY_MATRIX_LIKE,
-                    theta: EMPTY_MATRIX_LIKE,
-                    trainConfusionMatrix: {
-                        matrix: [],
-                        metrics: {
-                            type: 'binary',
-                            accuracy: 0,
-                            mcc: 0,
-                            cohensKappa: 0,
-                            precision: 0,
-                            recall: 0,
-                            f1: 0,
-                        },
-                    },
-                    trainRocCurve: {
-                        type: 'binary',
-                        auc: 0,
-                        fpr: new Float32Array([]),
-                        tpr: new Float32Array([]),
-                        thresholds: new Float32Array([]),
-                        youdenOptimalIndex: null,
-                        closestToCornerIndex: null,
-                    },
-                };
+                return DEFAULT_CLASSIFICATION_REPORT;
             case 'regression':
-                return {
-                    type: 'neural',
-                    taskType: 'regression',
-                    trainLossHistory: [],
-                    iteration: 0,
-                    optimizerLoss: 0,
-                    trainLoss: 0,
-                    trainPredictedLabels: EMPTY_MATRIX_LIKE,
-                    theta: EMPTY_MATRIX_LIKE,
-                    trainMetrics: null,
-                    trainResiduals: EMPTY_MATRIX_LIKE,
-                };
+                return DEFAULT_REGRESSION_REPORT;
             default:
                 throw new Error(`Unsupported task type: ${taskType}`);
         }

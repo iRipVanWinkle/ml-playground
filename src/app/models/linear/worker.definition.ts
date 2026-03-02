@@ -10,6 +10,11 @@ export const linearWorkerDefinition: WorkerDefinition<'linear'> = {
 
     extractParameters: (report) => {
         const { theta } = report;
+
+        if (theta.array.length === 0) {
+            return null;
+        }
+
         return tensor2d(theta.array, theta.shape);
     },
 };

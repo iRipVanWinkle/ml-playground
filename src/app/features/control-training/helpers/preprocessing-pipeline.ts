@@ -7,7 +7,7 @@ import { normalizeFunctionFactory, transformationsFactory } from '@/ml/factories
 export function createPreprocessingPipeline(
     model: Model<ModelRepresentation>,
     dataSettings: TransformationSettings,
-    eventEmitter: EventEmitter,
+    eventEmitter?: EventEmitter,
 ): PipelineModel<ModelRepresentation> {
     const transformations = transformationsFactory(dataSettings.transformations);
     const preScaler = normalizeFunctionFactory(dataSettings.normalization);

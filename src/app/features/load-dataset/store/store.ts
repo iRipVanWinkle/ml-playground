@@ -3,6 +3,7 @@ import type { DataState } from './types';
 
 export const initState: DataState = {
     dataset: {
+        id: null,
         trainInputFeatures: [],
         trainTargetLabels: [],
         testInputFeatures: [],

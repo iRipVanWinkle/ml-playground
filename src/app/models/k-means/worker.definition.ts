@@ -10,6 +10,11 @@ export const kMeansWorkerDefinition: WorkerDefinition<'k-means'> = {
 
     extractParameters: (report) => {
         const { centroids } = report;
+
+        if (centroids.array.length === 0) {
+            return null;
+        }
+
         return tensor2d(centroids.array, centroids.shape);
     },
 };

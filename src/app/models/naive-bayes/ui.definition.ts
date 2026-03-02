@@ -1,7 +1,4 @@
 import type { ModelDefinition } from '@/app/shared/registry/types';
-import { NaiveBayesSettings } from './ui/NaiveBayesSettings';
-import { NaiveBayesMainMetrics } from './ui/NaiveBayesMainMetrics';
-import { EMPTY_MATRIX_LIKE } from '@/app/shared/helpers';
 import {
     LogisticPlots,
     ClassConditionalPlot,
@@ -9,53 +6,19 @@ import {
     RocCurve,
     NaiveBayesParameters,
 } from '@/app/shared/visualization';
+import { NaiveBayesSettings } from './ui/NaiveBayesSettings';
+import { NaiveBayesMainMetrics } from './ui/NaiveBayesMainMetrics';
+import { DEFAULT_REPORT, DEFAULT_SETTINGS } from './defaults';
 
 export const naiveBayesModelDefinition: ModelDefinition<'naive-bayes'> = {
     key: 'naive-bayes',
     label: 'Naive Bayes',
     taskTypes: ['classification'],
-    defaultSettings: () => ({
-        type: 'naive-bayes',
-        variant: 'gaussian',
-    }),
+
+    defaultSettings: () => DEFAULT_SETTINGS,
     settingsComponent: NaiveBayesSettings,
 
-    defaultReport: () => ({
-        type: 'naive-bayes',
-        taskType: 'classification',
-        testAccuracy: 0,
-        trainAccuracy: 0,
-        trainPredictedLabels: EMPTY_MATRIX_LIKE,
-        iteration: 0,
-        params: {
-            type: 'gaussian',
-            classes: [],
-            classPriors: new Float32Array(),
-            classMeans: EMPTY_MATRIX_LIKE,
-            classVariances: EMPTY_MATRIX_LIKE,
-        },
-        trainConfusionMatrix: {
-            matrix: [],
-            metrics: {
-                type: 'binary',
-                accuracy: 0,
-                mcc: 0,
-                cohensKappa: 0,
-                precision: 0,
-                recall: 0,
-                f1: 0,
-            },
-        },
-        trainRocCurve: {
-            type: 'binary',
-            auc: 0,
-            fpr: new Float32Array([]),
-            tpr: new Float32Array([]),
-            thresholds: new Float32Array([]),
-            youdenOptimalIndex: null,
-            closestToCornerIndex: null,
-        },
-    }),
+    defaultReport: () => DEFAULT_REPORT,
     visualization: {
         metricsGridComponent: NaiveBayesMainMetrics,
         modelDataPlotComponent: LogisticPlots,

@@ -1,6 +1,4 @@
 import type { ModelDefinition } from '@/app/shared/registry/types';
-import type { TaskType } from '@/app/shared/types';
-import { EMPTY_MATRIX_LIKE } from '@/app/shared/helpers';
 import { TreeSettings } from './ui/TreeSettings';
 import { TreeMainMetrics } from './ui/TreeMainMetrics';
 import { TreeModelDataPlots } from './ui/TreeModelDataPlots';
@@ -10,66 +8,27 @@ import {
     RegressionMetrics,
     ResidualsPlot,
 } from '@/app/shared/visualization';
+import {
+    DEFAULT_CLASSIFICATION_REPORT,
+    DEFAULT_CLASSIFICATION_SETTINGS,
+    DEFAULT_REGRESSION_REPORT,
+    DEFAULT_REGRESSION_SETTINGS,
+} from './defaults';
 
 export const treeModelDefinition: ModelDefinition<'tree'> = {
     key: 'tree',
     label: 'Decision Tree',
     taskTypes: ['regression', 'classification'],
-    defaultSettings: (taskType?: TaskType) => ({
-        type: 'tree',
-        modelVariant: 'decision',
-        criterion: { type: taskType === 'regression' ? 'mse' : 'gini' },
-        maxDepth: 5,
-        minSamplesSplit: 2,
-        minSamplesLeaf: 1,
-        estimators: 10,
-        maxFeatures: 1,
-        numRandomThresholds: 1,
-    }),
+    defaultSettings: (taskType) =>
+        taskType === 'regression' ? DEFAULT_REGRESSION_SETTINGS : DEFAULT_CLASSIFICATION_SETTINGS,
     settingsComponent: TreeSettings,
 
-    defaultReport: (taskType: TaskType) => {
+    defaultReport: (taskType) => {
         switch (taskType) {
             case 'classification':
-                return {
-                    type: 'tree',
-                    taskType: 'classification',
-                    testAccuracy: 0,
-                    trainAccuracy: 0,
-                    trainPredictedLabels: EMPTY_MATRIX_LIKE,
-                    params: [],
-                    trainConfusionMatrix: {
-                        matrix: [],
-                        metrics: {
-                            type: 'binary',
-                            accuracy: 0,
-                            mcc: 0,
-                            cohensKappa: 0,
-                            precision: 0,
-                            recall: 0,
-                            f1: 0,
-                        },
-                    },
-                    trainRocCurve: {
-                        type: 'binary',
-                        auc: 0,
-                        fpr: new Float32Array([]),
-                        tpr: new Float32Array([]),
-                        thresholds: new Float32Array([]),
-                        youdenOptimalIndex: null,
-                        closestToCornerIndex: null,
-                    },
-                };
+                return DEFAULT_CLASSIFICATION_REPORT;
             case 'regression':
-                return {
-                    type: 'tree',
-                    taskType: 'regression',
-                    trainLoss: 0,
-                    trainPredictedLabels: EMPTY_MATRIX_LIKE,
-                    trainMetrics: null,
-                    trainResiduals: EMPTY_MATRIX_LIKE,
-                    params: [],
-                };
+                return DEFAULT_REGRESSION_REPORT;
             default:
                 throw new Error(`Unsupported task type: ${taskType}`);
         }

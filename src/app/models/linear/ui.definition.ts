@@ -1,5 +1,4 @@
 import type { ModelDefinition } from '@/app/shared/registry/types';
-import { EMPTY_MATRIX_LIKE } from '@/app/shared/helpers';
 import {
     LinearPlots,
     LossHistory,
@@ -7,35 +6,18 @@ import {
     RegressionParameters,
     ResidualsPlot,
 } from '@/app/shared/visualization';
-import { DEFAULT_OPTIMIZER } from '../defaults';
 import { LinearSettings } from './ui/LinearSettings';
 import { LinearMainMetrics } from './ui/LinearMainMetrics';
+import { DEFAULT_REPORT, DEFAULT_SETTINGS } from './defaults';
 
 export const linearModelDefinition: ModelDefinition<'linear'> = {
     key: 'linear',
     label: 'Linear Regression',
     taskTypes: ['regression'],
-    defaultSettings: () => ({
-        type: 'linear',
-        lossFunction: { type: 'mse' },
-        optimizer: DEFAULT_OPTIMIZER,
-        regularization: { type: 'none' },
-        thetaInitialization: { type: 'zeros' },
-    }),
+    defaultSettings: () => DEFAULT_SETTINGS,
     settingsComponent: LinearSettings,
 
-    defaultReport: () => ({
-        type: 'linear',
-        taskType: 'regression',
-        trainLossHistory: [],
-        iteration: 0,
-        optimizerLoss: 0,
-        trainLoss: 0,
-        trainPredictedLabels: EMPTY_MATRIX_LIKE,
-        theta: EMPTY_MATRIX_LIKE,
-        trainMetrics: null,
-        trainResiduals: EMPTY_MATRIX_LIKE,
-    }),
+    defaultReport: () => DEFAULT_REPORT,
     visualization: {
         metricsGridComponent: LinearMainMetrics,
         modelDataPlotComponent: LinearPlots,
