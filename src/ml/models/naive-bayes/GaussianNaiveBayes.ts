@@ -4,6 +4,7 @@ import { assertModelTrained } from '../../utils';
 import { BaseNaiveBayes, type BaseNaiveBayesOptions } from '../base/BaseNaiveBayes';
 import { Matrix } from '../../matrix';
 import { EPSILON } from '../../constants';
+import { calculateMean, calculateVariance } from '../../utils';
 
 export type GaussianNaiveBayesOptions = BaseNaiveBayesOptions & {
     varianceSmoothing?: number;
@@ -80,25 +81,14 @@ export class GaussianNaiveBayes extends BaseNaiveBayes<GaussianNaiveBayesParams>
             const rowOffset = clsIndex * numFeatures;
 
             // Calculate mean for each feature
-            for (let j = 0; j < numFeatures; j++) {
-                let sum = 0;
-                for (const idx of classIndices) {
-                    sum += XArray[idx][j];
-                }
-                classMeans.array[rowOffset + j] = sum / classCount;
-            }
+            const meanArr = calculateMean(XArray, numFeatures, classIndices);
+            classMeans.row(clsIndex).set(meanArr);
 
             // Calculate variance for each feature
+            const variancesArr = calculateVariance(XArray, meanArr, numFeatures, classIndices);
             for (let j = 0; j < numFeatures; j++) {
-                let sumSq = 0;
-                const mean = classMeans.array[rowOffset + j];
-                for (const idx of classIndices) {
-                    const diff = XArray[idx][j] - mean;
-                    sumSq += diff * diff;
-                }
-
                 // Add regularization to prevent zero variance and overfitting
-                classVariances.array[rowOffset + j] = sumSq / classCount + this.varianceSmoothing;
+                classVariances.array[rowOffset + j] = variancesArr[j] + this.varianceSmoothing;
             }
 
             this.params = {

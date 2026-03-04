@@ -4,6 +4,11 @@ import { assertModelTrained } from '../../utils';
 import { EPSILON } from '../../constants';
 import { BaseNaiveBayes, type BaseNaiveBayesOptions } from '../base/BaseNaiveBayes';
 import { Matrix, type MatrixLike } from '../../matrix';
+import {
+    calculateMean,
+    calculateCovarianceMatrix,
+    calculateInverseAndDeterminant,
+} from '../../utils';
 
 export type QuadraticNaiveBayesOptions = BaseNaiveBayesOptions & {
     regularization?: number;
@@ -74,51 +79,28 @@ export class QuadraticNaiveBayes extends BaseNaiveBayes<QuadraticNaiveBayesParam
             const classCount = classIndices.length;
             classPriors[clsIndex] = classCount / numSamples;
 
-            const classMean = classMeans.row(clsIndex);
+            const classMean = calculateMean(XArray, numFeatures, classIndices);
+            classMeans.row(clsIndex).set(classMean);
 
-            // Sum feature values across all samples in this class
-            for (const sampleIdx of classIndices) {
-                const sample = XArray[sampleIdx];
-                for (let featureIdx = 0; featureIdx < numFeatures; featureIdx++) {
-                    classMean[featureIdx] += sample[featureIdx];
-                }
-            }
+            // Compute covariance matrix
+            const classCovariance = calculateCovarianceMatrix(
+                XArray,
+                classMean,
+                numFeatures,
+                classIndices,
+            );
+            classCovariances[clsIndex] = classCovariance;
 
-            // Compute mean by dividing sums by class count
-            for (let featureIdx = 0; featureIdx < numFeatures; featureIdx++) {
-                classMean[featureIdx] /= classCount;
-            }
-
-            const classCovariance = classCovariances[clsIndex];
-
-            // Compute covariance matrix: Cov[i,j] = E[(X_i - μ_i)(X_j - μ_j)]
-            const centeredData: Float32Array[] = [];
-            for (const sampleIdx of classIndices) {
-                const deviations = new Float32Array(numFeatures);
-                for (let featureIdx = 0; featureIdx < numFeatures; featureIdx++) {
-                    deviations[featureIdx] = XArray[sampleIdx][featureIdx] - classMean[featureIdx];
-                }
-                centeredData.push(deviations);
-            }
-
-            // Calculate covariance matrix elements using outer product of deviations
+            // Add regularization to diagonal
             for (let row = 0; row < numFeatures; row++) {
-                for (let col = 0; col < numFeatures; col++) {
-                    let covarianceSum = 0;
-                    for (const deviations of centeredData) {
-                        covarianceSum += deviations[row] * deviations[col];
-                    }
-
-                    // Normalize by sample count and add regularization to diagonal
-                    classCovariance.array[row * numFeatures + col] = covarianceSum / classCount;
-                    if (row === col) {
-                        classCovariance.array[row * numFeatures + col] += this.regularization;
-                    }
-                }
+                classCovariance.array[row * numFeatures + row] += this.regularization;
             }
 
-            classCovariancesInverse[clsIndex] = this.invertMatrix(classCovariance);
-            classCovariancesDeterminant[clsIndex] = this.determinant(classCovariance);
+            // The matrix is already regularized dynamically, so we can pass 0 for fallback epsilon
+            const { inverse, determinant } = calculateInverseAndDeterminant(classCovariance, 0);
+
+            classCovariancesInverse[clsIndex] = inverse;
+            classCovariancesDeterminant[clsIndex] = determinant;
             classCovariances[clsIndex] = classCovariance;
 
             this.params = {
@@ -309,110 +291,5 @@ export class QuadraticNaiveBayes extends BaseNaiveBayes<QuadraticNaiveBayesParam
         }
 
         return scores;
-    }
-
-    /**
-     * Inverts a positive-definite symmetric matrix using Cholesky decomposition.
-     * Falls back to regularization if the matrix is not positive definite.
-     *
-     * @complexity O(n³) where n is matrix dimension
-     * @param matrix - Square symmetric positive-definite matrix
-     * @returns Inverted matrix
-     */
-    private invertMatrix(matrix: MatrixLike): MatrixLike {
-        const n = matrix.shape[0];
-        const array = matrix.array;
-
-        // Cholesky decomposition: A = L * L^T
-        const L = Matrix.create([n, n]).array;
-
-        for (let i = 0; i < n; i++) {
-            for (let j = 0; j <= i; j++) {
-                let sum = 0;
-                for (let k = 0; k < j; k++) {
-                    sum += L[i * n + k] * L[j * n + k];
-                }
-
-                if (i === j) {
-                    const val = array[i * n + i] - sum;
-                    if (val <= 0) {
-                        // Not positive definite, add regularization
-                        L[i * n + j] = Math.sqrt(Math.abs(val) + this.regularization);
-                    } else {
-                        L[i * n + j] = Math.sqrt(val);
-                    }
-                } else {
-                    L[i * n + j] = (array[i * n + j] - sum) / L[j * n + j];
-                }
-            }
-        }
-
-        // Invert L (lower triangular)
-        const LInv = Matrix.create([n, n]).array;
-        for (let i = 0; i < n; i++) {
-            LInv[i * n + i] = 1 / L[i * n + i];
-            for (let j = i - 1; j >= 0; j--) {
-                let sum = 0;
-                for (let k = j + 1; k <= i; k++) {
-                    sum += L[i * n + k] * LInv[k * n + j];
-                }
-                LInv[i * n + j] = -sum / L[i * n + i];
-            }
-        }
-
-        // A^-1 = (L^T)^-1 * L^-1
-        const inverse = Matrix.create([n, n]);
-        for (let i = 0; i < n; i++) {
-            for (let j = 0; j < n; j++) {
-                for (let k = Math.max(i, j); k < n; k++) {
-                    inverse.array[i * n + j] += LInv[k * n + i] * LInv[k * n + j];
-                }
-            }
-        }
-
-        return inverse;
-    }
-
-    /**
-     * Calculates the determinant of a square matrix using LU decomposition.
-     *
-     * @param matrix - Square matrix
-     * @returns Determinant value
-     */
-    private determinant(matrix: MatrixLike): number {
-        const n = matrix.shape[0];
-        const m = matrix.array.slice(); // Copy matrix
-
-        let det = 1;
-
-        for (let i = 0; i < n; i++) {
-            // Find pivot
-            let maxRow = i;
-            for (let k = i + 1; k < n; k++) {
-                if (Math.abs(m[k * n + i]) > Math.abs(m[maxRow * n + i])) {
-                    maxRow = k;
-                }
-            }
-
-            if (maxRow !== i) {
-                [m[i], m[maxRow]] = [m[maxRow], m[i]];
-                det *= -1;
-            }
-
-            if (Math.abs(m[i * n + i]) < EPSILON) {
-                return 0; // Singular matrix
-            }
-
-            det *= m[i * n + i];
-            // Eliminate below
-            for (let k = i + 1; k < n; k++) {
-                const factor = m[k * n + i] / m[i * n + i];
-                for (let j = i; j < n; j++) {
-                    m[k * n + j] -= factor * m[i * n + j];
-                }
-            }
-        }
-
-        return det;
     }
 }

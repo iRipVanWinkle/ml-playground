@@ -17,8 +17,8 @@ test.describe('Naive Bayes Training', () => {
                 testAccuracy: 'Test Accuracy: 60.00%',
             },
             quadratic: {
-                trainAccuracy: 'Train Accuracy: 92.50%',
-                testAccuracy: 'Test Accuracy: 70.00%',
+                trainAccuracy: 'Train Accuracy: 97.50%',
+                testAccuracy: 'Test Accuracy: 80.00%',
             },
         } as const;
 
@@ -63,7 +63,7 @@ test.describe('Naive Bayes Training', () => {
                 testAccuracy: 'Test Accuracy: 91.67%',
             },
             quadratic: {
-                trainAccuracy: 'Train Accuracy: 95.83%',
+                trainAccuracy: 'Train Accuracy: 93.75%',
                 testAccuracy: 'Test Accuracy: 91.67%',
             },
         } as const;
