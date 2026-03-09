@@ -129,18 +129,6 @@ export class KMeans implements Model<Tensor2D> {
         };
     }
 
-    evaluate(
-        X: Tensor2D,
-        _: Tensor2D,
-        centroids?: Tensor2D | undefined,
-    ): [Tensor2D, Tensor2D, Scalar] {
-        assertModelTrained(centroids ?? this.centroids);
-
-        const usedCentroids = centroids ?? this.centroids!;
-        const assignments = this.findClosestCentroids(X, usedCentroids);
-        return [X, assignments, this.computeInertia(X, usedCentroids, assignments)];
-    }
-
     dispose(): void {
         this.centroids?.dispose();
     }

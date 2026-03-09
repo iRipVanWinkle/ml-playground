@@ -1,4 +1,4 @@
-import { concat, ones, tensor2d, tidy, type Scalar, type Tensor2D } from '@tensorflow/tfjs';
+import { concat, ones, tensor2d, tidy, type Tensor2D } from '@tensorflow/tfjs';
 import type {
     LossFunction,
     Optimizer,
@@ -39,8 +39,6 @@ export abstract class BaseEstimator implements Model<Tensor2D> {
     abstract train(X: Tensor2D, y: Tensor2D): Promise<Tensor2D>;
 
     abstract predict(X: Tensor2D, theta?: Tensor2D): Tensor2D;
-
-    abstract evaluate(X: Tensor2D, y: Tensor2D, theta?: Tensor2D): [Tensor2D, Tensor2D, Scalar];
 
     abstract predictWithMetadata(X: Tensor2D, theta?: Tensor2D): PredictionMetadata;
 

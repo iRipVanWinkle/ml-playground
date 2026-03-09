@@ -87,22 +87,6 @@ export class LogisticRegressor extends BaseEstimator {
         };
     }
 
-    evaluate(X: Tensor2D, y: Tensor2D, theta?: Tensor2D): [Tensor2D, Tensor2D, Scalar] {
-        assertModelTrained(theta ?? this.theta);
-
-        const result = tidy(() => {
-            const probability = this.hypothesis(X, theta ?? this.theta!);
-
-            const loss = this.lossFunc.compute(y, probability);
-
-            const yPred = this.probabilityToClassIndex(probability);
-
-            return [yPred, probability, loss] as [Tensor2D, Tensor2D, Scalar];
-        });
-
-        return result;
-    }
-
     protected hypothesis(features: Tensor2D, theta: Tensor2D, asLogits = false): Tensor2D {
         const sigmoid = (z: Tensor2D): Tensor2D => {
             return z.sigmoid(); // 1 / (1 + exp(-z)), standard logistic function

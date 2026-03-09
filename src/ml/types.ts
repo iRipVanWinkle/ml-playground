@@ -391,16 +391,6 @@ export interface Model<T extends ModelRepresentation> {
     predictWithMetadata(X: Tensor2D, theta?: T): PredictionMetadata;
 
     /**
-     * Evaluates the model on the provided data.
-     *
-     * @param X - The input features.
-     * @param y - The true labels.
-     * @param theta - The model parameters (optional).
-     * @returns A tuple containing the predicted values, true labels, and the loss.
-     */
-    evaluate(X: Tensor2D, y: Tensor2D, theta?: T): [Tensor2D, Tensor2D, Scalar];
-
-    /**
      * Disposes of any resources used by the model.
      *
      * @param withDependencies - Whether to dispose of dependent resources.

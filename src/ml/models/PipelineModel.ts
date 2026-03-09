@@ -1,4 +1,4 @@
-import { concat, oneHot, tidy, type Scalar, type Tensor1D, type Tensor2D } from '@tensorflow/tfjs';
+import { concat, oneHot, tidy, type Tensor1D, type Tensor2D } from '@tensorflow/tfjs';
 import type {
     Model,
     ModelRepresentation,
@@ -65,18 +65,6 @@ export class PipelineModel<T extends ModelRepresentation> implements Model<T> {
         const result = this.model.predictWithMetadata(X, theta);
 
         X.dispose();
-
-        return result;
-    }
-
-    evaluate(X: Tensor2D, y: Tensor2D, theta?: T): [Tensor2D, Tensor2D, Scalar] {
-        X = this.prepareFeatures(X);
-        y = this.prepareLabels(y);
-
-        const result = this.model.evaluate(X, y, theta);
-
-        X.dispose();
-        y.dispose();
 
         return result;
     }

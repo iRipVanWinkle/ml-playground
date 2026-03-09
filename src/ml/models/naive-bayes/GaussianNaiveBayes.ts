@@ -1,9 +1,8 @@
-import { tidy, tensor2d, type Scalar, type Tensor2D, scalar } from '@tensorflow/tfjs';
+import { tensor2d, type Tensor2D } from '@tensorflow/tfjs';
 import type { GaussianNaiveBayesParams, PredictionMetadata } from '../../types';
 import { assertModelTrained } from '../../utils';
 import { BaseNaiveBayes, type BaseNaiveBayesOptions } from '../base/BaseNaiveBayes';
 import { Matrix } from '../../matrix';
-import { EPSILON } from '../../constants';
 import { calculateMean, calculateVariance } from '../../utils';
 
 export type GaussianNaiveBayesOptions = BaseNaiveBayesOptions & {
@@ -172,65 +171,6 @@ export class GaussianNaiveBayes extends BaseNaiveBayes<GaussianNaiveBayesParams>
                 probabilitiesTensor.dispose();
             },
         };
-    }
-
-    /**
-     * Evaluates the model on test data.
-     *
-     * @param X - Test features tensor of shape [n_samples, n_features]
-     * @param y - True labels tensor of shape [n_samples, 1]
-     * @param params - Optional model parameters (uses trained params if not provided)
-     * @returns Tuple of [predictions, probabilities, loss]
-     */
-    evaluate(
-        X: Tensor2D,
-        y: Tensor2D,
-        params?: GaussianNaiveBayesParams,
-    ): [Tensor2D, Tensor2D, Scalar] {
-        const modelParams = params ?? this.params;
-        assertModelTrained(modelParams);
-
-        const XArray = X.arraySync();
-        const yArray = y.dataSync(); // get the data as a flat array
-
-        const numSamples = XArray.length;
-        const predictions: number[][] = [];
-        const probabilities: number[][] = [];
-        let correctCount = 0;
-
-        for (let i = 0; i < numSamples; i++) {
-            const sample = XArray[i];
-            const logProbs = this.calculateLogProbabilities(sample, modelParams!);
-
-            // Convert log probabilities to probabilities
-            const maxLogProb = Math.max(...logProbs);
-            const expProbs = logProbs.map((lp) => Math.exp(lp - maxLogProb));
-            const sumExpProbs = expProbs.reduce((a, b) => a + b, 0);
-            const probs = expProbs.map((p) => p / sumExpProbs);
-
-            const maxIdx = logProbs.indexOf(maxLogProb);
-            const predictedClass = modelParams.classes[maxIdx];
-
-            predictions.push([predictedClass]);
-            probabilities.push(Array.from(probs));
-
-            if (predictedClass === yArray[i]) {
-                correctCount++;
-            }
-        }
-
-        const result = tidy(() => {
-            const yPred = tensor2d(predictions);
-            const yProbs = tensor2d(probabilities);
-
-            // Loss is negative log likelihood (accuracy-based approximation)
-            const accuracy = correctCount / numSamples;
-            const loss = scalar(-Math.log(accuracy + EPSILON));
-
-            return [yPred, yProbs, loss] as [Tensor2D, Tensor2D, Scalar];
-        });
-
-        return result;
     }
 
     /**

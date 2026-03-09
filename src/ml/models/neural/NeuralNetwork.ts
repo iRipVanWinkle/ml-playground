@@ -135,26 +135,6 @@ export class NeuralNetwork extends BaseEstimator {
               };
     }
 
-    evaluate(X: Tensor2D, y: Tensor2D, theta?: Tensor2D): [Tensor2D, Tensor2D, Scalar] {
-        if (!(theta ?? this.theta)) {
-            throw new Error('Model has not been trained yet. Please call train() first.');
-        }
-
-        const result = tidy(() => {
-            const unpackedTheta = this.unpackParameters(theta ?? this.theta!);
-            const rawOutput = this.forwardPropagation(X, unpackedTheta);
-
-            // Compute default loss using the loss function
-            const loss = this.lossFunc.compute(y, rawOutput);
-
-            const yPred = this.probabilityToClassIndex(rawOutput);
-
-            return [yPred, rawOutput, loss] as [Tensor2D, Tensor2D, Scalar];
-        });
-
-        return result;
-    }
-
     usesOneHotLabels(): boolean {
         return this.isMultiClassClassification();
     }

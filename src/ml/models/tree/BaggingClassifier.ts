@@ -1,4 +1,4 @@
-import { tensor3d, tidy, type Scalar, type Tensor2D } from '@tensorflow/tfjs';
+import { tensor3d, tidy, type Tensor2D } from '@tensorflow/tfjs';
 import type { EnsembleTree, PredictionMetadata } from '../../types';
 import { softVoting } from '../../aggregators';
 import { BaseEnsembleTree, type BaseEnsembleOptions } from '../base/BaseEnsembleTree';
@@ -85,40 +85,6 @@ export class BaggingClassifier extends BaseEnsembleTree {
                 classProbabilities.dispose();
             },
         };
-    }
-
-    evaluate(X: Tensor2D, y: Tensor2D, trees?: EnsembleTree): [Tensor2D, Tensor2D, Scalar] {
-        assertModelTrained(trees ?? this.trees);
-
-        const ensembleTrees = trees ?? this.trees!; // Use the first tree
-
-        const XArray = X.arraySync();
-
-        const predictions: number[][][] = [];
-        for (const sampleFeatures of XArray) {
-            const rowPrediction: number[][] = [];
-            for (const rootNode of ensembleTrees) {
-                const leafNode = findLeafNode(sampleFeatures, rootNode);
-
-                rowPrediction.push(leafNode.probabilities!);
-            }
-
-            predictions.push(rowPrediction);
-        }
-
-        const result = tidy(() => {
-            const predictionsMatrix = tensor3d(predictions);
-            const probabilities = this.aggregator(predictionsMatrix);
-
-            const yPred = probabilityToClassIndex(probabilities);
-
-            // Compute default loss using the loss function
-            const loss = this.criterion.loss(y, yPred);
-
-            return [yPred, probabilities, loss] as [Tensor2D, Tensor2D, Scalar];
-        });
-
-        return result;
     }
 
     protected calculatePrediction(XArray: number[][], ensembleTrees: EnsembleTree): number[][][] {

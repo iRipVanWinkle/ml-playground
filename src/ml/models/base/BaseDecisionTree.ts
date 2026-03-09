@@ -1,4 +1,4 @@
-import { type Scalar, type Tensor2D } from '@tensorflow/tfjs';
+import { type Tensor2D } from '@tensorflow/tfjs';
 import type {
     CriterionFunction,
     EnsembleTree,
@@ -43,8 +43,6 @@ export abstract class BaseDecisionTree implements Model<EnsembleTree> {
     abstract train(X: Tensor2D, y: Tensor2D): Promise<EnsembleTree>;
 
     abstract predict(X: Tensor2D, trees?: EnsembleTree): Tensor2D;
-
-    abstract evaluate(X: Tensor2D, y: Tensor2D, trees?: EnsembleTree): [Tensor2D, Tensor2D, Scalar];
 
     abstract predictWithMetadata(X: Tensor2D, trees?: EnsembleTree): PredictionMetadata;
 

@@ -92,24 +92,6 @@ export class SoftmaxLogisticRegressor extends LogisticRegressor {
         };
     }
 
-    evaluate(X: Tensor2D, y: Tensor2D, theta?: Tensor2D): [Tensor2D, Tensor2D, Scalar] {
-        assertModelTrained(theta ?? this.theta);
-
-        const result = tidy(() => {
-            const probability = this.hypothesis(X, theta ?? this.theta!);
-
-            // Compute default loss using the loss function
-            const loss = this.lossFunc.compute(y, probability);
-
-            // Compute the metrics
-            const yPred = this.probabilityToClassIndex(probability);
-
-            return [yPred, probability, loss] as [Tensor2D, Tensor2D, Scalar];
-        });
-
-        return result;
-    }
-
     usesOneHotLabels(): boolean {
         return true;
     }

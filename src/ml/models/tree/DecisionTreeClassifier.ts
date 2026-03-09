@@ -1,4 +1,4 @@
-import { tensor2d, tidy, type Scalar, type Tensor2D } from '@tensorflow/tfjs';
+import { tensor2d, tidy, type Tensor2D } from '@tensorflow/tfjs';
 import { BaseDecisionTree } from '../base/BaseDecisionTree';
 import type { EnsembleTree, PredictionMetadata } from '../../types';
 import {
@@ -88,32 +88,5 @@ export class DecisionTreeClassifier extends BaseDecisionTree {
                 classProbabilities.dispose();
             },
         };
-    }
-
-    evaluate(X: Tensor2D, y: Tensor2D, trees?: EnsembleTree): [Tensor2D, Tensor2D, Scalar] {
-        assertModelTrained(trees ?? this.trees);
-
-        const [rootNode] = trees ?? this.trees!; // Use the first tree
-
-        const XArray = X.arraySync();
-
-        const predictions: number[][] = [];
-        for (const sampleFeatures of XArray) {
-            const leafNode = findLeafNode(sampleFeatures, rootNode);
-            predictions.push(leafNode.probabilities!);
-        }
-
-        const result = tidy(() => {
-            const probabilities = tensor2d(predictions);
-
-            const yPred = probabilityToClassIndex(probabilities);
-
-            // Compute default loss using the loss function
-            const loss = this.criterion.loss(y, yPred);
-
-            return [yPred, probabilities, loss] as [Tensor2D, Tensor2D, Scalar];
-        });
-
-        return result;
     }
 }

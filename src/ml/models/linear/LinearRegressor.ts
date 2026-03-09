@@ -69,20 +69,6 @@ export class LinearRegressor extends BaseEstimator {
         };
     }
 
-    evaluate(X: Tensor2D, y: Tensor2D, theta?: Tensor2D): [Tensor2D, Tensor2D, Scalar] {
-        assertModelTrained(theta ?? this.theta);
-
-        const result = tidy(() => {
-            const yPred = this.hypothesis(X, theta ?? this.theta!);
-
-            const loss = this.lossFunc.compute(y, yPred);
-
-            return [yPred, yPred, loss] as [Tensor2D, Tensor2D, Scalar];
-        });
-
-        return result;
-    }
-
     private hypothesis(features: Tensor2D, theta: Tensor2D): Tensor2D {
         return tidy(() => this.addBiasTerm(features).matMul(theta) as Tensor2D);
     }

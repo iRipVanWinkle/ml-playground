@@ -1,4 +1,4 @@
-import { tensor2d, tidy, type Scalar, type Tensor2D } from '@tensorflow/tfjs';
+import { tensor2d, type Tensor2D } from '@tensorflow/tfjs';
 import type { EnsembleTree, PredictionMetadata } from '../../types';
 import { avgPreds } from '../../aggregators';
 import { BaseEnsembleTree, type BaseEnsembleOptions } from '../base/BaseEnsembleTree';
@@ -65,20 +65,5 @@ export class BaggingRegressor extends BaseEnsembleTree {
                 prediction.dispose();
             },
         };
-    }
-
-    evaluate(X: Tensor2D, y: Tensor2D, trees?: EnsembleTree): [Tensor2D, Tensor2D, Scalar] {
-        assertModelTrained(trees ?? this.trees);
-
-        const result = tidy(() => {
-            const yPred = this.predict(X, trees ?? this.trees);
-
-            // Compute default loss using the loss function
-            const loss = this.criterion.loss(y, yPred);
-
-            return [yPred, yPred, loss] as [Tensor2D, Tensor2D, Scalar];
-        });
-
-        return result;
     }
 }
