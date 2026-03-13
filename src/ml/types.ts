@@ -58,7 +58,8 @@ export type CallbackParameters =
     | TreeCallbackParameters
     | NaiveBayesCallbackParameters
     | KMeansCallbackParameters
-    | KNNCallbackParameters;
+    | KNNCallbackParameters
+    | GaussianDistributionCallbackParameters;
 
 export type TrainingState = 'transforming' | 'training' | 'paused' | 'stopped' | 'stepped-forward';
 /**
@@ -363,7 +364,50 @@ export type KNNCallbackParameters = Readonly<{
     params: KNNParams;
 }>;
 
-export type ModelRepresentation = Tensor2D | EnsembleTree | NaiveBayesParams | KNNParams;
+/**
+ * Parameters for diagonal Gaussian Distribution anomaly detection model.
+ */
+export type DiagonalGaussianDistributionParams = Readonly<{
+    type: 'gaussian-distribution';
+    covarianceType: 'diagonal';
+    featureMeans: Float32Array;
+    featureVariances: Float32Array;
+    threshold: number;
+}>;
+
+/**
+ * Parameters for full-covariance Gaussian Distribution anomaly detection model.
+ */
+export type FullGaussianDistributionParams = Readonly<{
+    type: 'gaussian-distribution';
+    covarianceType: 'full';
+    featureMeans: Float32Array;
+    covarianceMatrix: MatrixLike;
+    covarianceInverse: MatrixLike;
+    covarianceDeterminant: number;
+    threshold: number;
+}>;
+
+/**
+ * Union type for Gaussian Distribution parameters (backward compatible).
+ */
+export type GaussianDistributionParams =
+    | DiagonalGaussianDistributionParams
+    | FullGaussianDistributionParams;
+
+export type GaussianDistributionCallbackParameters = Readonly<{
+    threadId: number;
+    iteration: number;
+    threadName?: string;
+    params: GaussianDistributionParams;
+}>;
+
+export type ModelRepresentation =
+    | Tensor2D
+    | EnsembleTree
+    | NaiveBayesParams
+    | KNNParams
+    | GaussianDistributionParams;
 
 /**
  * Maps the internal GPU-based model representation (Tensor2D, etc.)
@@ -377,7 +421,9 @@ export type SerializedModelRepresentation<T extends ModelRepresentation> = T ext
         ? NaiveBayesParams
         : T extends KNNParams
           ? KNNParams
-          : never;
+          : T extends GaussianDistributionParams
+            ? GaussianDistributionParams
+            : never;
 
 /**
  * Interface for machine learning models.
@@ -444,4 +490,15 @@ export type ClusteringMetadata = {
     dispose(): void;
 };
 
-export type PredictionMetadata = ClassificationMetadata | RegressionMetadata | ClusteringMetadata;
+export type AnomalyDetectionMetadata = {
+    type: 'anomaly-detection';
+    predictions: Tensor2D;
+    probabilities: Tensor2D;
+    dispose(): void;
+};
+
+export type PredictionMetadata =
+    | ClassificationMetadata
+    | RegressionMetadata
+    | ClusteringMetadata
+    | AnomalyDetectionMetadata;

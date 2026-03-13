@@ -1,9 +1,13 @@
 import { tensor2d, type Tensor2D } from '@tensorflow/tfjs';
 import type { GaussianNaiveBayesParams, PredictionMetadata } from '../../types';
-import { assertModelTrained, calculateDiagonalGaussianLogPdf } from '../../utils';
 import { BaseNaiveBayes, type BaseNaiveBayesOptions } from '../base/BaseNaiveBayes';
 import { Matrix } from '../../matrix';
-import { calculateMean, calculateVariance } from '../../utils';
+import {
+    calculateMean,
+    calculateVariance,
+    calculateDiagonalGaussianLogPdf,
+    assertModelTrained,
+} from '../../utils';
 
 export type GaussianNaiveBayesOptions = BaseNaiveBayesOptions & {
     varianceSmoothing?: number;
@@ -117,7 +121,6 @@ export class GaussianNaiveBayes extends BaseNaiveBayes<GaussianNaiveBayesParams>
      */
     predict(X: Tensor2D, params?: GaussianNaiveBayesParams): Tensor2D {
         const resolvedParams = params ?? this.params;
-
         assertModelTrained(resolvedParams);
 
         const samplesArray = X.arraySync();
@@ -143,7 +146,6 @@ export class GaussianNaiveBayes extends BaseNaiveBayes<GaussianNaiveBayesParams>
      */
     predictWithMetadata(X: Tensor2D, params?: GaussianNaiveBayesParams): PredictionMetadata {
         const resolvedParams = params ?? this.params;
-
         assertModelTrained(resolvedParams);
 
         const samplesArray = X.arraySync();

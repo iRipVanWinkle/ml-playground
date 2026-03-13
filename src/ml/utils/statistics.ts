@@ -24,8 +24,8 @@ export function calculateMean(
         let sum = 0;
 
         for (let sampleIndex = 0; sampleIndex < numSamples; sampleIndex++) {
-            const sample = indices?.[sampleIndex] ?? sampleIndex;
-            sum += X[sample][featureIndex];
+            const sample = X[indices?.[sampleIndex] ?? sampleIndex];
+            sum += sample[featureIndex];
         }
 
         means[featureIndex] = sum / numSamples;

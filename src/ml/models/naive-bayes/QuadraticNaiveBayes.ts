@@ -1,12 +1,13 @@
 import { tensor2d, type Tensor2D } from '@tensorflow/tfjs';
 import type { PredictionMetadata, QuadraticNaiveBayesParams } from '../../types';
-import { assertModelTrained, calculateFullGaussianLogPdf } from '../../utils';
 import { BaseNaiveBayes, type BaseNaiveBayesOptions } from '../base/BaseNaiveBayes';
 import { Matrix, type MatrixLike } from '../../matrix';
 import {
     calculateMean,
     calculateCovarianceMatrix,
     calculateInverseAndDeterminant,
+    calculateFullGaussianLogPdf,
+    assertModelTrained,
 } from '../../utils';
 
 export type QuadraticNaiveBayesOptions = BaseNaiveBayesOptions & {
@@ -131,7 +132,6 @@ export class QuadraticNaiveBayes extends BaseNaiveBayes<QuadraticNaiveBayesParam
      */
     predict(X: Tensor2D, params?: QuadraticNaiveBayesParams): Tensor2D {
         const resolvedParams = params ?? this.params;
-
         assertModelTrained(resolvedParams);
 
         const samplesArray = X.arraySync();
@@ -157,7 +157,6 @@ export class QuadraticNaiveBayes extends BaseNaiveBayes<QuadraticNaiveBayesParam
      */
     predictWithMetadata(X: Tensor2D, params?: QuadraticNaiveBayesParams): PredictionMetadata {
         const resolvedParams = params ?? this.params;
-
         assertModelTrained(resolvedParams);
 
         const samplesArray = X.arraySync();

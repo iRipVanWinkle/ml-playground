@@ -131,13 +131,6 @@ describe('statistics utils', () => {
 
     describe('calculateCovarianceMatrix', () => {
         it('should calculate the full covariance matrix correctly', () => {
-            // Data array:
-            // x y
-            // 2 4
-            // 4 4
-            // 4 5
-            // 4 5
-            // 6 7
             const X = [
                 [2, 4],
                 [4, 4],
@@ -147,37 +140,27 @@ describe('statistics utils', () => {
             ];
             const means = new Float32Array([4, 5]);
 
-            // Var(X) = 1.6
-            // Var(Y) = 1.2
-            // Cov(X,Y) = E[(X-ux)(Y-uy)]
-            // = [ (2-4)(4-5) + (4-4)(4-5) + (4-4)(5-5) + (4-4)(5-5) + (6-4)(7-5) ] / 5
-            // = [ 2 + 0 + 0 + 0 + 4 ] / 5 = 1.2
-            //
-            // Covariance Matrix:
-            // [ 1.6  1.2 ]
-            // [ 1.2  1.2 ]
-
             const result = calculateCovarianceMatrix(X, means, 2);
 
             expect(result.shape).toEqual([2, 2]);
-            expect(result.array.length).toBe(4); // 2x2 flat
+            expect(result.array.length).toBe(4);
 
-            expect(result.array[0]).toBeCloseTo(1.6); // [0][0] Var(X)
-            expect(result.array[1]).toBeCloseTo(1.2); // [0][1] Cov(X,Y)
-            expect(result.array[2]).toBeCloseTo(1.2); // [1][0] Cov(Y,X)
-            expect(result.array[3]).toBeCloseTo(1.2); // [1][1] Var(Y)
+            expect(result.array[0]).toBeCloseTo(1.6); // Var(X)
+            expect(result.array[1]).toBeCloseTo(1.2); // Cov(X,Y)
+            expect(result.array[2]).toBeCloseTo(1.2); // Cov(Y,X)
+            expect(result.array[3]).toBeCloseTo(1.2); // Var(Y)
         });
 
         it('should calculate the covariance matrix using indices correctly', () => {
             const X = [
                 [100, 100],
-                [2, 4], // index 1
+                [2, 4],
                 [100, 100],
-                [4, 4], // index 3
-                [4, 5], // index 4
-                [4, 5], // index 5
+                [4, 4],
+                [4, 5],
+                [4, 5],
                 [100, 100],
-                [6, 7], // index 7
+                [6, 7],
             ];
             const indices = [1, 3, 4, 5, 7];
             const means = new Float32Array([4, 5]);
@@ -185,10 +168,10 @@ describe('statistics utils', () => {
             const result = calculateCovarianceMatrix(X, means, 2, indices);
 
             expect(result.shape).toEqual([2, 2]);
-            expect(result.array[0]).toBeCloseTo(1.6); // [0][0] Var(X)
-            expect(result.array[1]).toBeCloseTo(1.2); // [0][1] Cov(X,Y)
-            expect(result.array[2]).toBeCloseTo(1.2); // [1][0] Cov(Y,X)
-            expect(result.array[3]).toBeCloseTo(1.2); // [1][1] Var(Y)
+            expect(result.array[0]).toBeCloseTo(1.6);
+            expect(result.array[1]).toBeCloseTo(1.2);
+            expect(result.array[2]).toBeCloseTo(1.2);
+            expect(result.array[3]).toBeCloseTo(1.2);
         });
 
         it('should return zeros for empty dataset', () => {

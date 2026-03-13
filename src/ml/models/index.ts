@@ -20,5 +20,7 @@ export * from './naive-bayes/QuadraticNaiveBayes';
 
 export * from './knn/KNNClassifier';
 export * from './knn/KNNRegressor';
+export * from './gaussian-distribution/DiagonalGaussianDistribution';
+export * from './gaussian-distribution/FullGaussianDistribution';
 
 export * from './PipelineModel';

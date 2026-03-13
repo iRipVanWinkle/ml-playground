@@ -6,6 +6,7 @@ import { treeWorkerDefinition } from './tree/worker.definition';
 import { naiveBayesWorkerDefinition } from './naive-bayes/worker.definition';
 import { kMeansWorkerDefinition } from './k-means/worker.definition';
 import { knnWorkerDefinition } from './knn/worker.definition';
+import { gaussianDistributionWorkerDefinition } from './gaussian-distribution/worker.definition';
 
 export const workerRegistry = new WorkerRegistry([
     linearWorkerDefinition,
@@ -15,6 +16,7 @@ export const workerRegistry = new WorkerRegistry([
     naiveBayesWorkerDefinition,
     kMeansWorkerDefinition,
     knnWorkerDefinition,
+    gaussianDistributionWorkerDefinition,
 ]);
 
 export function getWorkerRegistry(): WorkerRegistry {

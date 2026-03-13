@@ -46,6 +46,12 @@ import type {
     KNNRepresentation,
     KNNSettings,
 } from './knn/types';
+import type {
+    GaussianDistributionCallbackParameters,
+    GaussianDistributionRepresentation,
+    GaussianDistributionSettings,
+    GaussianDistributionTrainingReport,
+} from './gaussian-distribution/types';
 
 export type ModelSettings =
     | LinearSettings
@@ -54,7 +60,8 @@ export type ModelSettings =
     | TreeSettings
     | NaiveBayesSettings
     | KMeansSettings
-    | KNNSettings;
+    | KNNSettings
+    | GaussianDistributionSettings;
 
 export type ModelType = ModelSettings['type'];
 
@@ -65,7 +72,8 @@ export type ModelRepresentation =
     | TreeRepresentation
     | NaiveBayesRepresentation
     | KMeansRepresentation
-    | KNNRepresentation;
+    | KNNRepresentation
+    | GaussianDistributionRepresentation;
 
 export type CallbackParameters =
     | LinearCallbackParameters
@@ -74,7 +82,8 @@ export type CallbackParameters =
     | TreeCallbackParameters
     | NaiveBayesCallbackParameters
     | KMeansCallbackParameters
-    | KNNCallbackParameters;
+    | KNNCallbackParameters
+    | GaussianDistributionCallbackParameters;
 
 export type TrainingReport =
     | LinearTrainingReport
@@ -86,7 +95,8 @@ export type TrainingReport =
     | NaiveBayesTrainingReport
     | KMeansTrainingReport
     | KNNClassificationTrainingReport
-    | KNNRegressionTrainingReport;
+    | KNNRegressionTrainingReport
+    | GaussianDistributionTrainingReport;
 
 export type TrainingSettings<TModelSettings extends ModelSettings = ModelSettings> = {
     taskType: TaskType;

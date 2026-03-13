@@ -7,6 +7,7 @@ import { naiveBayesModelDefinition } from './naive-bayes/ui.definition';
 import type { ModelType } from './types';
 import { kMeansModelDefinition } from './k-means/ui.definition';
 import { knnModelDefinition } from './knn/ui.definition';
+import { gaussianDistributionModelDefinition } from './gaussian-distribution/ui.definition';
 
 export const uiRegistry = new ModelRegistry([
     linearModelDefinition,
@@ -16,6 +17,7 @@ export const uiRegistry = new ModelRegistry([
     naiveBayesModelDefinition,
     kMeansModelDefinition,
     knnModelDefinition,
+    gaussianDistributionModelDefinition,
 ]);
 
 export function getModelRegistry(): ModelRegistry {
