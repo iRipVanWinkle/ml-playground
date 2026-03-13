@@ -106,17 +106,17 @@ export class KMeans implements Model<Tensor2D> {
     }
 
     predict(X: Tensor2D, centroids?: Tensor2D | undefined): Tensor2D {
-        assertModelTrained(centroids ?? this.centroids);
+        const usedCentroids = centroids ?? this.centroids;
+        assertModelTrained(usedCentroids);
 
-        const usedCentroids = centroids ?? this.centroids!;
         const assignments = this.findClosestCentroids(X, usedCentroids);
 
         return assignments;
     }
 
     predictWithMetadata(X: Tensor2D, centroids?: Tensor2D | undefined): PredictionMetadata {
-        assertModelTrained(centroids ?? this.centroids);
-        const usedCentroids = centroids ?? this.centroids!;
+        const usedCentroids = centroids ?? this.centroids;
+        assertModelTrained(usedCentroids);
 
         const assignments = this.findClosestCentroids(X, usedCentroids);
 
