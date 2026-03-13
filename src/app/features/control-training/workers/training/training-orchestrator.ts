@@ -4,22 +4,21 @@ import '@tensorflow/tfjs-backend-wasm';
 import { setWasmPaths } from '@tensorflow/tfjs-backend-wasm';
 import type {
     CallbackParameters,
-    ModelRepresentation,
     TrainingControl,
     TrainingEventEmitter,
     TrainingState,
     ScalerState,
 } from '@/ml/types';
 import { PipelineModel } from '@/ml/models';
-import { DatasetManager } from '@/app/shared/workers';
-import { createPreprocessingPipeline } from '../../helpers';
-import type { TrainingReport } from '@/app/models/types';
-import { getWorkerRegistry } from '@/app/models/worker-registry';
-import type { TrainingSettings } from '@/app/models/types';
 import { EventEmitter } from '@/ml/events/EventEmitter';
 import { TrainingController } from '@/ml/controllers/TrainingController';
-import type { LiveMetrics } from '@/app/shared/workers';
 import { Randomizer } from '@/ml/random/Randomizer';
+import { DatasetManager, type LiveMetrics } from '@/app/shared/workers';
+import type { ModelType, TrainingReport } from '@/app/models/types';
+import { getWorkerRegistry } from '@/app/models/worker-registry';
+import type { TrainingSettings } from '@/app/models/types';
+import type { RepresentationOf } from '@/app/shared/registry';
+import { createPreprocessingPipeline } from '../../helpers';
 
 type TrainingCallbacks = {
     onReport: (report: TrainingReport) => void;
@@ -29,7 +28,7 @@ type TrainingCallbacks = {
     onFinished: () => void;
 };
 
-type TrainedModel = PipelineModel<ModelRepresentation>;
+type TrainedModel = PipelineModel<RepresentationOf<ModelType>>;
 
 const workerRegistry = getWorkerRegistry();
 
@@ -266,7 +265,7 @@ export class TrainingOrchestrator {
 
     private createModel(
         settings: TrainingSettings,
-    ): [PipelineModel<ModelRepresentation>, TrainingEventEmitter, TrainingControl] {
+    ): [PipelineModel<RepresentationOf<ModelType>>, TrainingEventEmitter, TrainingControl] {
         try {
             const worker = workerRegistry.get(settings.modelSettings.type);
             const eventEmitter = new EventEmitter();

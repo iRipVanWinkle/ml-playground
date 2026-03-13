@@ -4,11 +4,11 @@ import { EventEmitter } from '@/ml/events/EventEmitter';
 import type { TransformationSettings } from '../../transform-data';
 import { normalizeFunctionFactory, transformationsFactory } from '@/ml/factories';
 
-export function createPreprocessingPipeline(
-    model: Model<ModelRepresentation>,
+export function createPreprocessingPipeline<T extends ModelRepresentation>(
+    model: Model<T>,
     dataSettings: TransformationSettings,
     eventEmitter?: EventEmitter,
-): PipelineModel<ModelRepresentation> {
+): PipelineModel<T> {
     const transformations = transformationsFactory(dataSettings.transformations);
     const preScaler = normalizeFunctionFactory(dataSettings.normalization);
     const postScaler = transformations.length
