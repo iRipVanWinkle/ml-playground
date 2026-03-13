@@ -1,4 +1,4 @@
-import { Matrix } from '../matrix';
+import { Matrix, type MatrixLike } from '../matrix';
 
 /**
  * Calculates the mean for each feature in a dataset.
@@ -13,7 +13,7 @@ import { Matrix } from '../matrix';
 export function calculateMean(
     X: number[][],
     numFeatures: number,
-    indices?: number[],
+    indices?: ArrayLike<number>,
 ): Float32Array {
     const means = new Float32Array(numFeatures);
     const numSamples = indices?.length ?? X.length;
@@ -44,8 +44,8 @@ export function calculateMean(
  * @returns Float32Array containing the variance of each feature
  */
 export function calculateVariance(
-    X: Float32Array[] | number[][],
-    means: Float32Array,
+    X: ArrayLike<ArrayLike<number>>,
+    means: ArrayLike<number>,
     numFeatures: number,
     indices?: number[],
 ): Float32Array {
@@ -77,10 +77,10 @@ export function calculateVariance(
  * @returns A Matrix representing the [numFeatures x numFeatures] covariance matrix
  */
 export function calculateCovarianceMatrix(
-    X: Float32Array[] | number[][],
-    means: Float32Array,
+    X: ArrayLike<ArrayLike<number>>,
+    means: ArrayLike<number>,
     numFeatures: number,
-    indices?: number[],
+    indices?: ArrayLike<number>,
 ): Matrix {
     const covariance = new Float32Array(numFeatures * numFeatures);
     const numSamples = indices?.length ?? X.length;
@@ -108,4 +108,71 @@ export function calculateCovarianceMatrix(
     }
 
     return new Matrix({ array: covariance, shape: [numFeatures, numFeatures] });
+}
+
+/**
+ * Calculates the log-PDF of a diagonal (independent features) Gaussian distribution.
+ * Equivalent to the sum of univariate Gaussian log-PDFs for each feature.
+ *
+ * @param sample - Feature vector for a single sample
+ * @param means - Mean of each feature
+ * @param variances - Variance of each feature
+ * @returns The total log-probability density
+ */
+export function calculateDiagonalGaussianLogPdf(
+    sample: ArrayLike<number>,
+    means: ArrayLike<number>,
+    variances: ArrayLike<number>,
+): number {
+    let logProb = 0;
+    for (let j = 0; j < sample.length; j++) {
+        const mean = means[j];
+        const variance = variances[j];
+        const x = sample[j];
+
+        // Log of Gaussian PDF: log(1/√(2πσ²)) - (x-μ)²/(2σ²)
+        const logPdf = -0.5 * Math.log(2 * Math.PI * variance) - (x - mean) ** 2 / (2 * variance);
+        logProb += logPdf;
+    }
+
+    return logProb;
+}
+
+/**
+ * Calculates the log-PDF of a multivariate Gaussian distribution with full covariance.
+ *
+ * @param sample - Feature vector for a single sample
+ * @param means - Mean of each feature
+ * @param covarianceInverse - Inverse of the covariance matrix (MatrixLike)
+ * @param covarianceDeterminant - Determinant of the covariance matrix
+ * @returns The log-probability density
+ */
+export function calculateFullGaussianLogPdf(
+    sample: ArrayLike<number>,
+    means: ArrayLike<number>,
+    covarianceInverse: MatrixLike,
+    covarianceDeterminant: number,
+): number {
+    const numFeatures = sample.length;
+    const diff = new Float32Array(numFeatures);
+    for (let i = 0; i < numFeatures; i++) {
+        diff[i] = sample[i] - means[i];
+    }
+
+    // Compute Mahalanobis distance: (x - μ)ᵀ Σ⁻¹ (x - μ)
+    let mahalanobis = 0;
+    for (let i = 0; i < numFeatures; i++) {
+        let sum = 0;
+        for (let j = 0; j < numFeatures; j++) {
+            sum += covarianceInverse.array[i * numFeatures + j] * diff[j];
+        }
+        mahalanobis += diff[i] * sum;
+    }
+
+    // log N(x|μ,Σ) = -0.5 * [d·log(2π) + log(|Σ|) + mahalanobis]
+    const logPdf =
+        -0.5 *
+        (numFeatures * Math.log(2 * Math.PI) + Math.log(covarianceDeterminant) + mahalanobis);
+
+    return logPdf;
 }

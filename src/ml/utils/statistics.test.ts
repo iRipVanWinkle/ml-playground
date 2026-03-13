@@ -1,5 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { calculateMean, calculateVariance, calculateCovarianceMatrix } from './statistics';
+import {
+    calculateMean,
+    calculateVariance,
+    calculateCovarianceMatrix,
+    calculateFullGaussianLogPdf,
+    calculateDiagonalGaussianLogPdf,
+} from './statistics';
 
 describe('statistics utils', () => {
     describe('calculateMean', () => {
@@ -189,6 +195,71 @@ describe('statistics utils', () => {
             const X: number[][] = [];
             const result = calculateCovarianceMatrix(X, new Float32Array([0, 0]), 2);
             expect(Array.from(result.array)).toEqual([0, 0, 0, 0]);
+        });
+    });
+
+    describe('calculateDiagonalGaussianLogPdf', () => {
+        it('should compute correct log-PDF for standard normal', () => {
+            // N(0,1): log-PDF at x=0 should be -0.5*log(2π) ≈ -0.9189
+            const result = calculateDiagonalGaussianLogPdf(
+                [0],
+                new Float32Array([0]),
+                new Float32Array([1]),
+            );
+            expect(result).toBeCloseTo(-0.5 * Math.log(2 * Math.PI));
+        });
+
+        it('should compute correct log-PDF for multiple features', () => {
+            const sample = [1, 2];
+            const means = new Float32Array([1, 2]);
+            const variances = new Float32Array([1, 1]);
+
+            // At the mean, each feature contributes -0.5*log(2π)
+            const expected = 2 * (-0.5 * Math.log(2 * Math.PI));
+            const result = calculateDiagonalGaussianLogPdf(sample, means, variances);
+            expect(result).toBeCloseTo(expected);
+        });
+
+        it('should return lower log-PDF further from the mean', () => {
+            const means = new Float32Array([0]);
+            const variances = new Float32Array([1]);
+
+            const atMean = calculateDiagonalGaussianLogPdf([0], means, variances);
+            const awayFromMean = calculateDiagonalGaussianLogPdf([3], means, variances);
+
+            expect(awayFromMean).toBeLessThan(atMean);
+        });
+    });
+
+    describe('calculateFullGaussianLogPdf', () => {
+        it('should compute correct log-PDF for identity covariance at mean', () => {
+            // 2D standard normal at origin
+            const sample = [0, 0];
+            const means = new Float32Array([0, 0]);
+            const covInverse = {
+                array: new Float32Array([1, 0, 0, 1]),
+                shape: [2, 2] as [number, number],
+            };
+            const det = 1;
+
+            // log N(0|0,I) = -0.5 * (2*log(2π) + log(1) + 0) = -log(2π)
+            const expected = -Math.log(2 * Math.PI);
+            const result = calculateFullGaussianLogPdf(sample, means, covInverse, det);
+            expect(result).toBeCloseTo(expected);
+        });
+
+        it('should return lower log-PDF further from the mean', () => {
+            const means = new Float32Array([0, 0]);
+            const covInverse = {
+                array: new Float32Array([1, 0, 0, 1]),
+                shape: [2, 2] as [number, number],
+            };
+            const det = 1;
+
+            const atMean = calculateFullGaussianLogPdf([0, 0], means, covInverse, det);
+            const awayFromMean = calculateFullGaussianLogPdf([3, 3], means, covInverse, det);
+
+            expect(awayFromMean).toBeLessThan(atMean);
         });
     });
 });

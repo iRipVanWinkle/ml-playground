@@ -1,6 +1,6 @@
 import { tensor2d, type Tensor2D } from '@tensorflow/tfjs';
 import type { GaussianNaiveBayesParams, PredictionMetadata } from '../../types';
-import { assertModelTrained } from '../../utils';
+import { assertModelTrained, calculateDiagonalGaussianLogPdf } from '../../utils';
 import { BaseNaiveBayes, type BaseNaiveBayesOptions } from '../base/BaseNaiveBayes';
 import { Matrix } from '../../matrix';
 import { calculateMean, calculateVariance } from '../../utils';
@@ -190,23 +190,18 @@ export class GaussianNaiveBayes extends BaseNaiveBayes<GaussianNaiveBayesParams>
         const logProbs = new Float32Array(numClasses);
 
         for (let c = 0; c < numClasses; c++) {
-            let logProb = Math.log(classPriors[c]);
+            const meansSlice = classMeans.array.subarray(
+                c * sample.length,
+                (c + 1) * sample.length,
+            );
+            const variancesSlice = classVariances.array.subarray(
+                c * sample.length,
+                (c + 1) * sample.length,
+            );
 
-            const rowOffset = c * sample.length;
-
-            // Calculate log probability for each feature using Gaussian PDF
-            for (let j = 0; j < sample.length; j++) {
-                const mean = classMeans.array[rowOffset + j];
-                const variance = classVariances.array[rowOffset + j];
-                const x = sample[j];
-
-                // Log of Gaussian PDF: log(1/sqrt(2πσ²)) - (x-μ)²/(2σ²)
-                const logPdf =
-                    -0.5 * Math.log(2 * Math.PI * variance) - (x - mean) ** 2 / (2 * variance);
-
-                logProb += logPdf;
-            }
-            logProbs[c] = logProb;
+            logProbs[c] =
+                Math.log(classPriors[c]) +
+                calculateDiagonalGaussianLogPdf(sample, meansSlice, variancesSlice);
         }
 
         return logProbs;

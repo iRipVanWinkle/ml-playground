@@ -1,6 +1,6 @@
 import { tensor2d, type Tensor2D } from '@tensorflow/tfjs';
 import type { PredictionMetadata, QuadraticNaiveBayesParams } from '../../types';
-import { assertModelTrained } from '../../utils';
+import { assertModelTrained, calculateFullGaussianLogPdf } from '../../utils';
 import { BaseNaiveBayes, type BaseNaiveBayesOptions } from '../base/BaseNaiveBayes';
 import { Matrix, type MatrixLike } from '../../matrix';
 import {
@@ -8,7 +8,6 @@ import {
     calculateCovarianceMatrix,
     calculateInverseAndDeterminant,
 } from '../../utils';
-import { EPSILON } from '../../constants';
 
 export type QuadraticNaiveBayesOptions = BaseNaiveBayesOptions & {
     regularization?: number;
@@ -200,36 +199,16 @@ export class QuadraticNaiveBayes extends BaseNaiveBayes<QuadraticNaiveBayesParam
         sample: number[],
         params: QuadraticNaiveBayesParams,
     ): Float32Array {
-        const numFeatures = sample.length;
         const scores = new Float32Array(params.classes.length);
 
         for (let c = 0; c < params.classes.length; c++) {
             const mean = Matrix.from(params.classMeans).row(c);
-            const covInv = params.classCovariancesInverse[c].array;
+            const covInv = params.classCovariancesInverse[c];
             const det = params.classCovariancesDeterminant[c];
 
-            // Calculate (x - mean)
-            const diff = new Float32Array(numFeatures);
-            for (let j = 0; j < diff.length; j++) {
-                diff[j] = sample[j] - mean[j];
-            }
-
-            // Quadratic discriminant score:
-            // score = log(P(class)) - 0.5 * log(|Cov|) - 0.5 * (x-mean)^T * Cov^-1 * (x-mean)
-            let mahalanobis = 0;
-            for (let j = 0; j < numFeatures; j++) {
-                const rowOffset = j * numFeatures;
-                for (let k = 0; k < numFeatures; k++) {
-                    mahalanobis += diff[j] * covInv[rowOffset + k] * diff[k];
-                }
-            }
-
-            const score =
-                Math.log(params.classPriors[c]) -
-                0.5 * Math.log(Math.abs(det) + EPSILON) -
-                0.5 * mahalanobis;
-
-            scores[c] = score;
+            scores[c] =
+                Math.log(params.classPriors[c]) +
+                calculateFullGaussianLogPdf(sample, mean, covInv, det);
         }
 
         return scores;
