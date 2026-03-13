@@ -110,6 +110,13 @@ export const PREPARED_CLASSIFICATION_DATASETS: DatasetOption[] = [
     },
 ];
 
+export const PREPARED_ANOMALY_DATASETS: DatasetOption[] = [
+    {
+        value: './data/server-operational-params.csv',
+        label: 'Server Operational Parameters',
+    },
+];
+
 export const PREPARED_CLUSTERING_DATASETS: DatasetOption[] = [
     {
         value: './data/iris-petal.csv',

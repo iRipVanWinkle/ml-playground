@@ -3,6 +3,7 @@ import { Field, Input, Label, Select, Slider, Switch } from '@/app/shared/ui';
 import type { TaskType } from '@/app/shared/types';
 import {
     DEFAULT_STATE,
+    PREPARED_ANOMALY_DATASETS,
     PREPARED_CLASSIFICATION_DATASETS,
     PREPARED_CLUSTERING_DATASETS,
     PREPARED_REGRESSION_DATASETS,
@@ -91,6 +92,9 @@ export function DataLoader({ disabled, taskType, randomSeed, onChange }: DataLoa
             break;
         case 'clustering':
             datasets = PREPARED_CLUSTERING_DATASETS;
+            break;
+        case 'anomaly':
+            datasets = PREPARED_ANOMALY_DATASETS;
             break;
     }
 
