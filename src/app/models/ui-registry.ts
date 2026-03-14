@@ -9,6 +9,7 @@ import { kMeansModelDefinition } from './k-means/ui.definition';
 import { knnModelDefinition } from './knn/ui.definition';
 import { gaussianDistributionModelDefinition } from './gaussian-distribution/ui.definition';
 import { dbscanModelDefinition } from './dbscan/ui.definition';
+import { isolationForestModelDefinition } from './isolation-forest/ui.definition';
 
 export const uiRegistry = new ModelRegistry([
     linearModelDefinition,
@@ -20,6 +21,7 @@ export const uiRegistry = new ModelRegistry([
     knnModelDefinition,
     gaussianDistributionModelDefinition,
     dbscanModelDefinition,
+    isolationForestModelDefinition,
 ]);
 
 export function getModelRegistry(): ModelRegistry {

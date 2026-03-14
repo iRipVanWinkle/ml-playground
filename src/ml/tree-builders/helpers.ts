@@ -7,7 +7,7 @@ import { Randomizer } from '../random/Randomizer';
  * @param shape - Shape of the 2D array to create.
  * @returns A 2D array filled with zeros.
  */
-export function zeros(shape: number[]) {
+export function zeros(shape: number[]): number[][] {
     return Array.from({ length: shape[0] }, () => Array(shape[1]).fill(0));
 }
 
@@ -142,29 +142,67 @@ export function probabilityToClassIndex(probability: Tensor2D): Tensor2D {
  * Create a bootstrapped sample from the original dataset.
  * @param features The feature matrix.
  * @param targets The target vector.
- * @param iteration The current iteration number (used for seeding).
+ * @param seed The current iteration number (used for seeding).
  * @returns A bootstrapped sample of features and targets.
  */
 export function bootstrapSample(
     features: Tensor2D,
     targets: Tensor2D,
-    iteration: number,
+    seed: number,
 ): [Tensor2D, Tensor2D] {
     const numSamples = features.shape[0];
     return tidy(() => {
-        const indicesTensor = Randomizer.randomUniform(
-            [numSamples],
-            0,
-            numSamples,
-            'int32',
-            iteration,
-        );
+        const indicesTensor = Randomizer.randomUniform([numSamples], 0, numSamples, 'int32', seed);
 
         // Gather the rows for features and targets using the sampled indices
         const bootstrappedFeatures = features.gather(indicesTensor);
         const bootstrappedTargets = targets.gather(indicesTensor);
 
         return [bootstrappedFeatures, bootstrappedTargets];
+    });
+}
+
+/**
+ * Create a subsampled feature matrix by randomly selecting rows without replacement.
+ * @param features The feature matrix.
+ * @param sampleSize Optional size of the subsampled dataset (defaults to the original dataset size).
+ * @param seed The random seed for reproducibility.
+ * @returns A subsampled dataset of features.
+ */
+export function subsampleFeatures(features: Tensor2D, sampleSize: number, seed: number): Tensor2D {
+    const numSamples = features.shape[0];
+    const actual = Math.min(sampleSize, numSamples);
+
+    return tidy(() => {
+        const indicesTensor = Randomizer.randomUniqueNumber(
+            [actual],
+            0,
+            numSamples - 1,
+            'int32',
+            seed,
+        );
+        const subsampleFeatures = features.gather(indicesTensor);
+
+        return subsampleFeatures;
+    });
+}
+
+/**
+ * Create a bootstrapped features from the original dataset.
+ * @param features The feature matrix.
+ * @param sampleSize The number of samples to draw.
+ * @param seed The random seed for reproducibility.
+ * @returns A bootstrapped dataset of features.
+ */
+export function bootstrapFeatures(features: Tensor2D, sampleSize: number, seed: number): Tensor2D {
+    const numSamples = features.shape[0];
+    const actual = Math.min(sampleSize, numSamples);
+
+    return tidy(() => {
+        const indicesTensor = Randomizer.randomUniform([actual], 0, numSamples, 'int32', seed);
+        const subsampleFeatures = features.gather(indicesTensor);
+
+        return subsampleFeatures;
     });
 }
 

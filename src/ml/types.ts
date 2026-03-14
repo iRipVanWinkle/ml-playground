@@ -28,6 +28,13 @@ export type TreeCallbackParameters = Readonly<{
     threadName?: string;
 }>;
 
+export type IsolationForestCallbackParameters = Readonly<{
+    threadId: number;
+    iteration: number;
+    ensemble: IsolationEnsembleTree;
+    threadName?: string;
+}>;
+
 export type OptimizerCallbackParameters = Readonly<{
     threadId: number;
     iteration: number;
@@ -56,6 +63,7 @@ export type KMeansCallbackParameters = Readonly<{
 export type CallbackParameters =
     | OptimizerCallbackParameters
     | TreeCallbackParameters
+    | IsolationForestCallbackParameters
     | NaiveBayesCallbackParameters
     | KMeansCallbackParameters
     | KNNCallbackParameters
@@ -322,6 +330,11 @@ export type TreeNode = {
 
 export type EnsembleTree = ReadonlyArray<TreeNode>;
 
+export type IsolationEnsembleTree = {
+    trees: EnsembleTree;
+    scoreThreshold: number;
+};
+
 /**
  * Parameters for trained Gaussian Naive Bayes model.
  */
@@ -426,6 +439,7 @@ export type DBSCANCallbackParameters = Readonly<{
 export type ModelRepresentation =
     | Tensor2D
     | EnsembleTree
+    | IsolationEnsembleTree
     | NaiveBayesParams
     | KNNParams
     | GaussianDistributionParams

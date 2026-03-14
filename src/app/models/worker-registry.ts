@@ -8,6 +8,7 @@ import { kMeansWorkerDefinition } from './k-means/worker.definition';
 import { knnWorkerDefinition } from './knn/worker.definition';
 import { gaussianDistributionWorkerDefinition } from './gaussian-distribution/worker.definition';
 import { dbscanWorkerDefinition } from './dbscan/worker.definition';
+import { isolationForestWorkerDefinition } from './isolation-forest/worker.definition';
 
 export const workerRegistry = new WorkerRegistry([
     linearWorkerDefinition,
@@ -19,6 +20,7 @@ export const workerRegistry = new WorkerRegistry([
     knnWorkerDefinition,
     gaussianDistributionWorkerDefinition,
     dbscanWorkerDefinition,
+    isolationForestWorkerDefinition,
 ]);
 
 export function getWorkerRegistry(): WorkerRegistry {

@@ -7,7 +7,7 @@ export function DecisionTreeParameters({
     report,
     dataset,
 }: ParametersVisualizationProps<TrainingReport>) {
-    const supportsTreeParameters = report.type === 'tree';
+    const supportsTreeParameters = report.type === 'tree' || report.type === 'isolation-forest';
     const featureLabels = useMemo(() => dataset.headers.slice(1), [dataset.headers]);
 
     if (!supportsTreeParameters) {

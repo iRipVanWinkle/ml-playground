@@ -58,6 +58,12 @@ import type {
     DBSCANSettings,
     DBSCANTrainingReport,
 } from './dbscan/types';
+import type {
+    IsolationForestCallbackParameters,
+    IsolationForestRepresentation,
+    IsolationForestSettings,
+    IsolationForestTrainingReport,
+} from './isolation-forest/types';
 
 export type ModelSettings =
     | LinearSettings
@@ -68,7 +74,8 @@ export type ModelSettings =
     | KMeansSettings
     | KNNSettings
     | GaussianDistributionSettings
-    | DBSCANSettings;
+    | DBSCANSettings
+    | IsolationForestSettings;
 
 export type ModelType = ModelSettings['type'];
 
@@ -81,7 +88,8 @@ export type ModelRepresentation =
     | KMeansRepresentation
     | KNNRepresentation
     | GaussianDistributionRepresentation
-    | DBSCANRepresentation;
+    | DBSCANRepresentation
+    | IsolationForestRepresentation;
 
 export type CallbackParameters =
     | LinearCallbackParameters
@@ -92,7 +100,8 @@ export type CallbackParameters =
     | KMeansCallbackParameters
     | KNNCallbackParameters
     | GaussianDistributionCallbackParameters
-    | DBSCANCallbackParameters;
+    | DBSCANCallbackParameters
+    | IsolationForestCallbackParameters;
 
 export type TrainingReport =
     | LinearTrainingReport
@@ -106,7 +115,8 @@ export type TrainingReport =
     | KNNClassificationTrainingReport
     | KNNRegressionTrainingReport
     | GaussianDistributionTrainingReport
-    | DBSCANTrainingReport;
+    | DBSCANTrainingReport
+    | IsolationForestTrainingReport;
 
 export type TrainingSettings<TModelSettings extends ModelSettings = ModelSettings> = {
     taskType: TaskType;

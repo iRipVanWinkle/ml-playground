@@ -115,6 +115,10 @@ export const PREPARED_ANOMALY_DATASETS: DatasetOption[] = [
         value: './data/server-operational-params.csv',
         label: 'Server Operational Parameters',
     },
+    {
+        value: './data/server-operational-params-big.csv',
+        label: 'Server Operational Parameters Big (10k rows)',
+    },
 ];
 
 export const PREPARED_CLUSTERING_DATASETS: DatasetOption[] = [
