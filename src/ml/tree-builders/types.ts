@@ -5,7 +5,7 @@ export interface FeatureSelector {
 }
 
 export interface SplitStrategy {
-    findBestSplit(features: number[][], targets: number[][], indices: number[]): SplitResult | null;
+    findBestSplit(indices: number[], features: number[][], targets: number[][]): SplitResult | null;
 }
 
 export interface SplitResult {

@@ -15,9 +15,9 @@ export abstract class BaseSplitStrategy implements SplitStrategy {
     }
 
     findBestSplit(
+        indices: number[],
         features: number[][],
         targets: number[][],
-        indices: number[],
     ): SplitResult | null {
         let bestSplit: SplitResult | null = null;
         let bestImpurityReduction = -Infinity;

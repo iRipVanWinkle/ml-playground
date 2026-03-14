@@ -57,7 +57,7 @@ describe('RandomThresholdSplitStrategy', () => {
                 [0, 1],
             ];
             const indices = [0, 1, 2, 3, 4];
-            const result = strategy.findBestSplit(features, targets, indices);
+            const result = strategy.findBestSplit(indices, features, targets);
             expect(result).not.toBeNull();
             expect(result!.featureIndex).toBe(0);
             expect(typeof result!.threshold).toBe('number');
@@ -73,7 +73,7 @@ describe('RandomThresholdSplitStrategy', () => {
                 [1, 0],
             ];
             const indices = [0, 1, 2];
-            const result = strategy.findBestSplit(features, targets, indices);
+            const result = strategy.findBestSplit(indices, features, targets);
             expect(result).toBeNull();
         });
 
@@ -91,7 +91,7 @@ describe('RandomThresholdSplitStrategy', () => {
                 [0, 1],
             ];
             const indices = [0, 1, 2, 3];
-            const result = strategyWithMinLeaf.findBestSplit(features, targets, indices);
+            const result = strategyWithMinLeaf.findBestSplit(indices, features, targets);
             expect(result).toBeNull(); // Cannot split without violating minSamplesLeaf
         });
 
@@ -115,7 +115,7 @@ describe('RandomThresholdSplitStrategy', () => {
                 [0, 1],
             ];
             const indices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-            const result = strategyWithMoreThresholds.findBestSplit(features, targets, indices);
+            const result = strategyWithMoreThresholds.findBestSplit(indices, features, targets);
             expect(result).not.toBeNull();
         });
 
@@ -133,7 +133,7 @@ describe('RandomThresholdSplitStrategy', () => {
                 [0, 1],
             ];
             const indices = [0, 1, 2, 3];
-            const result = strategyWithOneThreshold.findBestSplit(features, targets, indices);
+            const result = strategyWithOneThreshold.findBestSplit(indices, features, targets);
             expect(result).not.toBeNull();
         });
 
@@ -151,7 +151,7 @@ describe('RandomThresholdSplitStrategy', () => {
                 [0, 1],
             ];
             const indices = [0, 1, 2, 3];
-            const result = strategy.findBestSplit(features, targets, indices);
+            const result = strategy.findBestSplit(indices, features, targets);
             expect(result).not.toBeNull();
             expect([0, 1]).toContain(result!.featureIndex);
         });

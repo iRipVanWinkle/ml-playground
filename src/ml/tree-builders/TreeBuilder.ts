@@ -134,7 +134,7 @@ export class TreeBuilder {
 
         // Find the best split
         console.time(`Find best split: depth=${depth}, numSamples=${numSamples}`);
-        const bestSplit = this.context!.splitStrategy.findBestSplit(features, targets, indices);
+        const bestSplit = this.context!.splitStrategy.findBestSplit(indices, features, targets);
         console.timeEnd(`Find best split: depth=${depth}, numSamples=${numSamples}`);
 
         if (!bestSplit) {

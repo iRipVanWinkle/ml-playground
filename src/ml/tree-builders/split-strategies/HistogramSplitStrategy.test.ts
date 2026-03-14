@@ -60,7 +60,7 @@ describe('HistogramSplitStrategy', () => {
                 [0, 1],
             ];
             const indices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-            const result = strategy.findBestSplit(features, targets, indices);
+            const result = strategy.findBestSplit(indices, features, targets);
             expect(result).not.toBeNull();
             expect(result!.featureIndex).toBe(0);
             expect(typeof result!.threshold).toBe('number');
@@ -76,7 +76,7 @@ describe('HistogramSplitStrategy', () => {
                 [1, 0],
             ];
             const indices = [0, 1, 2];
-            const result = strategy.findBestSplit(features, targets, indices);
+            const result = strategy.findBestSplit(indices, features, targets);
             expect(result).toBeNull();
         });
 
@@ -100,7 +100,7 @@ describe('HistogramSplitStrategy', () => {
                 [0, 1],
             ];
             const indices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-            const result = strategyWithMinLeaf.findBestSplit(features, targets, indices);
+            const result = strategyWithMinLeaf.findBestSplit(indices, features, targets);
             expect(result).toBeNull(); // Cannot split without violating minSamplesLeaf
         });
 
@@ -124,7 +124,7 @@ describe('HistogramSplitStrategy', () => {
                 [0, 1],
             ];
             const indices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-            const result = strategyWithMoreBins.findBestSplit(features, targets, indices);
+            const result = strategyWithMoreBins.findBestSplit(indices, features, targets);
             expect(result).not.toBeNull();
         });
 
@@ -135,7 +135,7 @@ describe('HistogramSplitStrategy', () => {
                 [0, 1],
             ];
             const indices = [0, 1];
-            const result = strategy.findBestSplit(features, targets, indices);
+            const result = strategy.findBestSplit(indices, features, targets);
             expect(result).not.toBeNull();
         });
 
@@ -143,7 +143,7 @@ describe('HistogramSplitStrategy', () => {
             const features = Array.from({ length: 100 }, (_, i) => [i]);
             const targets = Array.from({ length: 100 }, (_, i) => (i < 50 ? [1, 0] : [0, 1]));
             const indices = Array.from({ length: 100 }, (_, i) => i);
-            const result = strategy.findBestSplit(features, targets, indices);
+            const result = strategy.findBestSplit(indices, features, targets);
             expect(result).not.toBeNull();
         });
 
@@ -161,7 +161,7 @@ describe('HistogramSplitStrategy', () => {
                 [0, 1],
             ];
             const indices = [0, 1, 2, 3];
-            const result = strategy.findBestSplit(features, targets, indices);
+            const result = strategy.findBestSplit(indices, features, targets);
             expect(result).not.toBeNull();
             expect([0, 1]).toContain(result!.featureIndex);
         });
@@ -180,7 +180,7 @@ describe('HistogramSplitStrategy', () => {
                 [0, 1],
             ];
             const indices = [0, 1, 2, 3, 4];
-            const result = strategyWithDefault.findBestSplit(features, targets, indices);
+            const result = strategyWithDefault.findBestSplit(indices, features, targets);
             expect(result).not.toBeNull();
         });
     });

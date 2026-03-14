@@ -44,7 +44,7 @@ describe('StandardSplitStrategy', () => {
                 [1, 0],
             ]; // All same class
             const indices = [0, 1, 2];
-            const result = strategy.findBestSplit(features, targets, indices);
+            const result = strategy.findBestSplit(indices, features, targets);
             expect(result).toBeNull();
         });
 
@@ -57,7 +57,7 @@ describe('StandardSplitStrategy', () => {
                 [0, 1],
             ]; // Classes split at feature value 2.5
             const indices = [0, 1, 2, 3];
-            const result = strategy.findBestSplit(features, targets, indices);
+            const result = strategy.findBestSplit(indices, features, targets);
             expect(result).not.toBeNull();
             expect(result!.featureIndex).toBe(0);
             expect(result!.threshold).toBe(2.5);
@@ -78,7 +78,7 @@ describe('StandardSplitStrategy', () => {
                 [0, 1],
             ];
             const indices = [0, 1, 2, 3];
-            const result = strategyWithMinLeaf.findBestSplit(features, targets, indices);
+            const result = strategyWithMinLeaf.findBestSplit(indices, features, targets);
             expect(result).toBeNull(); // Cannot split without violating minSamplesLeaf
         });
 
@@ -90,7 +90,7 @@ describe('StandardSplitStrategy', () => {
                 [1, 0],
             ];
             const indices = [0, 1, 2];
-            const result = strategy.findBestSplit(features, targets, indices);
+            const result = strategy.findBestSplit(indices, features, targets);
             expect(result).toBeNull();
         });
 
@@ -108,7 +108,7 @@ describe('StandardSplitStrategy', () => {
                 [0, 1],
             ];
             const indices = [0, 1, 2, 3];
-            const result = strategy.findBestSplit(features, targets, indices);
+            const result = strategy.findBestSplit(indices, features, targets);
             expect(result).not.toBeNull();
             expect([0, 1]).toContain(result!.featureIndex);
         });
@@ -124,7 +124,7 @@ describe('StandardSplitStrategy', () => {
                 [0, 1],
             ];
             const indices = [1, 2, 3, 4]; // Only middle 4 samples
-            const result = strategy.findBestSplit(features, targets, indices);
+            const result = strategy.findBestSplit(indices, features, targets);
             expect(result).not.toBeNull();
             expect(result!.featureIndex).toBe(0);
             expect(result!.threshold).toBe(3.5);
