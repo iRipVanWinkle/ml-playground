@@ -23,4 +23,6 @@ export * from './knn/KNNRegressor';
 export * from './gaussian-distribution/DiagonalGaussianDistribution';
 export * from './gaussian-distribution/FullGaussianDistribution';
 
+export * from './dbscan/DBSCAN';
+
 export * from './PipelineModel';

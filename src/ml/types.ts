@@ -59,7 +59,8 @@ export type CallbackParameters =
     | NaiveBayesCallbackParameters
     | KMeansCallbackParameters
     | KNNCallbackParameters
-    | GaussianDistributionCallbackParameters;
+    | GaussianDistributionCallbackParameters
+    | DBSCANCallbackParameters;
 
 export type TrainingState = 'transforming' | 'training' | 'paused' | 'stopped' | 'stepped-forward';
 /**
@@ -402,12 +403,33 @@ export type GaussianDistributionCallbackParameters = Readonly<{
     params: GaussianDistributionParams;
 }>;
 
+/**
+ * Parameters for trained DBSCAN clustering model.
+ */
+export type DBSCANParams = Readonly<{
+    type: 'dbscan';
+    corePoints: MatrixLike;
+    coreLabels: Int32Array;
+}>;
+
+export type DBSCANCallbackParameters = Readonly<{
+    threadId: number;
+    iteration: number;
+    threadName?: string;
+    assignments: Int32Array;
+    numClusters: number;
+    activePointIndex?: number;
+    epsilon: number;
+    params?: DBSCANParams;
+}>;
+
 export type ModelRepresentation =
     | Tensor2D
     | EnsembleTree
     | NaiveBayesParams
     | KNNParams
-    | GaussianDistributionParams;
+    | GaussianDistributionParams
+    | DBSCANParams;
 
 /**
  * Maps the internal GPU-based model representation (Tensor2D, etc.)
@@ -423,7 +445,9 @@ export type SerializedModelRepresentation<T extends ModelRepresentation> = T ext
           ? KNNParams
           : T extends GaussianDistributionParams
             ? GaussianDistributionParams
-            : never;
+            : T extends DBSCANParams
+              ? DBSCANParams
+              : never;
 
 /**
  * Interface for machine learning models.

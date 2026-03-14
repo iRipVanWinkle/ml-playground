@@ -52,6 +52,12 @@ import type {
     GaussianDistributionSettings,
     GaussianDistributionTrainingReport,
 } from './gaussian-distribution/types';
+import type {
+    DBSCANCallbackParameters,
+    DBSCANRepresentation,
+    DBSCANSettings,
+    DBSCANTrainingReport,
+} from './dbscan/types';
 
 export type ModelSettings =
     | LinearSettings
@@ -61,7 +67,8 @@ export type ModelSettings =
     | NaiveBayesSettings
     | KMeansSettings
     | KNNSettings
-    | GaussianDistributionSettings;
+    | GaussianDistributionSettings
+    | DBSCANSettings;
 
 export type ModelType = ModelSettings['type'];
 
@@ -73,7 +80,8 @@ export type ModelRepresentation =
     | NaiveBayesRepresentation
     | KMeansRepresentation
     | KNNRepresentation
-    | GaussianDistributionRepresentation;
+    | GaussianDistributionRepresentation
+    | DBSCANRepresentation;
 
 export type CallbackParameters =
     | LinearCallbackParameters
@@ -83,7 +91,8 @@ export type CallbackParameters =
     | NaiveBayesCallbackParameters
     | KMeansCallbackParameters
     | KNNCallbackParameters
-    | GaussianDistributionCallbackParameters;
+    | GaussianDistributionCallbackParameters
+    | DBSCANCallbackParameters;
 
 export type TrainingReport =
     | LinearTrainingReport
@@ -96,7 +105,8 @@ export type TrainingReport =
     | KMeansTrainingReport
     | KNNClassificationTrainingReport
     | KNNRegressionTrainingReport
-    | GaussianDistributionTrainingReport;
+    | GaussianDistributionTrainingReport
+    | DBSCANTrainingReport;
 
 export type TrainingSettings<TModelSettings extends ModelSettings = ModelSettings> = {
     taskType: TaskType;
