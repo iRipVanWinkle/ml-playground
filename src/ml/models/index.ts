@@ -18,4 +18,7 @@ export * from './tree/BaggingRegressor';
 export * from './naive-bayes/GaussianNaiveBayes';
 export * from './naive-bayes/QuadraticNaiveBayes';
 
+export * from './knn/KNNClassifier';
+export * from './knn/KNNRegressor';
+
 export * from './PipelineModel';

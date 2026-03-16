@@ -6,6 +6,7 @@ import { treeModelDefinition } from './tree/ui.definition';
 import { naiveBayesModelDefinition } from './naive-bayes/ui.definition';
 import type { ModelType } from './types';
 import { kMeansModelDefinition } from './k-means/ui.definition';
+import { knnModelDefinition } from './knn/ui.definition';
 
 export const uiRegistry = new ModelRegistry([
     linearModelDefinition,
@@ -14,6 +15,7 @@ export const uiRegistry = new ModelRegistry([
     treeModelDefinition,
     naiveBayesModelDefinition,
     kMeansModelDefinition,
+    knnModelDefinition,
 ]);
 
 export function getModelRegistry(): ModelRegistry {

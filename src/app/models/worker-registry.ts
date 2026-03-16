@@ -5,6 +5,7 @@ import { neuralWorkerDefinition } from './neural/worker.definition';
 import { treeWorkerDefinition } from './tree/worker.definition';
 import { naiveBayesWorkerDefinition } from './naive-bayes/worker.definition';
 import { kMeansWorkerDefinition } from './k-means/worker.definition';
+import { knnWorkerDefinition } from './knn/worker.definition';
 
 export const workerRegistry = new WorkerRegistry([
     linearWorkerDefinition,
@@ -13,6 +14,7 @@ export const workerRegistry = new WorkerRegistry([
     treeWorkerDefinition,
     naiveBayesWorkerDefinition,
     kMeansWorkerDefinition,
+    knnWorkerDefinition,
 ]);
 
 export function getWorkerRegistry(): WorkerRegistry {

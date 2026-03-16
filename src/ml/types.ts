@@ -57,7 +57,8 @@ export type CallbackParameters =
     | OptimizerCallbackParameters
     | TreeCallbackParameters
     | NaiveBayesCallbackParameters
-    | KMeansCallbackParameters;
+    | KMeansCallbackParameters
+    | KNNCallbackParameters;
 
 export type TrainingState = 'transforming' | 'training' | 'paused' | 'stopped' | 'stepped-forward';
 /**
@@ -345,7 +346,24 @@ export type QuadraticNaiveBayesParams = Readonly<{
 
 export type NaiveBayesParams = GaussianNaiveBayesParams | QuadraticNaiveBayesParams;
 
-export type ModelRepresentation = Tensor2D | EnsembleTree | NaiveBayesParams;
+/**
+ * Parameters for trained K-Nearest Neighbors model.
+ */
+export type KNNParams = Readonly<{
+    type: 'knn';
+    XTrain: Tensor2D;
+    yTrain: Tensor2D;
+    classes: number[];
+}>;
+
+export type KNNCallbackParameters = Readonly<{
+    threadId: number;
+    iteration: number;
+    threadName?: string;
+    params: KNNParams;
+}>;
+
+export type ModelRepresentation = Tensor2D | EnsembleTree | NaiveBayesParams | KNNParams;
 
 /**
  * Maps the internal GPU-based model representation (Tensor2D, etc.)
@@ -357,7 +375,9 @@ export type SerializedModelRepresentation<T extends ModelRepresentation> = T ext
       ? EnsembleTree
       : T extends NaiveBayesParams
         ? NaiveBayesParams
-        : never;
+        : T extends KNNParams
+          ? KNNParams
+          : never;
 
 /**
  * Interface for machine learning models.

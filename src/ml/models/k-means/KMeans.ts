@@ -145,7 +145,7 @@ export class KMeans implements Model<Tensor2D> {
     private computeCentroids(data: Tensor2D, assignments: Tensor2D): Tensor2D {
         return tidy(() => {
             const labels = assignments.squeeze();
-            const hot = oneHot(labels, this.numClusters);
+            const hot = oneHot(labels, this.numClusters).toFloat();
             const counts = hot.sum(0).expandDims(1);
             const summed = hot.transpose().matMul(data);
 

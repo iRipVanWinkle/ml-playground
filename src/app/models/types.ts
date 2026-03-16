@@ -39,6 +39,13 @@ import type {
     KMeansSettings,
     KMeansTrainingReport,
 } from './k-means/types';
+import type {
+    KNNCallbackParameters,
+    KNNClassificationTrainingReport,
+    KNNRegressionTrainingReport,
+    KNNRepresentation,
+    KNNSettings,
+} from './knn/types';
 
 export type ModelSettings =
     | LinearSettings
@@ -46,7 +53,8 @@ export type ModelSettings =
     | NeuralSettings
     | TreeSettings
     | NaiveBayesSettings
-    | KMeansSettings;
+    | KMeansSettings
+    | KNNSettings;
 
 export type ModelType = ModelSettings['type'];
 
@@ -56,7 +64,8 @@ export type ModelRepresentation =
     | NeuralRepresentation
     | TreeRepresentation
     | NaiveBayesRepresentation
-    | KMeansRepresentation;
+    | KMeansRepresentation
+    | KNNRepresentation;
 
 export type CallbackParameters =
     | LinearCallbackParameters
@@ -64,7 +73,8 @@ export type CallbackParameters =
     | NeuralCallbackParameters
     | TreeCallbackParameters
     | NaiveBayesCallbackParameters
-    | KMeansCallbackParameters;
+    | KMeansCallbackParameters
+    | KNNCallbackParameters;
 
 export type TrainingReport =
     | LinearTrainingReport
@@ -74,7 +84,9 @@ export type TrainingReport =
     | TreeClassificationTrainingReport
     | TreeRegressionTrainingReport
     | NaiveBayesTrainingReport
-    | KMeansTrainingReport;
+    | KMeansTrainingReport
+    | KNNClassificationTrainingReport
+    | KNNRegressionTrainingReport;
 
 export type TrainingSettings<TModelSettings extends ModelSettings = ModelSettings> = {
     taskType: TaskType;
