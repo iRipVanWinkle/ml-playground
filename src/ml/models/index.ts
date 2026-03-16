@@ -26,4 +26,7 @@ export * from './gaussian-distribution/FullGaussianDistribution';
 
 export * from './dbscan/DBSCAN';
 
+export * from './hierarchical/AgglomerativeClustering';
+export * from './hierarchical/DivisiveClustering';
+
 export * from './PipelineModel';

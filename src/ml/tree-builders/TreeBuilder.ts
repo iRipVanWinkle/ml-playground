@@ -1,6 +1,6 @@
 import type { TrainingControl, TrainingEventEmitter, TreeNode } from '../types';
 import type { SplitStrategy, TreeBuilderOptions } from './types';
-import { gather, zeros } from './helpers';
+import { gather, zeros } from '../utils';
 
 type RootNodeRef = {
     current: TreeNode | null;

@@ -1,6 +1,7 @@
-import type { CriterionFunction } from '../../../ml/types';
+import type { CriterionFunction } from '../../types';
+import { gather } from '../../utils';
 import { AllFeatureSelector } from '../feature-selectors';
-import { gather, getColumnValues, splitIndices } from '../helpers';
+import { getColumnValues, splitIndices } from '../helpers';
 import type { FeatureSelector, SplitResult, SplitStrategy, SplitStrategyOptions } from '../types';
 
 export abstract class BaseSplitStrategy implements SplitStrategy {

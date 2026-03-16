@@ -3,29 +3,6 @@ import type { TreeNode } from '../types';
 import { Randomizer } from '../random/Randomizer';
 
 /**
- * Creates a 2D array filled with zeros.
- * @param shape - Shape of the 2D array to create.
- * @returns A 2D array filled with zeros.
- */
-export function zeros(shape: number[]): number[][] {
-    return Array.from({ length: shape[0] }, () => Array(shape[1]).fill(0));
-}
-
-/**
- * Gathers rows from a 2D array based on provided indices.
- * @param features - The 2D array to gather rows from.
- * @param indices - The indices of the rows to gather.
- * @returns A 2D array containing the gathered rows.
- */
-export function gather(features: number[][], indices: number[]): number[][] {
-    if (indices.length === 0) {
-        return zeros([0, features[0].length]);
-    }
-
-    return indices.map((idx) => features[idx]);
-}
-
-/**
  * Extracts values from a specific column in a 2D array based on provided row indices.
  * @param features - The 2D array to extract values from.
  * @param indexes - The indices of the rows to extract values from.

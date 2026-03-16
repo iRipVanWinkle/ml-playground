@@ -65,6 +65,12 @@ import type {
     IsolationForestSettings,
     IsolationForestTrainingReport,
 } from './isolation-forest/types';
+import type {
+    HierarchicalClusteringCallbackParameters,
+    HierarchicalClusteringRepresentation,
+    HierarchicalClusteringSettings,
+    HierarchicalClusteringTrainingReport,
+} from './hierarchical/types';
 
 export type ModelSettings =
     | LinearSettings
@@ -76,7 +82,8 @@ export type ModelSettings =
     | KNNSettings
     | GaussianDistributionSettings
     | DBSCANSettings
-    | IsolationForestSettings;
+    | IsolationForestSettings
+    | HierarchicalClusteringSettings;
 
 export type ModelType = ModelSettings['type'];
 
@@ -90,7 +97,8 @@ export type ModelRepresentation =
     | KNNRepresentation
     | GaussianDistributionRepresentation
     | DBSCANRepresentation
-    | IsolationForestRepresentation;
+    | IsolationForestRepresentation
+    | HierarchicalClusteringRepresentation;
 
 export type CallbackParameters =
     | LinearCallbackParameters
@@ -102,7 +110,8 @@ export type CallbackParameters =
     | KNNCallbackParameters
     | GaussianDistributionCallbackParameters
     | DBSCANCallbackParameters
-    | IsolationForestCallbackParameters;
+    | IsolationForestCallbackParameters
+    | HierarchicalClusteringCallbackParameters;
 
 export type TrainingReport =
     | LinearTrainingReport
@@ -118,7 +127,8 @@ export type TrainingReport =
     | GaussianDistributionTrainingReport
     | DBSCANClusteringTrainingReport
     | DBSCANAnomalyTrainingReport
-    | IsolationForestTrainingReport;
+    | IsolationForestTrainingReport
+    | HierarchicalClusteringTrainingReport;
 
 export type TrainingSettings<TModelSettings extends ModelSettings = ModelSettings> = {
     taskType: TaskType;

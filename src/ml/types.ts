@@ -60,6 +60,15 @@ export type KMeansCallbackParameters = Readonly<{
     inertia: number;
 }>;
 
+export type HierarchicalClusteringCallbackParameters = Readonly<{
+    threadId: number;
+    iteration: number;
+    threadName?: string;
+    assignments: Int32Array;
+    numClusters: number;
+    params?: HierarchicalClusteringParams;
+}>;
+
 export type CallbackParameters =
     | OptimizerCallbackParameters
     | TreeCallbackParameters
@@ -68,7 +77,8 @@ export type CallbackParameters =
     | KMeansCallbackParameters
     | KNNCallbackParameters
     | GaussianDistributionCallbackParameters
-    | DBSCANCallbackParameters;
+    | DBSCANCallbackParameters
+    | HierarchicalClusteringCallbackParameters;
 
 export type TrainingState = 'transforming' | 'training' | 'paused' | 'stopped' | 'stepped-forward';
 /**
@@ -415,6 +425,14 @@ export type GaussianDistributionCallbackParameters = Readonly<{
 }>;
 
 /**
+ * Parameters for trained Divisive Clustering model.
+ */
+export type HierarchicalClusteringParams = Readonly<{
+    centroids: MatrixLike;
+    assignments: Int32Array;
+}>;
+
+/**
  * Parameters for trained DBSCAN clustering model.
  */
 export type DBSCANParams = Readonly<{
@@ -441,25 +459,8 @@ export type ModelRepresentation =
     | NaiveBayesParams
     | KNNParams
     | GaussianDistributionParams
-    | DBSCANParams;
-
-/**
- * Maps the internal GPU-based model representation (Tensor2D, etc.)
- * to its CPU-based serialized equivalent (MatrixLike, etc.)
- */
-export type SerializedModelRepresentation<T extends ModelRepresentation> = T extends Tensor2D
-    ? MatrixLike
-    : T extends EnsembleTree
-      ? EnsembleTree
-      : T extends NaiveBayesParams
-        ? NaiveBayesParams
-        : T extends KNNParams
-          ? KNNParams
-          : T extends GaussianDistributionParams
-            ? GaussianDistributionParams
-            : T extends DBSCANParams
-              ? DBSCANParams
-              : never;
+    | DBSCANParams
+    | HierarchicalClusteringParams;
 
 /**
  * Interface for machine learning models.

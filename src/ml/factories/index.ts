@@ -6,7 +6,7 @@ export { thetaInitializerFactory } from './theta-initialization/factory';
 export { criterionFactory } from './criterion/factory';
 export { lossFunctionFactory } from './loss-function/factory';
 export { optimizerFactory } from './optimizer/factory';
-export { distanceFactory } from './distance/factory';
+export { distanceFactory, arrayClusteringMathFactory } from './distance/factory';
 export { centroidInitializationFactory } from './centroid-initialization/factory';
 
 // Types

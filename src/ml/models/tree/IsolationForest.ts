@@ -14,9 +14,8 @@ import {
     bootstrapFeatures,
     subsampleFeatures,
     TreeBuilder,
-    zeros,
 } from '../../tree-builders';
-import { assertModelTrained } from '../../utils';
+import { assertModelTrained, zeros } from '../../utils';
 
 export type IsolationForestOptions = {
     estimators?: number;
