@@ -60,7 +60,11 @@ export function TrainingSection() {
                 <TrainingMetricsGrid modelType={modelType} />
 
                 <div className="flex flex-col gap-4">
-                    <ModelDataPlot modelType={modelType} dataset={dataset} />
+                    <ModelDataPlot
+                        modelType={modelType}
+                        dataset={dataset}
+                        modelSettings={modelSettings}
+                    />
 
                     <Separator />
 

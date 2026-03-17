@@ -23,7 +23,9 @@ export interface ModelDefinition<TKey extends ModelType = ModelType> {
     defaultReport: (taskType: TaskType) => TrainingReportOf<TKey>;
     visualization: {
         metricsGridComponent: ComponentType<MainMetricsProps<TrainingReportOf<TKey>>>;
-        modelDataPlotComponent: ComponentType<ModelDataPlotProps<TrainingReportOf<TKey>>>;
+        modelDataPlotComponent: ComponentType<
+            ModelDataPlotProps<TrainingReportOf<TKey>, SettingsOf<TKey>>
+        >;
         plots?: PlotsVisualization<TKey>;
         parametersComponent?: ComponentType<ParametersVisualizationProps<TrainingReportOf<TKey>>>;
     };
@@ -51,9 +53,10 @@ export type MainMetricsProps<TTrainingReport> = {
     report: TTrainingReport;
 };
 
-export type ModelDataPlotProps<TTrainingReport> = {
+export type ModelDataPlotProps<TTrainingReport, TSettings = ModelSettings> = {
     dataset: Dataset;
     report: TTrainingReport;
+    modelSettings: TSettings;
 };
 
 export type PlotProps<TTrainingReport> = {
