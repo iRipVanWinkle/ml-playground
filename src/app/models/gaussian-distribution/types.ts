@@ -1,9 +1,8 @@
-import type { BaseTrainingReport } from '@/app/shared/types';
+import type { BaseAnomalyReport } from '@/app/shared/types';
 import type {
     GaussianDistributionCallbackParameters as GaussianDistributionCallbackParametersMl,
     GaussianDistributionParams,
 } from '@/ml/types';
-import type { MatrixLike } from '@/app/shared/helpers';
 
 export type GaussianDistributionVariant = 'diagonal' | 'full';
 
@@ -24,12 +23,7 @@ export type GaussianDistributionCallbackParameters = {
     callbackParameters: GaussianDistributionCallbackParametersMl;
 };
 
-export type GaussianDistributionTrainingReport = BaseTrainingReport & {
+export type GaussianDistributionTrainingReport = BaseAnomalyReport & {
     type: 'gaussian-distribution';
-    taskType: 'anomaly';
-    trainAnomalyRate: number;
-    testAnomalyRate?: number;
-    trainPredictions: MatrixLike;
-    testPredictions?: MatrixLike;
     params: GaussianDistributionParams;
 };

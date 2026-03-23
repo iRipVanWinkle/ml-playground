@@ -36,7 +36,6 @@ export class DiagonalGaussianDistribution extends BaseGaussianDistribution<Diago
             covarianceType: 'diagonal',
             featureMeans,
             featureVariances,
-            threshold: this.threshold,
         };
 
         await this.eventEmitter?.emit('callback', {

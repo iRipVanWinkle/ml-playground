@@ -64,17 +64,7 @@ export function LinearPlots({ dataset, report }: LinerPlotsProps) {
                     title: { text: 'Data & Model' },
                     xaxis: { title: { text: x1Label } },
                     yaxis: { title: { text: yLabel } },
-                    legend: {
-                        x: 0.5,
-                        y: -0.2,
-                        xanchor: 'center',
-                        yanchor: 'top',
-                        orientation: 'h',
-                    },
-                    margin: { l: 40, r: 40, t: 40, b: 40 },
                 }}
-                style={{ width: '100%', height: '100%' }}
-                useResizeHandler
             />
         );
     } else if (is3DPlot) {

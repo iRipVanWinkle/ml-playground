@@ -53,10 +53,11 @@ import type {
     GaussianDistributionTrainingReport,
 } from './gaussian-distribution/types';
 import type {
+    DBSCANAnomalyTrainingReport,
     DBSCANCallbackParameters,
+    DBSCANClusteringTrainingReport,
     DBSCANRepresentation,
     DBSCANSettings,
-    DBSCANTrainingReport,
 } from './dbscan/types';
 import type {
     IsolationForestCallbackParameters,
@@ -115,7 +116,8 @@ export type TrainingReport =
     | KNNClassificationTrainingReport
     | KNNRegressionTrainingReport
     | GaussianDistributionTrainingReport
-    | DBSCANTrainingReport
+    | DBSCANClusteringTrainingReport
+    | DBSCANAnomalyTrainingReport
     | IsolationForestTrainingReport;
 
 export type TrainingSettings<TModelSettings extends ModelSettings = ModelSettings> = {

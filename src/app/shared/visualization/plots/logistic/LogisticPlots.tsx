@@ -107,14 +107,6 @@ export function LogisticPlots({ dataset, report }: LogisticPlotsProps) {
                     title: { text: 'Data & Model' },
                     xaxis: { title: { text: headers[1] } },
                     yaxis: { title: { text: headers[2] } },
-                    legend: {
-                        x: 0.5,
-                        y: -0.2,
-                        xanchor: 'center',
-                        yanchor: 'top',
-                        orientation: 'h',
-                    },
-                    margin: { l: 40, r: 40, t: 40, b: 40 },
                 }}
             />
         );

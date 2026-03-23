@@ -20,8 +20,8 @@ export const uiRegistry = new ModelRegistry([
     kMeansModelDefinition,
     knnModelDefinition,
     gaussianDistributionModelDefinition,
-    dbscanModelDefinition,
     isolationForestModelDefinition,
+    dbscanModelDefinition,
 ]);
 
 export function getModelRegistry(): ModelRegistry {

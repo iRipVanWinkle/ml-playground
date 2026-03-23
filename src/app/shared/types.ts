@@ -67,3 +67,12 @@ export type BaseClassificationReport = BaseTrainingReport & {
 export type BaseClusteringReport = BaseTrainingReport & {
     taskType: 'clustering';
 };
+
+export type BaseAnomalyReport = BaseTrainingReport & {
+    taskType: 'anomaly';
+    trainAnomalyRate?: number;
+    testAnomalyRate?: number;
+
+    trainPredictions?: MatrixLike;
+    testPredictions?: MatrixLike;
+};

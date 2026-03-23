@@ -78,7 +78,7 @@ export class DBSCAN implements Model<DBSCANParams> {
         this.params = {
             type: 'dbscan',
             corePoints: getMatrixFromArray(corePoints),
-            coreLabels: new Int32Array(corePoints.length),
+            coreLabels: new Int32Array(corePoints.length).fill(UNVISITED),
         };
 
         const context = {

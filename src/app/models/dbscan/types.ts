@@ -2,7 +2,7 @@ import type {
     DBSCANCallbackParameters as DBSCANCallbackParametersMl,
     DBSCANParams,
 } from '@/ml/types';
-import type { BaseClusteringReport } from '@/app/shared/types';
+import type { BaseAnomalyReport, BaseClusteringReport } from '@/app/shared/types';
 import type { MatrixLike } from '@/app/shared/helpers';
 import type { DistanceConfig } from '@/ml/factories';
 
@@ -23,7 +23,7 @@ export type DBSCANCallbackParameters = {
     callbackParameters: DBSCANCallbackParametersMl;
 };
 
-export type DBSCANTrainingReport = BaseClusteringReport & {
+export type DBSCANClusteringTrainingReport = BaseClusteringReport & {
     type: 'dbscan';
     numClusters: number;
     activePointIndex?: number;
@@ -33,3 +33,12 @@ export type DBSCANTrainingReport = BaseClusteringReport & {
     trainSilhouetteScore?: number;
     testSilhouetteScore?: number;
 };
+
+export type DBSCANAnomalyTrainingReport = BaseAnomalyReport & {
+    type: 'dbscan';
+    numClusters: number;
+    activePointIndex?: number;
+    params: DBSCANParams | null;
+};
+
+export type DBSCANTrainingReport = DBSCANClusteringTrainingReport | DBSCANAnomalyTrainingReport;

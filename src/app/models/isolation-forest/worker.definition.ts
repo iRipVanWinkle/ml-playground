@@ -7,8 +7,11 @@ export const isolationForestWorkerDefinition: WorkerDefinition<'isolation-forest
     modelFactory: isolationForestModelFactory,
     liveMetricsFactory: IsolationForestLiveMetrics.factory,
 
-    extractParameters: (report) => report.params ? {
-        trees: report.params,
-        scoreThreshold: report.scoreThreshold,
-    } : null,
+    extractParameters: (report) =>
+        report.params
+            ? {
+                  trees: report.params,
+                  scoreThreshold: report.scoreThreshold,
+              }
+            : null,
 };

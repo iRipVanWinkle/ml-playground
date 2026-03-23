@@ -70,7 +70,7 @@ export function GaussianDistributionSettings({
                     id="gaussianThreshold"
                     data-testid="gaussian-threshold-input"
                     type="number"
-                    step="any"
+                    step="0.001"
                     min={0}
                     value={settings.threshold}
                     onChange={(e) => handleChange({ threshold: parseFloat(e.target.value) || 0 })}
@@ -83,7 +83,7 @@ export function GaussianDistributionSettings({
                     id="gaussianSmoothing"
                     data-testid="gaussian-smoothing-input"
                     type="number"
-                    step="any"
+                    step="0.000001"
                     min={0}
                     value={settings.varianceSmoothing}
                     onChange={(e) =>

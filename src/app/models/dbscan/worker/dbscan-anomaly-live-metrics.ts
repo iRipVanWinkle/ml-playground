@@ -1,9 +1,5 @@
-import type {
-    GaussianDistributionCallbackParameters,
-    GaussianDistributionParams,
-    Model,
-} from '@/ml/types';
-import type { GaussianDistributionTrainingReport } from '../types';
+import type { DBSCANCallbackParameters, DBSCANParams, Model } from '@/ml/types';
+import type { DBSCANAnomalyTrainingReport } from '../types';
 import {
     getSafeMatrixFromTensor,
     type DatasetManager,
@@ -11,28 +7,25 @@ import {
 } from '@/app/shared/workers';
 import type { MatrixLike } from '@/app/shared/helpers';
 
-export class GaussianDistributionLiveMetrics
-    implements
-        LiveMetrics<GaussianDistributionCallbackParameters, GaussianDistributionTrainingReport>
+export class DBSCANAnomalyLiveMetrics
+    implements LiveMetrics<DBSCANCallbackParameters, DBSCANAnomalyTrainingReport>
 {
-    private model: Model<GaussianDistributionParams>;
+    private model: Model<DBSCANParams>;
     private datasetManager: DatasetManager;
 
-    static factory(model: Model<GaussianDistributionParams>, datasetManager: DatasetManager) {
-        return new GaussianDistributionLiveMetrics(model, datasetManager);
+    static factory(model: Model<DBSCANParams>, datasetManager: DatasetManager) {
+        return new DBSCANAnomalyLiveMetrics(model, datasetManager);
     }
 
-    private constructor(model: Model<GaussianDistributionParams>, datasetManager: DatasetManager) {
+    private constructor(model: Model<DBSCANParams>, datasetManager: DatasetManager) {
         this.model = model;
         this.datasetManager = datasetManager;
     }
 
-    async calculateMetrics(
-        params: GaussianDistributionCallbackParameters,
-    ): Promise<GaussianDistributionTrainingReport> {
+    async calculateMetrics(params: DBSCANCallbackParameters): Promise<DBSCANAnomalyTrainingReport> {
         const trainingData = this.datasetManager.getTrainingData();
         const testData = this.datasetManager.getTestData();
-        const { params: modelParams } = params;
+        const { params: modelParams, numClusters, activePointIndex } = params;
 
         const trainPredictionsTensor = this.model.predict(trainingData.X, modelParams);
         const testPredictionsTensor = testData
@@ -48,13 +41,15 @@ export class GaussianDistributionLiveMetrics
         testPredictionsTensor?.dispose();
 
         return {
-            type: 'gaussian-distribution',
+            type: 'dbscan',
             taskType: 'anomaly',
+            numClusters,
+            activePointIndex,
             trainAnomalyRate: calcAnomalyRate(trainPredictions),
             testAnomalyRate: testPredictions ? calcAnomalyRate(testPredictions) : undefined,
             trainPredictions,
             testPredictions,
-            params: modelParams,
+            params: modelParams ?? null,
         };
     }
 }

@@ -1,8 +1,8 @@
 import type { ModelDefinition } from '@/app/shared/registry/types';
 import { GaussianDistributionSettings } from './ui/GaussianDistributionSettings';
 import { GaussianDistributionMainMetrics } from './ui/GaussianDistributionMainMetrics';
-import { GaussianDistributionPlots } from './ui/GaussianDistributionPlots';
 import { DEFAULT_REPORT, DEFAULT_SETTINGS } from './defaults';
+import { AnomalyPlots } from '@/app/shared/visualization';
 
 export const gaussianDistributionModelDefinition: ModelDefinition<'gaussian-distribution'> = {
     key: 'gaussian-distribution',
@@ -15,14 +15,14 @@ export const gaussianDistributionModelDefinition: ModelDefinition<'gaussian-dist
     defaultReport: () => DEFAULT_REPORT,
     visualization: {
         metricsGridComponent: GaussianDistributionMainMetrics,
-        modelDataPlotComponent: GaussianDistributionPlots,
+        modelDataPlotComponent: AnomalyPlots,
     },
 
     progress: {
         getProgressInfo: ({ report }) => ({
             type: 'determinate',
-            label: report.trainAnomalyRate > 0 ? 'Done' : '0/1',
-            current: report.trainAnomalyRate > 0 ? 1 : 0,
+            label: (report.trainAnomalyRate ?? 0) > 0 ? 'Done' : '0/1',
+            current: (report.trainAnomalyRate ?? 0) > 0 ? 1 : 0,
             max: 1,
         }),
     },

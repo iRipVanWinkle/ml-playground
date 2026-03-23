@@ -1,4 +1,6 @@
 import { fill, greater, tensor2d, tidy, where, type Tensor2D } from '@tensorflow/tfjs';
+import { TrainingController } from '../../controllers/TrainingController';
+import { EventEmitter } from '../../events/EventEmitter';
 import type {
     AnomalyDetectionMetadata,
     IsolationEnsembleTree,
@@ -15,7 +17,6 @@ import {
     zeros,
 } from '../../tree-builders';
 import { assertModelTrained } from '../../utils';
-import { EventEmitter } from '../../events/EventEmitter';
 
 export type IsolationForestOptions = {
     estimators?: number;
@@ -45,6 +46,7 @@ export class IsolationForest implements Model<IsolationEnsembleTree> {
     private bootstrap: boolean;
 
     private eventEmitter?: TrainingEventEmitter;
+    private trainingController?: TrainingControl;
 
     private treeBuilder: TreeBuilder;
     private trees: IsolationEnsembleTree = { trees: [], scoreThreshold: 0.5 };
@@ -58,12 +60,15 @@ export class IsolationForest implements Model<IsolationEnsembleTree> {
         this.bootstrap = options.bootstrap ?? false;
 
         this.eventEmitter = options.eventEmitter;
+        this.trainingController = options.trainingController;
 
         const dummyEmitter = new EventEmitter();
-        this.treeBuilder = new TreeBuilder(dummyEmitter, options.trainingController);
+        const dummyTrainingController = new TrainingController(dummyEmitter);
+        this.treeBuilder = new TreeBuilder(dummyEmitter, dummyTrainingController);
     }
 
     async train(X: Tensor2D): Promise<IsolationEnsembleTree> {
+        const isSyncBackend = true;
         const numSamples = X.shape[0];
         this.actualMaxSamples = Math.min(this.maxSamples, numSamples);
         const maxDepth = Math.ceil(Math.log2(this.actualMaxSamples));
@@ -73,6 +78,12 @@ export class IsolationForest implements Model<IsolationEnsembleTree> {
 
         // Step 1: Build an ensemble of isolation trees on random subsamples
         for (let i = 0; i < this.estimators; i++) {
+            // Handle pause/step logic
+            await this.trainingController?.handleControlFlow(isSyncBackend);
+            if (this.trainingController?.isTrainingStopped) {
+                break;
+            }
+
             const [subsample, dummyTargets] = await this.prepareTrainingData(X, i);
 
             const splitStrategy = new IsolationSplitStrategy(i);

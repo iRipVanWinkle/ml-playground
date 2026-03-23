@@ -6,7 +6,8 @@ export function IsolationForestMainMetrics({
 }: MainMetricsProps<IsolationForestTrainingReport>) {
     const { trainAnomalyRate, testAnomalyRate } = report;
 
-    const trainValue = (trainAnomalyRate * 100).toFixed(2) + '%';
+    const trainValue =
+        trainAnomalyRate !== undefined ? (trainAnomalyRate * 100).toFixed(2) + '%' : '--';
     const testValue =
         testAnomalyRate !== undefined ? (testAnomalyRate * 100).toFixed(2) + '%' : '--';
 

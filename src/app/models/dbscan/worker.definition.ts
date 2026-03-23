@@ -1,10 +1,17 @@
 import type { WorkerDefinition } from '@/app/shared/registry';
 import { dbscanModelFactory } from './worker/dbscan-model-factory';
-import { DBSCANLiveMetrics } from './worker/dbscan-live-metrics';
+import { DBSCANAnomalyLiveMetrics } from './worker/dbscan-anomaly-live-metrics';
+import { DBSCANClusteringLiveMetrics } from './worker/dbscan-clustering-live-metrics';
 
 export const dbscanWorkerDefinition: WorkerDefinition<'dbscan'> = {
     key: 'dbscan',
     modelFactory: dbscanModelFactory,
-    liveMetricsFactory: DBSCANLiveMetrics.factory,
+    liveMetricsFactory: (model, datasetManager, settings) => {
+        if (settings.taskType === 'clustering') {
+            return DBSCANClusteringLiveMetrics.factory(model, datasetManager, settings);
+        } else {
+            return DBSCANAnomalyLiveMetrics.factory(model, datasetManager);
+        }
+    },
     extractParameters: (report) => report.params ?? null,
 };

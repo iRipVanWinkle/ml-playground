@@ -285,11 +285,11 @@ describe('DiagonalGaussianDistribution', () => {
         const inDistMeta = model.predictWithMetadata(tf.tensor2d([[0, 0]]));
         const outDistMeta = model.predictWithMetadata(tf.tensor2d([[10, 10]]));
 
-        expect(inDist).toBe(inDistMeta.probabilities.arraySync()[0][0] < threshold ? 1 : 0);
-        expect(outDist).toBe(outDistMeta.probabilities.arraySync()[0][0] < threshold ? 1 : 0);
+        expect(inDist).toBe(inDistMeta.probabilities.arraySync()[0][0] < threshold ? -1 : 1);
+        expect(outDist).toBe(outDistMeta.probabilities.arraySync()[0][0] < threshold ? -1 : 1);
         // Expect a 0,0 prediction to definitely have higher prob than threshold
-        expect(inDist).toBe(0);
+        expect(inDist).toBe(1);
         // Expect a far point to be anomalous
-        expect(outDist).toBe(1);
+        expect(outDist).toBe(-1);
     });
 });

@@ -386,7 +386,6 @@ export type DiagonalGaussianDistributionParams = Readonly<{
     covarianceType: 'diagonal';
     featureMeans: Float32Array;
     featureVariances: Float32Array;
-    threshold: number;
 }>;
 
 /**
@@ -399,7 +398,6 @@ export type FullGaussianDistributionParams = Readonly<{
     covarianceMatrix: MatrixLike;
     covarianceInverse: MatrixLike;
     covarianceDeterminant: number;
-    threshold: number;
 }>;
 
 /**

@@ -41,7 +41,7 @@ export abstract class BaseGaussianDistribution<T extends GaussianDistributionPar
 
     /**
      * Predicts anomaly scores for input features.
-     * Returns 1 for anomalies (low probability), 0 for normal (high probability).
+     * Returns -1 for anomalies (low probability), 1 for normal (high probability).
      */
     predict(X: Tensor2D, params?: T): Tensor2D {
         const modelParams = params ?? this.params;
@@ -54,7 +54,7 @@ export abstract class BaseGaussianDistribution<T extends GaussianDistributionPar
         for (let i = 0; i < numSamples; i++) {
             const sample = XArray[i];
             const probability = this.calculateProbability(sample, modelParams);
-            predictions.push([probability < modelParams.threshold ? 1 : 0]);
+            predictions.push([probability < this.threshold ? -1 : 1]);
         }
 
         return tensor2d(predictions);
@@ -62,7 +62,7 @@ export abstract class BaseGaussianDistribution<T extends GaussianDistributionPar
 
     /**
      * Predicts anomaly scores with metadata for input features.
-     * Returns predictions (1 for anomalies, 0 for normal) and probability densities.
+     * Returns predictions (-1 for anomalies, 1 for normal) and probability densities.
      */
     predictWithMetadata(X: Tensor2D, params?: T): AnomalyDetectionMetadata {
         const modelParams = params ?? this.params;
@@ -76,7 +76,7 @@ export abstract class BaseGaussianDistribution<T extends GaussianDistributionPar
         for (let i = 0; i < numSamples; i++) {
             const sample = XArray[i];
             const probability = this.calculateProbability(sample, modelParams);
-            predictionsArray.push([probability < modelParams.threshold ? 1 : 0]);
+            predictionsArray.push([probability < this.threshold ? -1 : 1]);
             probabilitiesArray.push([probability]);
         }
 

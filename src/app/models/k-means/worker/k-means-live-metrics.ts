@@ -5,8 +5,11 @@ import {
     type DatasetManager,
     type LiveMetrics,
 } from '@/app/shared/workers';
-import type { KMeansTrainingReport } from '../types';
+import type { KMeansSettings, KMeansTrainingReport } from '../types';
 import { kMeansMetricData } from '@/app/shared/visualization/metrics/k-means/calculations';
+import type { TrainingSettings } from '../../types';
+import { distanceFactory } from '@/ml/factories';
+import type { DistanceMetric } from '@/ml/distance';
 
 export class KMeansLiveMetrics
     implements LiveMetrics<KMeansCallbackParameters, KMeansTrainingReport>
@@ -15,19 +18,31 @@ export class KMeansLiveMetrics
 
     private model: Model<ModelRepresentation>;
     private datasetManager: DatasetManager;
+    private distanceMetric: DistanceMetric;
 
-    static factory(model: Model<Tensor2D>, datasetManager: DatasetManager) {
-        return new KMeansLiveMetrics(model, datasetManager);
+    static factory(
+        model: Model<Tensor2D>,
+        datasetManager: DatasetManager,
+        settings: TrainingSettings<KMeansSettings>,
+    ) {
+        const distanceMetric = distanceFactory(settings.modelSettings.distance);
+        return new KMeansLiveMetrics(model, datasetManager, distanceMetric);
     }
 
-    private constructor(model: Model<Tensor2D>, datasetManager: DatasetManager) {
+    private constructor(
+        model: Model<Tensor2D>,
+        datasetManager: DatasetManager,
+        distanceMetric: DistanceMetric,
+    ) {
         this.model = model;
         this.datasetManager = datasetManager;
+        this.distanceMetric = distanceMetric;
     }
 
     async calculateMetrics(params: KMeansCallbackParameters): Promise<KMeansTrainingReport> {
         const trainingData = this.datasetManager.getTrainingData();
         const testData = this.datasetManager.getTestData();
+        const distanceMetric = this.distanceMetric;
 
         const { iteration, assignments, centroids, inertia } = params;
 
@@ -48,9 +63,9 @@ export class KMeansLiveMetrics
             getSafeMatrixFromTensor(assignments),
             getSafeMatrixFromTensor(centroids),
             getSafeMatrixFromTensor(testAssignments),
-            kMeansMetricData(trainingData.X, assignments, centroids),
+            kMeansMetricData(trainingData.X, assignments, centroids, distanceMetric),
             testData && testAssignments
-                ? kMeansMetricData(testData.X, testAssignments, centroids)
+                ? kMeansMetricData(testData.X, testAssignments, centroids, distanceMetric)
                 : undefined,
         ]);
 

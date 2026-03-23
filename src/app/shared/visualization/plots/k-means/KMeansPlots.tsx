@@ -16,6 +16,7 @@ export function KMeansPlots({ dataset, report }: KMeansPlotsProps) {
 
     const { getColor } = useColor();
 
+    const isKMeans = report.type === 'k-means';
     const is2DPlot = trainInputFeatures[0]?.length === 2;
     const is3DPlot = trainInputFeatures[0]?.length === 3;
 
@@ -49,7 +50,7 @@ export function KMeansPlots({ dataset, report }: KMeansPlotsProps) {
 
     const [x1Label, x2Label, x3Label] = headers;
 
-    const hasValidClusters = trainClusterData && centroidData.x.length > 0;
+    const hasValidClusters = isKMeans && trainClusterData && centroidData.x.length > 0;
 
     if (is2DPlot) {
         const plotData = [];

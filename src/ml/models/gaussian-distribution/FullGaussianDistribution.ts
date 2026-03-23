@@ -46,7 +46,6 @@ export class FullGaussianDistribution extends BaseGaussianDistribution<FullGauss
             covarianceMatrix,
             covarianceInverse: inverse,
             covarianceDeterminant: determinant,
-            threshold: this.threshold,
         };
 
         await this.eventEmitter?.emit('callback', {
