@@ -1,6 +1,6 @@
 import type { TypedArray } from '@/app/shared/helpers';
 
-export type BinaryLineParams = {
+type BinaryLineParams = {
     x: TypedArray;
     y: TypedArray;
     thresholds: TypedArray;
@@ -8,7 +8,7 @@ export type BinaryLineParams = {
     color: string;
 };
 
-export type MulticlassLineParams = {
+type MulticlassLineParams = {
     x: TypedArray;
     y: TypedArray;
     thresholds: TypedArray;
@@ -26,7 +26,7 @@ type OptimalThresholdMarkerParams = {
     color: string;
 };
 
-export type ThresholdMarkersParams = {
+type ThresholdMarkersParams = {
     fpr: TypedArray;
     tpr: TypedArray;
     thresholds: TypedArray;
