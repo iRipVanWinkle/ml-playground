@@ -1,5 +1,3 @@
-export type OptimizerType = 'batch' | 'sgd' | 'momentum' | 'adam';
-
 type OptimizerBasicConfig = {
     maxIterations: number;
     tolerance?: number;
