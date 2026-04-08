@@ -20,17 +20,17 @@ npm ci            # Install dependencies
 
 ## Key Commands
 
-| Command              | Purpose                                    |
-| -------------------- | ------------------------------------------ |
-| `npm run dev`        | Start dev server (http://localhost:5173)    |
-| `npm run build`      | Production build (typecheck + vite build)   |
-| `npm run lint`       | ESLint check (.ts, .tsx files)             |
-| `npm run lint:fix`   | ESLint auto-fix                            |
-| `npm run format`     | Prettier format all files                  |
-| `npm run typecheck`  | TypeScript type check (`tsc --noEmit`)     |
-| `npm run test`       | Run unit tests (Vitest)                    |
-| `npm run test:e2e`   | Run E2E tests (Playwright)                |
-| `npm run check`      | Run all checks: lint, format, typecheck, test, e2e |
+| Command             | Purpose                                            |
+| ------------------- | -------------------------------------------------- |
+| `npm run dev`       | Start dev server (http://localhost:5173)           |
+| `npm run build`     | Production build (typecheck + vite build)          |
+| `npm run lint`      | ESLint check (.ts, .tsx files)                     |
+| `npm run lint:fix`  | ESLint auto-fix                                    |
+| `npm run format`    | Prettier format all files                          |
+| `npm run typecheck` | TypeScript type check (`tsc --noEmit`)             |
+| `npm run test`      | Run unit tests (Vitest)                            |
+| `npm run test:e2e`  | Run E2E tests (Playwright)                         |
+| `npm run check`     | Run all checks: lint, format, typecheck, test, e2e |
 
 ## Validation
 
