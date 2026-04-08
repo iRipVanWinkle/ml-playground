@@ -14,8 +14,11 @@ export function assert(condition: boolean, message: string): asserts condition {
  * @param theta - The model parameters to check.
  */
 export function assertModelTrained(value: unknown): asserts value is NonNullable<unknown> {
+    const isNillable = value === null || value === undefined;
+    const isEmptyArray = Array.isArray(value) && value.length === 0;
+
     assert(
-        !!value && (!Array.isArray(value) || value.length > 0),
+        !isNillable && !isEmptyArray,
         'Model has not been trained yet. Please call train() first.',
     );
 }
