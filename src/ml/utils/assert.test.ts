@@ -23,15 +23,21 @@ describe('assert utils', () => {
         });
 
         it('should throw if value is null', () => {
-            expect(() => assertModelTrained(null)).toThrow('Model has not been trained yet. Please call train() first.');
+            expect(() => assertModelTrained(null)).toThrow(
+                'Model has not been trained yet. Please call train() first.',
+            );
         });
 
         it('should throw if value is undefined', () => {
-            expect(() => assertModelTrained(undefined)).toThrow('Model has not been trained yet. Please call train() first.');
+            expect(() => assertModelTrained(undefined)).toThrow(
+                'Model has not been trained yet. Please call train() first.',
+            );
         });
 
         it('should throw if value is an empty array', () => {
-            expect(() => assertModelTrained([])).toThrow('Model has not been trained yet. Please call train() first.');
+            expect(() => assertModelTrained([])).toThrow(
+                'Model has not been trained yet. Please call train() first.',
+            );
         });
     });
 });
