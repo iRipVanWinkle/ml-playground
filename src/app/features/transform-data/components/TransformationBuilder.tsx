@@ -1,7 +1,6 @@
-import { startTransition, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Button, Field } from '@/app/shared/ui';
-import { useTransformations } from '../store';
-import { resetTransformations, updateTransformations } from '../store/actions';
+import { setTransformations, useTransformations } from '@/app/store';
 import {
     createEmptyTransformation,
     updateTransformationType,
@@ -9,28 +8,16 @@ import {
     removeTransformation,
 } from '../libs';
 import { TransformationItem } from './TransformationItem';
-import type { TaskType, TransformationType } from '@/app/shared/types';
+import type { TransformationType } from '@/app/shared/types';
 
 type TransformationBuilderProps = {
     disabled?: boolean;
     numFeatures: number;
-    taskType: TaskType;
 };
 
-export function TransformationBuilder({
-    disabled,
-    numFeatures,
-    taskType,
-}: TransformationBuilderProps) {
+export function TransformationBuilder({ disabled, numFeatures }: TransformationBuilderProps) {
     const transformations = useTransformations();
     const [localTransformations, setLocalTransformations] = useState(transformations);
-
-    useEffect(() => {
-        startTransition(() => {
-            resetTransformations();
-            setLocalTransformations([]);
-        });
-    }, [taskType]);
 
     const handleNewTransformation = () => {
         const updatedTransformations = [...localTransformations, createEmptyTransformation()];
@@ -40,7 +27,7 @@ export function TransformationBuilder({
     const handleRemoveTransformation = (index: number) => {
         const updatedTransformations = removeTransformation(localTransformations, index);
         setLocalTransformations(updatedTransformations);
-        updateTransformations(updatedTransformations);
+        setTransformations(updatedTransformations);
     };
 
     const handleUpdateDegree = (index: number, degree: number) => {
@@ -50,13 +37,13 @@ export function TransformationBuilder({
             degree,
         );
         setLocalTransformations(updatedTransformations);
-        updateTransformations(updatedTransformations);
+        setTransformations(updatedTransformations);
     };
 
     const handleUpdateType = (index: number, type: TransformationType) => {
         const updatedTransformations = updateTransformationType(localTransformations, index, type);
         setLocalTransformations(updatedTransformations);
-        updateTransformations(updatedTransformations);
+        setTransformations(updatedTransformations);
     };
 
     return (

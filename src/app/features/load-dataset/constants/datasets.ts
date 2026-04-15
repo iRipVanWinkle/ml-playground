@@ -1,4 +1,4 @@
-import type { DataSectionState } from '../store/types';
+import type { DataSectionState } from '../types';
 
 type DatasetOption = {
     value: string;

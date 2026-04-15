@@ -2,7 +2,7 @@ import type { Dataset } from '@/app/shared/types';
 import { EnhancedTabs } from '@/app/shared/ui';
 import type { ModelType } from '@/app/models/types';
 import { useModelDefinition } from '@/app/models/ui-registry';
-import { useTrainingReport } from '../store';
+import { useTrainingReport } from '@/app/store';
 import type { PlotVisualization } from '@/app/shared/registry';
 
 type TabbedVisualizationsProps = {

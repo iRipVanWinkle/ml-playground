@@ -1,6 +1,7 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Field, Input, Label, Select, Slider, Switch } from '@/app/shared/ui';
 import type { TaskType } from '@/app/shared/types';
+import { setDataset } from '@/app/store';
 import {
     DEFAULT_STATE,
     PREPARED_ANOMALY_DATASETS,
@@ -8,8 +9,7 @@ import {
     PREPARED_CLUSTERING_DATASETS,
     PREPARED_REGRESSION_DATASETS,
 } from '../constants/datasets';
-import { type DataSectionState } from '../store';
-import { setDataset, reset } from '../store/actions';
+import { type DataSectionState } from '../types';
 import { createFileFromURL } from '../libs/file-fetcher';
 import { extractFeatures } from '../libs/extract-features';
 
@@ -17,29 +17,10 @@ type DataLoaderProps = {
     disabled: boolean;
     taskType: TaskType;
     randomSeed?: number;
-    onChange: () => void;
 };
 
-export function DataLoader({ disabled, taskType, randomSeed, onChange }: DataLoaderProps) {
+export function DataLoader({ disabled, taskType, randomSeed }: DataLoaderProps) {
     const [state, setState] = useState<DataSectionState>(DEFAULT_STATE);
-
-    useEffect(() => {
-        reset();
-    }, [taskType]);
-
-    const taskTypeRef = useRef(taskType);
-    useLayoutEffect(() => {
-        taskTypeRef.current = taskType;
-        // Use setTimeout to avoid synchronous setState in effect
-        setTimeout(() => {
-            setState((prev) => ({
-                ...prev,
-                file: null,
-                datasetPath: '',
-                isImage: false,
-            }));
-        }, 0);
-    }, [taskType]);
 
     useEffect(() => {
         (async () => {
@@ -48,7 +29,7 @@ export function DataLoader({ disabled, taskType, randomSeed, onChange }: DataLoa
                     file: state.file!,
                     shuffleData: state.shuffleData,
                     trainTestSplit: state.trainTestSplit,
-                    taskType: taskTypeRef.current,
+                    taskType,
                     seed: randomSeed,
                 });
 
@@ -57,11 +38,9 @@ export function DataLoader({ disabled, taskType, randomSeed, onChange }: DataLoa
                     id: state.datasetPath ?? null,
                     isImage: state.isImageDataset,
                 });
-
-                onChange();
             }
         })();
-    }, [randomSeed, state, onChange]);
+    }, [randomSeed, state, taskType]);
 
     const handleChange = (data: Partial<DataSectionState>) => {
         setState((prev) => ({ ...prev, ...data }));

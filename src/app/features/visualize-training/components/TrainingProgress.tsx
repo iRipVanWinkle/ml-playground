@@ -2,7 +2,7 @@ import { Progress } from '@/app/shared/ui';
 import type { ModelSettings } from '@/app/models/types';
 import type { ModelType } from '@/app/models/types';
 import { useModelDefinition } from '@/app/models/ui-registry';
-import { useTrainingReport } from '../store';
+import { useTrainingReport } from '@/app/store';
 import type { Dataset } from '@/app/shared/types';
 
 type TrainingProgressProps = {

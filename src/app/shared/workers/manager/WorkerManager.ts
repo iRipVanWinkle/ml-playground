@@ -1,7 +1,7 @@
 type PendingRequest<TResponse> = {
     resolve: (response: TResponse) => void;
     reject: (error: Error) => void;
-    timeout?: NodeJS.Timeout;
+    timeout?: ReturnType<typeof setTimeout>;
 };
 
 type ResponseMessage<TResponse> = {
@@ -78,7 +78,6 @@ export class WorkerManager<TMessage, TResponse> {
                 reject,
                 timeout: timeoutHandle,
             });
-
             const messageWithId = {
                 ...message,
                 requestId,

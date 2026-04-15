@@ -2,19 +2,20 @@ import { Loader, Pause, Play, Square, StepForward } from 'lucide-react';
 import { StartButton } from './StartButton';
 import { Button, DelayedLoader } from '@/app/shared/ui';
 import { useModel } from '../hooks/useModel';
-import { useTrainingState, usePendingAction } from '../store';
-import type { TrainingReport, TrainingSettings } from '@/app/models/types';
+import { useTrainingState } from '@/app/store';
+import { useState } from 'react';
+
+type PendingAction = 'pause' | 'stop' | 'step' | 'resume' | null;
 
 type ControlsProps = {
     hasData: boolean;
-    snapshotTrainingSettings: () => TrainingSettings;
-    setTrainingReport: (report: TrainingReport) => void;
 };
 
-export function Controls({ hasData, snapshotTrainingSettings, setTrainingReport }: ControlsProps) {
+export function Controls({ hasData }: ControlsProps) {
     const state = useTrainingState();
-    const pendingAction = usePendingAction();
-    const model = useModel({ snapshotTrainingSettings, setTrainingReport });
+    const [pendingAction, setPendingAction] = useState<PendingAction>(null);
+
+    const model = useModel();
     const isPendingStop = pendingAction === 'stop';
     const isPendingPause = pendingAction === 'pause';
     const isPendingResume = pendingAction === 'resume';
@@ -23,10 +24,30 @@ export function Controls({ hasData, snapshotTrainingSettings, setTrainingReport 
     const handleTrain = (byStep = false) => {
         model.train({ byStep });
     };
-    const handleStop = () => model.stop();
-    const handlePause = () => model.pause();
-    const handleResume = () => model.resume();
-    const handleStep = () => model.step();
+
+    const handleStop = async () => {
+        setPendingAction('stop');
+        await model.stop();
+        setPendingAction(null);
+    };
+
+    const handlePause = async () => {
+        setPendingAction('pause');
+        await model.pause();
+        setPendingAction(null);
+    };
+
+    const handleResume = async () => {
+        setPendingAction('resume');
+        await model.resume();
+        setPendingAction(null);
+    };
+
+    const handleStep = async () => {
+        setPendingAction('step');
+        await model.step();
+        setPendingAction(null);
+    };
 
     let buttons = <StartButton onTrain={handleTrain} disabled={!hasData} />;
 

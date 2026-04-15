@@ -1,3 +1,3 @@
 export { DataLoader } from './components/DataLoader';
 
-export * from './store';
+export type { DataSectionState, ExtractFeaturesOptions } from './types';

@@ -1,4 +1,4 @@
-import type { ExtractFeaturesOptions } from '../store/types';
+import type { ExtractFeaturesOptions } from '../types';
 import { readCsv } from './csv-reader';
 import { shuffleArray } from './shuffle';
 import {

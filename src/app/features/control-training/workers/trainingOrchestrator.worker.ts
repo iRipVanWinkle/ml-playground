@@ -35,15 +35,19 @@ self.onmessage = (event: MessageEvent<UIToWorkerMessage>) => {
                 break;
             case 'stop':
                 orchestrator?.stop();
+                send('state', requestId, 'stopped');
                 break;
             case 'pause':
                 orchestrator?.pause();
+                send('state', requestId, 'paused');
                 break;
             case 'resume':
                 orchestrator?.resume();
+                send('state', requestId, 'training');
                 break;
             case 'step-forward':
                 orchestrator?.step();
+                send('state', requestId, 'stepped-forward');
                 break;
             default:
                 throw new Error(`Unknown message type: ${type}`);

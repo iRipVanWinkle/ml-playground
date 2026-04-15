@@ -1,6 +1,6 @@
 import type { ModelType } from '@/app/models/types';
 import { useModelDefinition } from '@/app/models/ui-registry';
-import { useTrainingReport } from '../store';
+import { useTrainingReport } from '@/app/store';
 
 type TrainingMetricsGridProps = {
     modelType: ModelType;

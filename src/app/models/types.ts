@@ -1,6 +1,4 @@
-import type { Dataset, TaskType } from '@/app/shared/types';
-import type { SystemSettings } from '@/app/features/configure-system';
-import type { TransformationSettings } from '@/app/features/transform-data';
+import type { Dataset, SystemSettings, TaskType, TransformationSettings } from '@/app/shared/types';
 import type {
     LinearCallbackParameters,
     LinearSettings,

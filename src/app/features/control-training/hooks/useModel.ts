@@ -1,18 +1,13 @@
 import { useEffect, useRef } from 'react';
 import { toast } from 'sonner';
-import { setPendingAction, setTrainingStatus } from '../store/actions';
+import { setTrainingReport, setTrainingState, snapshotTrainingSettings } from '@/app/store';
 import type { TrainingWorkerManager, UIToWorkerMessage } from '../workers/types';
 import { WorkerManager } from '@/app/shared/workers/manager';
-import type { TrainingReport, TrainingSettings } from '@/app/models/types';
+import type { TrainingReport } from '@/app/models/types';
 
 import TrainingWorker from '../workers/trainingOrchestrator.worker.ts?worker';
 
-type UseModelProps = {
-    snapshotTrainingSettings: () => TrainingSettings;
-    setTrainingReport: (report: TrainingReport) => void;
-};
-
-export const useModel = ({ snapshotTrainingSettings, setTrainingReport }: UseModelProps) => {
+export const useModel = () => {
     const workerRef = useRef<TrainingWorkerManager | null>(null);
 
     const terminateWorker = () => {
@@ -43,26 +38,25 @@ export const useModel = ({ snapshotTrainingSettings, setTrainingReport }: UseMod
         });
 
         workerManager.on('state', (state: string) => {
-            setPendingAction(null);
             switch (state) {
                 case 'transforming':
-                    setTrainingStatus('preparing');
+                    setTrainingState('preparing');
                     break;
                 case 'training':
-                    setTrainingStatus('training');
+                    setTrainingState('training');
                     break;
                 case 'stopped':
-                    setTrainingStatus('init');
+                    setTrainingState('init');
                     break;
                 case 'stepped-forward':
                 case 'paused':
-                    setTrainingStatus('paused');
+                    setTrainingState('paused');
                     break;
             }
         });
 
         workerManager.on('error', (error: Error) => {
-            setTrainingStatus('init');
+            setTrainingState('init');
             console.error(error);
             toast.error(error.message);
             terminateWorker();
@@ -74,7 +68,7 @@ export const useModel = ({ snapshotTrainingSettings, setTrainingReport }: UseMod
         });
 
         workerManager.on('finished', () => {
-            setTrainingStatus('init');
+            setTrainingState('init');
             terminateWorker();
             toast.success('Training finished');
         });
@@ -90,33 +84,25 @@ export const useModel = ({ snapshotTrainingSettings, setTrainingReport }: UseMod
         workerRef.current = workerManager;
     };
 
-    const stop = () => {
-        setPendingAction('stop');
-        return workerRef.current?.postMessageAsync({
+    const stop = () =>
+        workerRef.current?.postMessageAsync({
             type: 'stop',
         });
-    };
 
-    const pause = () => {
-        setPendingAction('pause');
-        return workerRef.current?.postMessageAsync({
+    const pause = () =>
+        workerRef.current?.postMessageAsync({
             type: 'pause',
         });
-    };
 
-    const step = () => {
-        setPendingAction('step');
-        return workerRef.current?.postMessageAsync({
+    const step = () =>
+        workerRef.current?.postMessageAsync({
             type: 'step-forward',
         });
-    };
 
-    const resume = () => {
-        setPendingAction('resume');
-        return workerRef.current?.postMessageAsync({
+    const resume = () =>
+        workerRef.current?.postMessageAsync({
             type: 'resume',
         });
-    };
 
     return { train, stop, pause, step, resume };
 };

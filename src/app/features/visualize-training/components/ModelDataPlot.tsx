@@ -1,7 +1,7 @@
 import type { Dataset } from '@/app/shared/types';
 import type { ModelSettings, ModelType } from '@/app/models/types';
 import { useModelDefinition } from '@/app/models/ui-registry';
-import { useTrainingReport } from '../store';
+import { useTrainingReport } from '@/app/store';
 
 type ModelDataPlotProps = {
     modelType: ModelType;

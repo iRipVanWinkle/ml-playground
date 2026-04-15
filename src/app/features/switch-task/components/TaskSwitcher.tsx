@@ -3,20 +3,18 @@ import { EnhancedTabs } from '@/app/shared/ui';
 import type { TaskType } from '@/app/shared/types';
 import { getModelRegistry } from '@/app/models/ui-registry';
 import { TASK_TYPES } from '../constants';
-import { useTaskType } from '../store/hooks';
-import { setTaskType } from '../store/actions';
+import { switchTask, useIsTraining, useTaskType } from '@/app/store';
 
 type TaskSwitcherProps = {
     disabled?: boolean;
-    onChange: (taskType: TaskType) => void;
 };
 
-export function TaskSwitcher({ disabled, onChange }: TaskSwitcherProps) {
+export function TaskSwitcher({ disabled }: TaskSwitcherProps) {
     const taskType = useTaskType();
+    const isTraining = useIsTraining();
 
     const handleTaskTypeChange = (taskType: string) => {
-        setTaskType(taskType as TaskType);
-        onChange(taskType as TaskType);
+        switchTask(taskType as TaskType);
     };
 
     const availableTaskTypes = useMemo(() => {
@@ -41,7 +39,7 @@ export function TaskSwitcher({ disabled, onChange }: TaskSwitcherProps) {
                     <EnhancedTabs.Trigger
                         key={tt.value}
                         value={tt.value}
-                        disabled={disabled}
+                        disabled={disabled ?? isTraining}
                         icon={tt.icon}
                     >
                         {tt.label}

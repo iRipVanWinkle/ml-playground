@@ -3,8 +3,7 @@ import { Field, Select } from '@/app/shared/ui';
 import type { ModelType } from '@/app/models/types';
 import type { TaskType } from '@/app/shared/types';
 import { getModelRegistry } from '@/app/models/ui-registry';
-import { useModelType } from '../store';
-import { setModelType } from '../store/actions';
+import { setModelType, useModelType } from '@/app/store';
 
 type ModelTypeProps = {
     taskType: TaskType;
@@ -22,7 +21,7 @@ export function ModelTypeSelector({ taskType, disabled }: ModelTypeProps) {
 
     const handleChange = (value: string) => {
         const modelType = value as ModelType;
-        setModelType(modelType, taskType);
+        setModelType(modelType);
     };
 
     return (
