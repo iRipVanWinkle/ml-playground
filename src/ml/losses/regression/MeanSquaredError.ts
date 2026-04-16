@@ -1,5 +1,6 @@
 import { type Scalar, type Tensor2D, concat, tidy } from '@tensorflow/tfjs';
 import type { LossFunction } from '../../types';
+import { meanSquaredError } from '../../metrics';
 
 export class MeanSquaredError implements LossFunction {
     /**
@@ -21,7 +22,7 @@ export class MeanSquaredError implements LossFunction {
      * @returns Scalar representing the Mean Squared Error.
      */
     compute(yTrue: Tensor2D, yPred: Tensor2D): Scalar {
-        return tidy(() => yPred.sub(yTrue).square().mean());
+        return meanSquaredError(yTrue, yPred);
     }
 
     /**

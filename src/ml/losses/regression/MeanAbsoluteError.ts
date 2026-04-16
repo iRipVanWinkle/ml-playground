@@ -9,6 +9,7 @@ import {
     type Tensor2D,
 } from '@tensorflow/tfjs';
 import type { LossFunction } from '../../types';
+import { meanAbsoluteError } from '../../metrics';
 
 export class MeanAbsoluteError implements LossFunction {
     /**
@@ -27,7 +28,7 @@ export class MeanAbsoluteError implements LossFunction {
      * @returns Scalar representing the mean absolute error.
      */
     compute(yTrue: Tensor2D, yPred: Tensor2D): Scalar {
-        return tidy(() => yPred.sub(yTrue).abs().mean());
+        return meanAbsoluteError(yTrue, yPred);
     }
 
     /**
