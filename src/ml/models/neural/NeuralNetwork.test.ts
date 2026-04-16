@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as tf from '@tensorflow/tfjs';
-import { BatchGD } from '../../optimizers/BatchGD';
+import { BatchGD } from '../../optimizers';
 import { NeuralNetwork } from './NeuralNetwork';
 import type { LossFunction } from '../../types';
 import {

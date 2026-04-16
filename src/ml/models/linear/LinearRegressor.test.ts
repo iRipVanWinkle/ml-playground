@@ -2,10 +2,9 @@ import * as tf from '@tensorflow/tfjs';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { LinearRegressor } from './LinearRegressor';
 import { MeanAbsoluteError, MeanSquaredError } from '../../losses';
-import { BatchGD } from '../../optimizers/BatchGD';
+import { BatchGD, MomentumGD } from '../../optimizers';
 import { L2Regularization, NoRegularization } from '../../regularization';
 import type { LossFunction, Optimizer } from '../../types';
-import { MomentumGD } from '../../optimizers/MomentumGD';
 
 describe('LinearRegressor', () => {
     let model: LinearRegressor;
