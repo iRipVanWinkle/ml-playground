@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { LogisticRegressor } from './LogisticRegressor';
 import { BinaryCrossentropyLogits, BinaryCrossentropy } from '../../losses';
 import { L2Regularization, NoRegularization } from '../../regularization';
-import { BatchGD } from '../../optimizers/batch';
+import { BatchGD } from '../../optimizers/BatchGD';
 import type { LossFunction, Optimizer, Regularization } from '../../types';
 
 describe('LogisticRegressor', () => {

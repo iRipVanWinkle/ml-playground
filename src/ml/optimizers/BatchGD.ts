@@ -1,5 +1,5 @@
 import { tidy, variable, type Tensor2D } from '@tensorflow/tfjs';
-import { BaseOptimizer } from './base';
+import { BaseOptimizer } from './BaseOptimizer';
 import type { OptimizeParameters } from '../types';
 
 export class BatchGD extends BaseOptimizer {

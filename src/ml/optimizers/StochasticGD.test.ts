@@ -1,5 +1,5 @@
 import * as tf from '@tensorflow/tfjs';
-import { StochasticGD } from './stochastic';
+import { StochasticGD } from './StochasticGD';
 import type { OptimizeParameters } from '../types';
 import { beforeEach, describe, expect, it } from 'vitest';
 

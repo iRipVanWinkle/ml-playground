@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import * as tf from '@tensorflow/tfjs';
-import { MinMaxScaler } from './linearScaling';
+import { MinMaxScaler } from './MinMaxScaler';
 
 describe('linearScaling', () => {
     it('throws error for empty matrix', () => {

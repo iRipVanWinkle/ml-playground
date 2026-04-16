@@ -1,7 +1,7 @@
 import * as tf from '@tensorflow/tfjs';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { SoftmaxLogisticRegressor } from './SoftmaxLogisticRegressor';
-import { BatchGD } from '../../optimizers/batch';
+import { BatchGD } from '../../optimizers/BatchGD';
 import { CategoricalCrossentropyLogits, CategoricalCrossentropy } from '../../losses';
 import { L2Regularization } from '../../regularization';
 

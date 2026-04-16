@@ -1,7 +1,7 @@
 import { concat, scalar, tidy, zeros, type Scalar, type Tensor2D } from '@tensorflow/tfjs';
 import type { Regularization } from '../types';
-import { L1Regularization } from './l1';
-import { L2Regularization } from './l2';
+import { L1Regularization } from './L1Regularization';
+import { L2Regularization } from './L2Regularization';
 
 export class ElasticNetRegularization implements Regularization {
     private alpha: Scalar; // L1/L2 ratio parameter

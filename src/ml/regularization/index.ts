@@ -13,6 +13,6 @@ export class NoRegularization implements Regularization {
     }
 }
 
-export * from './l1';
-export * from './l2';
-export * from './elasticnet';
+export * from './L1Regularization';
+export * from './L2Regularization';
+export * from './ElasticNetRegularization';

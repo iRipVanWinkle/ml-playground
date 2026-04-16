@@ -12,6 +12,6 @@ export function noScaling(tensor: tf.Tensor2D): tf.Tensor2D {
     return tensor.clone();
 }
 
-export * from './zScoreScaling';
-export * from './logScaling';
-export * from './linearScaling';
+export * from './ZScoreScaler';
+export * from './LogScaler';
+export * from './MinMaxScaler';

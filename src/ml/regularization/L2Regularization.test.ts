@@ -1,5 +1,5 @@
 import * as tf from '@tensorflow/tfjs';
-import { L2Regularization } from './l2';
+import { L2Regularization } from './L2Regularization';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 describe('L2Regularization', () => {

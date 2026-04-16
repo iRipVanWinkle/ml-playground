@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { tensor2d } from '@tensorflow/tfjs';
-import { L1Regularization } from './l1';
+import { L1Regularization } from './L1Regularization';
 
 describe('L1Regularization', () => {
     describe('compute', () => {

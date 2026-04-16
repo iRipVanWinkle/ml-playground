@@ -1,8 +1,8 @@
 import * as tf from '@tensorflow/tfjs';
-import { MomentumGD } from './momentum';
+import { MomentumGD } from './MomentumGD';
 import type { OptimizeParameters } from '../types';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { BatchGD } from './batch';
+import { BatchGD } from './BatchGD';
 
 describe('MomentumGD', () => {
     let optimizer: MomentumGD;

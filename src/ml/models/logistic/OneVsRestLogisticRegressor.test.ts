@@ -2,7 +2,7 @@ import * as tf from '@tensorflow/tfjs';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { OneVsRestLogisticRegressor } from './OneVsRestLogisticRegressor';
 import { BinaryCrossentropyLogits, BinaryCrossentropy } from '../../losses';
-import { BatchGD } from '../../optimizers/batch';
+import { BatchGD } from '../../optimizers/BatchGD';
 import { L2Regularization } from '../../regularization';
 
 describe('OneVsRestLogisticRegressor', () => {

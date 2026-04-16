@@ -1,5 +1,5 @@
 import { tensor1d, tidy, variable, type Tensor2D } from '@tensorflow/tfjs';
-import { BaseOptimizer, type OptimizerOptions } from './base';
+import { BaseOptimizer, type OptimizerOptions } from './BaseOptimizer';
 import type { OptimizeParameters } from '../types';
 import { assert, range } from '../utils';
 import { Randomizer } from '../random/Randomizer';

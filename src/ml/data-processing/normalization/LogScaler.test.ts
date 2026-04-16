@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import * as tf from '@tensorflow/tfjs';
-import { LogScaler } from './logScaling';
+import { LogScaler } from './LogScaler';
 
 describe('logScaling', () => {
     it('returns empty tensor for empty matrix', () => {

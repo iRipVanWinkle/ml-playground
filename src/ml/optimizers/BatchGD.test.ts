@@ -1,5 +1,5 @@
 import * as tf from '@tensorflow/tfjs';
-import { BatchGD } from './batch';
+import { BatchGD } from './BatchGD';
 import type { OptimizeParameters } from '../types';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { LearningRate } from '../LearningRate';

@@ -1,8 +1,8 @@
 import * as tf from '@tensorflow/tfjs';
-import { ElasticNetRegularization } from './elasticnet';
+import { ElasticNetRegularization } from './ElasticNetRegularization';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { L1Regularization } from './l1';
-import { L2Regularization } from './l2';
+import { L1Regularization } from './L1Regularization';
+import { L2Regularization } from './L2Regularization';
 
 describe('ElasticNetRegularization', () => {
     let regularization: ElasticNetRegularization;

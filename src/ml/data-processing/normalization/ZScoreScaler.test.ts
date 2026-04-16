@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import * as tf from '@tensorflow/tfjs';
-import { ZScoreScaler } from './zScoreScaling';
+import { ZScoreScaler } from './ZScoreScaler';
 
 describe('zScoreScaling', () => {
     it('throws error for empty matrix', () => {
