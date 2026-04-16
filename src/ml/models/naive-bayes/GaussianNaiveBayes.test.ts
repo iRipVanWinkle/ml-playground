@@ -1,7 +1,7 @@
 import * as tf from '@tensorflow/tfjs';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { GaussianNaiveBayes } from './GaussianNaiveBayes';
-import { getMatrixFromArray, type MatrixLike } from '../../matrix';
+import { getMatrixFromArray, type MatrixLike } from '../../utils/matrix';
 
 function getMatrixValue(m: MatrixLike, row: number, col: number): number {
     return m.array[row * m.shape[1] + col];

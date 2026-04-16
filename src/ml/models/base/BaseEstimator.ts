@@ -11,7 +11,7 @@ import {
     zerosInitializer,
     type ThetaInitializer,
 } from '../../factories/theta-initialization/initializers';
-import { getMatrixFromTensor, type MatrixLike } from '../../matrix';
+import { getMatrixFromTensor, type MatrixLike } from '../../utils/matrix';
 import { assertModelTrained } from '../../utils';
 
 export type ModelOptions = {

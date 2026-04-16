@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { rocCurve, multiclassRocCurve } from './roc';
-import type { MatrixLike } from '../../matrix';
+import type { MatrixLike } from '../../utils/matrix';
 
 describe('rocCurve', () => {
     describe('basic functionality', () => {

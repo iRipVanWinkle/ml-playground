@@ -1,7 +1,7 @@
 import { tensor2d, type Tensor2D } from '@tensorflow/tfjs';
 import type { GaussianNaiveBayesParams, PredictionMetadata } from '../../types';
 import { BaseNaiveBayes, type BaseNaiveBayesOptions } from '../base/BaseNaiveBayes';
-import { Matrix } from '../../matrix';
+import { Matrix } from '../../utils/matrix';
 import {
     calculateMean,
     calculateVariance,

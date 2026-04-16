@@ -1,6 +1,6 @@
 import type { Rank, Scalar, Tensor2D, Tensor3D, Variable } from '@tensorflow/tfjs';
 import type { EventEmitter } from './events/EventEmitter';
-import type { MatrixLike } from './matrix';
+import type { MatrixLike } from './utils/matrix';
 
 export type Variable2D = Variable<Rank.R2>;
 

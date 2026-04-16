@@ -1,4 +1,4 @@
-import { Matrix, type MatrixLike } from '../matrix';
+import { Matrix, type MatrixLike } from './matrix';
 
 /**
  * Calculates the mean for each feature in a dataset.

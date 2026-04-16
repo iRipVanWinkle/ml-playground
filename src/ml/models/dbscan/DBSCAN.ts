@@ -6,7 +6,7 @@ import type {
     TrainingEventEmitter,
     Model,
 } from '../../types';
-import { getMatrixFromArray } from '../../matrix';
+import { getMatrixFromArray } from '../../utils/matrix';
 import { assert, assertModelTrained } from '../../utils';
 import { euclideanDistance, type DistanceMetric } from '../../distance';
 

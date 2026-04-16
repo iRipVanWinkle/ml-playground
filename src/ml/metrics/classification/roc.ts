@@ -1,4 +1,4 @@
-import { Matrix, type MatrixLike } from '../../matrix';
+import { Matrix, type MatrixLike } from '../../utils/matrix';
 /**
  * A type representing a ROC curve.
  *

@@ -7,7 +7,7 @@ import type {
     TrainingEventEmitter,
 } from '../../types';
 import { assertModelTrained, zeros } from '../../utils';
-import { getMatrixFromArray } from '../../matrix';
+import { getMatrixFromArray } from '../../utils/matrix';
 
 type BaseOptions = {
     numClusters: number;
