@@ -112,7 +112,7 @@ describe('array utils', () => {
             });
 
             it('should handle repeating indices', () => {
-                 const features = [
+                const features = [
                     [1, 2],
                     [3, 4],
                 ];
@@ -130,10 +130,7 @@ describe('array utils', () => {
                     [3, 4],
                 ];
                 const indices = [0, 5];
-                expect(gather(features, indices)).toEqual([
-                    [1, 2],
-                    undefined
-                ]);
+                expect(gather(features, indices)).toEqual([[1, 2], undefined]);
             });
         });
     });
