@@ -26,14 +26,12 @@ export class Gini implements CriterionFunction {
             }
         }
 
-        // Calculate class probabilities
-        const classProbabilities = classCounts.map((count) => count / numSamples);
-
         // Gini impurity: 1 - Σ(p_i)²
-        const sumSquaredProbabilities = classProbabilities.reduce(
-            (sum, prob) => sum + prob * prob,
-            0,
-        );
+        let sumSquaredProbabilities = 0;
+        for (let i = 0; i < classCounts.length; i++) {
+            const prob = classCounts[i] / numSamples;
+            sumSquaredProbabilities += prob * prob;
+        }
         const giniImpurityValue = 1 - sumSquaredProbabilities;
 
         return giniImpurityValue;
