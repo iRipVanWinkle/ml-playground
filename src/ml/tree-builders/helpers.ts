@@ -14,7 +14,12 @@ export function getColumnValues(
     indexes: number[],
     columnIndex: number,
 ): number[] {
-    return indexes.map((idx) => features[idx][columnIndex]);
+    const length = indexes.length;
+    const result = new Array(length);
+    for (let i = 0; i < length; i++) {
+        result[i] = features[indexes[i]][columnIndex];
+    }
+    return result;
 }
 
 /**
