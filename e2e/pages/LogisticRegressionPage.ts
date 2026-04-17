@@ -17,4 +17,20 @@ export class LogisticRegressionPage extends LinearRegressionPage {
             await this.page.getByTestId('classification-type-softmax').click();
         }
     }
+
+    async verifyMulticlassLearnedParameters(
+        expected: Array<{ bias: string; weights: Record<string, string> }>,
+    ): Promise<void> {
+        const biasElements = this.page.getByTestId('param-bias-value');
+        await expect(biasElements).toHaveCount(expected.length);
+
+        for (let i = 0; i < expected.length; i++) {
+            await expect(biasElements.nth(i)).toHaveText(expected[i].bias);
+            for (const [feature, value] of Object.entries(expected[i].weights)) {
+                await expect(
+                    this.page.getByTestId(`param-weight-${feature}-value`).nth(i),
+                ).toHaveText(value);
+            }
+        }
+    }
 }

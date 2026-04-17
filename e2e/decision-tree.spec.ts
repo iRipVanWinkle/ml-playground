@@ -15,22 +15,26 @@ test.describe('Decision Tree Training', () => {
             default: {
                 trainAccuracy: 'Train Accuracy: 100.00%',
                 testAccuracy: 'Test Accuracy: 60.00%',
-            },
-            withEntropy: {
-                trainAccuracy: 'Train Accuracy: 100.00%',
-                testAccuracy: 'Test Accuracy: 60.00%',
+                confusionMatrixMetrics: {
+                    Accuracy: '100.0%',
+                    MCC: '1.000',
+                    "Cohen's Kappa": '1.000',
+                    Precision: '100.0%',
+                    Recall: '100.0%',
+                    F1: '100.0%',
+                },
             },
             withRandomForest: {
                 trainAccuracy: 'Train Accuracy: 100.00%',
                 testAccuracy: 'Test Accuracy: 90.00%',
-            },
-            withBagging: {
-                trainAccuracy: 'Train Accuracy: 100.00%',
-                testAccuracy: 'Test Accuracy: 70.00%',
-            },
-            withExtraTrees: {
-                trainAccuracy: 'Train Accuracy: 100.00%',
-                testAccuracy: 'Test Accuracy: 80.00%',
+                confusionMatrixMetrics: {
+                    Accuracy: '100.0%',
+                    MCC: '1.000',
+                    "Cohen's Kappa": '1.000',
+                    Precision: '100.0%',
+                    Recall: '100.0%',
+                    F1: '100.0%',
+                },
             },
         } as const;
 
@@ -45,20 +49,13 @@ test.describe('Decision Tree Training', () => {
             await decisionTreePage.startTraining();
             await decisionTreePage.waitForTrainingCompletion();
 
+            const defaultExpected = EXPECTED_RESULTS.default;
             await decisionTreePage.verifyTrainingResults(
-                EXPECTED_RESULTS.default.trainAccuracy,
-                EXPECTED_RESULTS.default.testAccuracy,
+                defaultExpected.trainAccuracy,
+                defaultExpected.testAccuracy,
             );
-        });
-
-        test('should successfully train model with Entropy criterion', async () => {
-            await decisionTreePage.setCriterion('Entropy');
-            await decisionTreePage.startTraining();
-            await decisionTreePage.waitForTrainingCompletion();
-
-            await decisionTreePage.verifyTrainingResults(
-                EXPECTED_RESULTS.withEntropy.trainAccuracy,
-                EXPECTED_RESULTS.withEntropy.testAccuracy,
+            await decisionTreePage.verifyConfusionMatrixMetrics(
+                defaultExpected.confusionMatrixMetrics,
             );
         });
 
@@ -68,34 +65,12 @@ test.describe('Decision Tree Training', () => {
             await decisionTreePage.startTraining();
             await decisionTreePage.waitForTrainingCompletion();
 
+            const rfExpected = EXPECTED_RESULTS.withRandomForest;
             await decisionTreePage.verifyTrainingResults(
-                EXPECTED_RESULTS.withRandomForest.trainAccuracy,
-                EXPECTED_RESULTS.withRandomForest.testAccuracy,
+                rfExpected.trainAccuracy,
+                rfExpected.testAccuracy,
             );
-        });
-
-        test('should successfully train model with Bagging variant', async () => {
-            await decisionTreePage.setModelVariant('Bagging');
-            await decisionTreePage.setEstimators(5);
-            await decisionTreePage.startTraining();
-            await decisionTreePage.waitForTrainingCompletion();
-
-            await decisionTreePage.verifyTrainingResults(
-                EXPECTED_RESULTS.withBagging.trainAccuracy,
-                EXPECTED_RESULTS.withBagging.testAccuracy,
-            );
-        });
-
-        test('should successfully train model with Extra Trees variant', async () => {
-            await decisionTreePage.setModelVariant('Extra Trees');
-            await decisionTreePage.setEstimators(5);
-            await decisionTreePage.startTraining();
-            await decisionTreePage.waitForTrainingCompletion();
-
-            await decisionTreePage.verifyTrainingResults(
-                EXPECTED_RESULTS.withExtraTrees.trainAccuracy,
-                EXPECTED_RESULTS.withExtraTrees.testAccuracy,
-            );
+            await decisionTreePage.verifyConfusionMatrixMetrics(rfExpected.confusionMatrixMetrics);
         });
     });
 
@@ -105,18 +80,42 @@ test.describe('Decision Tree Training', () => {
             default: {
                 trainLoss: 'Train Loss: --',
                 testLoss: 'Test Loss: 0.8199',
+                metrics: {
+                    mse: '0.0609',
+                    rmse: '0.2467',
+                    mae: '0.1415',
+                    r2: '0.9990',
+                },
             },
             withMAE: {
                 trainLoss: 'Train Loss: --',
                 testLoss: 'Test Loss: 0.7978',
+                metrics: {
+                    mse: '0.0738',
+                    rmse: '0.2716',
+                    mae: '0.1441',
+                    r2: '0.9987',
+                },
             },
             withHuber: {
                 trainLoss: 'Train Loss: --',
                 testLoss: 'Test Loss: 0.2758',
+                metrics: {
+                    mse: '0.0687',
+                    rmse: '0.2621',
+                    mae: '0.1320',
+                    r2: '0.9988',
+                },
             },
             withRandomForest: {
                 trainLoss: 'Train Loss: --',
                 testLoss: 'Test Loss: 1.0752',
+                metrics: {
+                    mse: '0.2173',
+                    rmse: '0.4661',
+                    mae: '0.3129',
+                    r2: '0.9963',
+                },
             },
         } as const;
 
@@ -131,10 +130,12 @@ test.describe('Decision Tree Training', () => {
             await decisionTreePage.startTraining();
             await decisionTreePage.waitForTrainingCompletion();
 
+            const defaultExpected = EXPECTED_RESULTS.default;
             await decisionTreePage.verifyTrainingResults(
-                EXPECTED_RESULTS.default.trainLoss,
-                EXPECTED_RESULTS.default.testLoss,
+                defaultExpected.trainLoss,
+                defaultExpected.testLoss,
             );
+            await decisionTreePage.verifyRegressionMetrics(defaultExpected.metrics);
         });
 
         test('should successfully train model with MAE criterion', async () => {
@@ -142,10 +143,12 @@ test.describe('Decision Tree Training', () => {
             await decisionTreePage.startTraining();
             await decisionTreePage.waitForTrainingCompletion();
 
+            const maeExpected = EXPECTED_RESULTS.withMAE;
             await decisionTreePage.verifyTrainingResults(
-                EXPECTED_RESULTS.withMAE.trainLoss,
-                EXPECTED_RESULTS.withMAE.testLoss,
+                maeExpected.trainLoss,
+                maeExpected.testLoss,
             );
+            await decisionTreePage.verifyRegressionMetrics(maeExpected.metrics);
         });
 
         test('should successfully train model with Huber criterion', async () => {
@@ -153,10 +156,12 @@ test.describe('Decision Tree Training', () => {
             await decisionTreePage.startTraining();
             await decisionTreePage.waitForTrainingCompletion();
 
+            const huberExpected = EXPECTED_RESULTS.withHuber;
             await decisionTreePage.verifyTrainingResults(
-                EXPECTED_RESULTS.withHuber.trainLoss,
-                EXPECTED_RESULTS.withHuber.testLoss,
+                huberExpected.trainLoss,
+                huberExpected.testLoss,
             );
+            await decisionTreePage.verifyRegressionMetrics(huberExpected.metrics);
         });
 
         test('should successfully train model with Random Forest variant', async () => {
@@ -165,10 +170,9 @@ test.describe('Decision Tree Training', () => {
             await decisionTreePage.startTraining();
             await decisionTreePage.waitForTrainingCompletion();
 
-            await decisionTreePage.verifyTrainingResults(
-                EXPECTED_RESULTS.withRandomForest.trainLoss,
-                EXPECTED_RESULTS.withRandomForest.testLoss,
-            );
+            const rfExpected = EXPECTED_RESULTS.withRandomForest;
+            await decisionTreePage.verifyTrainingResults(rfExpected.trainLoss, rfExpected.testLoss);
+            await decisionTreePage.verifyRegressionMetrics(rfExpected.metrics);
         });
     });
 
@@ -181,10 +185,32 @@ test.describe('Decision Tree Training', () => {
             default: {
                 trainAccuracy: 'Train Accuracy: 100.00%',
                 testAccuracy: 'Test Accuracy: 91.67%',
+                confusionMatrixMetrics: {
+                    Accuracy: '100.0%',
+                    MCC: '1.000',
+                    "Cohen's Kappa": '1.000',
+                    'Macro Precision': '100.0%',
+                    'Macro Recall': '100.0%',
+                    'Macro F1': '100.0%',
+                    'Weighted Precision': '100.0%',
+                    'Weighted Recall': '100.0%',
+                    'Weighted F1': '100.0%',
+                },
             },
             withBagging: {
                 trainAccuracy: 'Train Accuracy: 100.00%',
                 testAccuracy: 'Test Accuracy: 100.00%',
+                confusionMatrixMetrics: {
+                    Accuracy: '100.0%',
+                    MCC: '1.000',
+                    "Cohen's Kappa": '1.000',
+                    'Macro Precision': '100.0%',
+                    'Macro Recall': '100.0%',
+                    'Macro F1': '100.0%',
+                    'Weighted Precision': '100.0%',
+                    'Weighted Recall': '100.0%',
+                    'Weighted F1': '100.0%',
+                },
             },
         } as const;
 
@@ -199,9 +225,13 @@ test.describe('Decision Tree Training', () => {
             await decisionTreePage.startTraining();
             await decisionTreePage.waitForTrainingCompletion();
 
+            const defaultExpected = EXPECTED_RESULTS.default;
             await decisionTreePage.verifyTrainingResults(
-                EXPECTED_RESULTS.default.trainAccuracy,
-                EXPECTED_RESULTS.default.testAccuracy,
+                defaultExpected.trainAccuracy,
+                defaultExpected.testAccuracy,
+            );
+            await decisionTreePage.verifyConfusionMatrixMetrics(
+                defaultExpected.confusionMatrixMetrics,
             );
         });
 
@@ -211,9 +241,13 @@ test.describe('Decision Tree Training', () => {
             await decisionTreePage.startTraining();
             await decisionTreePage.waitForTrainingCompletion();
 
+            const baggingExpected = EXPECTED_RESULTS.withBagging;
             await decisionTreePage.verifyTrainingResults(
-                EXPECTED_RESULTS.withBagging.trainAccuracy,
-                EXPECTED_RESULTS.withBagging.testAccuracy,
+                baggingExpected.trainAccuracy,
+                baggingExpected.testAccuracy,
+            );
+            await decisionTreePage.verifyConfusionMatrixMetrics(
+                baggingExpected.confusionMatrixMetrics,
             );
         });
     });

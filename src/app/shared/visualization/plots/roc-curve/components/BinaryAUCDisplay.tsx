@@ -13,6 +13,7 @@ export function BinaryAUCDisplay({ rocCurveData }: BinaryAUCDisplayProps) {
                 value={rocCurveData.auc}
                 tooltip="Measures how well the model can distinguish between positive and negative classes. Higher is better, with 1.0 being perfect."
                 className="text-lg"
+                data-testid="auc"
             />
         </div>
     );

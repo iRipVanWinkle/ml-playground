@@ -7,9 +7,11 @@ interface MetricCardProps {
     tooltip: string;
     format: 'percentage' | 'decimal';
     decimals?: number;
+    'data-testid'?: string;
 }
 
-export function MetricCard({ label, value, tooltip, format, decimals }: MetricCardProps) {
+export function MetricCard({ label, value, tooltip, format, decimals, ...rest }: MetricCardProps) {
+    const testId = rest['data-testid'];
     const formattedValue =
         value === null
             ? 'N/A'
@@ -25,7 +27,9 @@ export function MetricCard({ label, value, tooltip, format, decimals }: MetricCa
                     <InfoTooltip>{tooltip}</InfoTooltip>
                 </div>
             </div>
-            <div className="font-semibold">{formattedValue}</div>
+            <div className="font-semibold" data-testid={testId ? `${testId}-value` : undefined}>
+                {formattedValue}
+            </div>
         </div>
     );
 }

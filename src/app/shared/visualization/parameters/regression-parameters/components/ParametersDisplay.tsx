@@ -19,7 +19,9 @@ export function ParametersDisplay({
 }: ParametersDisplayProps) {
     return (
         <CategoryBlock title={categoryName}>
-            <FeatureHighlight label="Intercept (Bias)">{bias}</FeatureHighlight>
+            <FeatureHighlight label="Intercept (Bias)" data-testid="param-bias">
+                {bias}
+            </FeatureHighlight>
             <FeatureBlock title="Weights">
                 <FeatureGrid
                     items={weights}

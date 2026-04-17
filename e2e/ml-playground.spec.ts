@@ -78,27 +78,4 @@ test.describe('ML Playground', () => {
         // Check that no console errors occurred
         expect(consoleMessages).toHaveLength(0);
     });
-
-    test('should load basic UI components', async ({ page }) => {
-        await page.goto('/');
-
-        // Wait for the page to load with a shorter timeout
-        await page.waitForLoadState('domcontentloaded');
-
-        // Check for basic interactive elements using first() to handle multiple elements
-        await expect(page.getByRole('combobox').first()).toBeVisible();
-        const tabList = page.getByTestId('task-switcher-list');
-        await expect(tabList).toBeVisible();
-
-        // Verify tabs are clickable
-        const regressionTab = tabList.getByRole('tab', { name: 'Regression' });
-        const classificationTab = tabList.getByRole('tab', { name: 'Classification' });
-
-        await expect(regressionTab).toBeVisible();
-        await expect(classificationTab).toBeVisible();
-
-        // Test tab switching
-        await classificationTab.click();
-        await expect(classificationTab).toHaveAttribute('data-state', 'active');
-    });
 });

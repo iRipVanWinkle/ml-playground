@@ -5,9 +5,11 @@ interface MetricCardProps {
     value: number;
     tooltip: string;
     decimals?: number;
+    'data-testid'?: string;
 }
 
-export function MetricCard({ label, value, tooltip, decimals = 4 }: MetricCardProps) {
+export function MetricCard({ label, value, tooltip, decimals = 4, ...rest }: MetricCardProps) {
+    const testId = rest['data-testid'];
     const formattedValue = Number.isFinite(value) ? value.toFixed(decimals) : 'N/A';
 
     return (
@@ -16,7 +18,12 @@ export function MetricCard({ label, value, tooltip, decimals = 4 }: MetricCardPr
                 <span className="text-muted-foreground text-sm font-medium">{label}</span>
                 <InfoTooltip>{tooltip}</InfoTooltip>
             </div>
-            <div className="text-xl font-semibold">{formattedValue}</div>
+            <div
+                className="text-xl font-semibold"
+                data-testid={testId ? `${testId}-value` : undefined}
+            >
+                {formattedValue}
+            </div>
         </div>
     );
 }

@@ -113,7 +113,10 @@ export function FeatureGridRow({
                 <div className="h-2 w-12 overflow-hidden rounded-full bg-muted">
                     <div className="h-full rounded-full transition-[width]" style={progressStyle} />
                 </div>
-                <div className={`w-20 text-right text-sm font-medium tabular-nums`}>
+                <div
+                    className={`w-20 text-right text-sm font-medium tabular-nums`}
+                    data-testid={`param-weight-${label}-value`}
+                >
                     {formattedValue}
                 </div>
             </div>

@@ -27,8 +27,9 @@ export function DBSCANMainMetrics({ report }: MainMetricsProps<DBSCANTrainingRep
 
     const { trainAnomalyRate, testAnomalyRate } = report;
     const trainAnomalyRateValue =
-        trainAnomalyRate !== undefined ? trainAnomalyRate.toFixed(4) : '--';
-    const testAnomalyRateValue = testAnomalyRate !== undefined ? testAnomalyRate.toFixed(4) : '--';
+        trainAnomalyRate !== undefined ? (trainAnomalyRate * 100).toFixed(2) + '%' : '--';
+    const testAnomalyRateValue =
+        testAnomalyRate !== undefined ? (testAnomalyRate * 100).toFixed(2) + '%' : '--';
 
     return (
         <>

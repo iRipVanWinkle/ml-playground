@@ -140,6 +140,9 @@ export function MetricsDisplay({ metrics }: MetricsDisplayProps) {
                             value={metricConfig.field ? metrics[metricConfig.field] : null}
                             tooltip={metricConfig.tooltip}
                             format={metricConfig.format}
+                            data-testid={
+                                metricConfig.field ? `metric-${metricConfig.field}` : undefined
+                            }
                         />
                     ))}
                 </div>
@@ -148,7 +151,10 @@ export function MetricsDisplay({ metrics }: MetricsDisplayProps) {
     }
 
     return (
-        <div className="p-4 rounded-lg bg-primary-foreground">
+        <div
+            className="p-4 rounded-lg bg-primary-foreground"
+            data-testid="confusion-matrix-metrics"
+        >
             <div className="grid grid-cols-3 md:grid-cols-3 gap-3 text-sm">
                 {FULL_METRICS_CONFIG.map((metricConfig) => (
                     <MetricCard
@@ -157,6 +163,9 @@ export function MetricsDisplay({ metrics }: MetricsDisplayProps) {
                         value={metricConfig.field ? metrics[metricConfig.field] : null}
                         tooltip={metricConfig.tooltip}
                         format={metricConfig.format}
+                        data-testid={
+                            metricConfig.field ? `metric-${metricConfig.field}` : undefined
+                        }
                     />
                 ))}
             </div>

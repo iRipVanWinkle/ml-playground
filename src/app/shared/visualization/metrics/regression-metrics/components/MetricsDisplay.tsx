@@ -48,6 +48,7 @@ export function MetricsDisplay({ metrics }: MetricsDisplayProps) {
                         label={metricConfig.label}
                         value={metrics[metricConfig.field]}
                         tooltip={metricConfig.tooltip}
+                        data-testid={`metric-${metricConfig.field}`}
                     />
                 ))}
             </div>

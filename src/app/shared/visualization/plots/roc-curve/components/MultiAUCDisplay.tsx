@@ -38,6 +38,7 @@ export function MultiAUCDisplay({ rocCurveData, categories }: MultiAUCDisplayPro
                             value={rocCurveData[config.value]}
                             tooltip={config.tooltip}
                             className="text-base"
+                            data-testid={`auc-${config.value}`}
                         />
                     </div>
                 ))}
@@ -49,7 +50,14 @@ export function MultiAUCDisplay({ rocCurveData, categories }: MultiAUCDisplayPro
                         const classIndex = rocCurveData.classIndices[index];
                         const label = categories?.[classIndex] || `Class ${classIndex}`;
                         const auc = rocCurveData.aucs[index];
-                        return <AUCCard key={classIndex} label={label} value={auc} />;
+                        return (
+                            <AUCCard
+                                key={classIndex}
+                                label={label}
+                                value={auc}
+                                data-testid={`auc-class-${classIndex}`}
+                            />
+                        );
                     })}
                 </div>
             </div>

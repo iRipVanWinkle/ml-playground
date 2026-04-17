@@ -34,7 +34,9 @@ export class LinearRegressionPage {
         await expect(this.page).toHaveTitle('Machine Learning Playground');
     }
 
-    async navigateToTab(tab: 'Regression' | 'Classification'): Promise<void> {
+    async navigateToTab(
+        tab: 'Regression' | 'Classification' | 'Clustering' | 'Anomaly',
+    ): Promise<void> {
         await this.page.getByTestId('task-switcher-list').getByRole('tab', { name: tab }).click();
     }
 
@@ -176,5 +178,84 @@ export class LinearRegressionPage {
         await expect(this.page.getByText(expectedTestLoss)).toBeVisible();
 
         expect(this.consoleMessages).toHaveLength(0);
+    }
+
+    async navigateToVisualizationTab(tabName: string): Promise<void> {
+        await this.page.getByRole('tab', { name: tabName, exact: true }).click();
+    }
+
+    async verifyRegressionMetrics(expected: {
+        mse: string;
+        rmse: string;
+        mae: string;
+        r2: string;
+    }): Promise<void> {
+        await this.navigateToVisualizationTab('Metrics');
+
+        const fieldMap: Record<keyof typeof expected, string> = {
+            mse: 'metric-mse-value',
+            rmse: 'metric-rmse-value',
+            mae: 'metric-mae-value',
+            r2: 'metric-r2-value',
+        };
+
+        for (const [key, testId] of Object.entries(fieldMap)) {
+            await expect(this.page.getByTestId(testId)).toHaveText(
+                expected[key as keyof typeof expected],
+            );
+        }
+    }
+
+    async verifyConfusionMatrixMetrics(expected: Record<string, string>): Promise<void> {
+        await this.navigateToVisualizationTab('Confusion Matrix');
+
+        const labelToField: Record<string, string> = {
+            Accuracy: 'accuracy',
+            MCC: 'mcc',
+            "Cohen's Kappa": 'cohensKappa',
+            Precision: 'precision',
+            Recall: 'recall',
+            F1: 'f1',
+            'Macro Precision': 'macroPrecision',
+            'Macro Recall': 'macroRecall',
+            'Macro F1': 'macroF1',
+            'Weighted Precision': 'weightedPrecision',
+            'Weighted Recall': 'weightedRecall',
+            'Weighted F1': 'weightedF1',
+        };
+
+        for (const [label, value] of Object.entries(expected)) {
+            const field = labelToField[label];
+            if (!field) {
+                throw new Error(`Unknown confusion matrix metric label: "${label}"`);
+            }
+            await expect(this.page.getByTestId(`metric-${field}-value`)).toHaveText(value);
+        }
+    }
+
+    async verifyROCAUC(expected: { auc: string }): Promise<void> {
+        await this.navigateToVisualizationTab('ROC Curve');
+        await expect(this.page.getByTestId('auc-value')).toHaveText(expected.auc);
+    }
+
+    async verifyMulticlassROCAUC(expected: {
+        macroAuc: string;
+        weightedAuc: string;
+    }): Promise<void> {
+        await this.navigateToVisualizationTab('ROC Curve');
+        await expect(this.page.getByTestId('auc-macroAuc-value')).toHaveText(expected.macroAuc);
+        await expect(this.page.getByTestId('auc-weightedAuc-value')).toHaveText(
+            expected.weightedAuc,
+        );
+    }
+
+    async verifyLearnedParameters(expected: {
+        bias: string;
+        weights: Record<string, string>;
+    }): Promise<void> {
+        await expect(this.page.getByTestId('param-bias-value')).toHaveText(expected.bias);
+        for (const [feature, value] of Object.entries(expected.weights)) {
+            await expect(this.page.getByTestId(`param-weight-${feature}-value`)).toHaveText(value);
+        }
     }
 }

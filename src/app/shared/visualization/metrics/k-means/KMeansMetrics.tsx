@@ -74,6 +74,7 @@ function KMeansMetricsContent({ metrics }: KMeansMetricsContentProps) {
             const separation = metrics.avgDistanceToOtherCenters[clusterId];
 
             return {
+                clusterId,
                 clusterLabel,
                 metrics: [silhouetteScore, radius, cohesion, separation],
                 labels: ['Silhouette Score', 'Radius', 'Cohesion', 'Separation'],
@@ -83,22 +84,44 @@ function KMeansMetricsContent({ metrics }: KMeansMetricsContentProps) {
 
     return (
         <div className="w-full grid grid-cols-2 gap-3">
-            {preparedMetrics.map(({ clusterLabel, metrics, labels }) => (
+            {preparedMetrics.map(({ clusterId, clusterLabel, metrics, labels }) => (
                 <CategoryBlock key={clusterLabel} title={clusterLabel}>
-                    <FeatureGrid oneColumn items={metrics} labels={labels} itemComponent={Item} />
+                    <FeatureGrid
+                        oneColumn
+                        items={metrics}
+                        labels={labels}
+                        itemComponent={({ label, value }) => (
+                            <Item
+                                label={label}
+                                value={value}
+                                data-testid={`cluster-${clusterId}-${label}-value`}
+                            />
+                        )}
+                    />
                 </CategoryBlock>
             ))}
         </div>
     );
 }
 
-function Item({ label, value }: { label: string; value: number }) {
+function Item({
+    label,
+    value,
+    'data-testid': testId,
+}: {
+    label: string;
+    value: number;
+    'data-testid'?: string;
+}) {
     return (
         <div className="flex items-center px-2 pb-3 border-b border-border/50">
             <div className="flex-1 truncate text-left text-sm text-muted-foreground" title={label}>
                 {label}
             </div>
-            <div className="ml-3 shrink-0 text-right text-sm font-medium tabular-nums">
+            <div
+                className="ml-3 shrink-0 text-right text-sm font-medium tabular-nums"
+                data-testid={testId}
+            >
                 {value.toFixed(4)}
             </div>
         </div>
