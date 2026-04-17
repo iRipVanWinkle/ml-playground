@@ -3,7 +3,7 @@ import type { TrainingReport } from '@/app/models/types';
 import type { ParametersVisualizationProps } from '@/app/shared/registry';
 import type { Dataset, Transformation } from '@/app/shared/types';
 import { transposeMatrix, type MatrixLike } from '@/app/shared/helpers';
-import { useAllFeatureLabels } from './hooks';
+import { useAllFeatureLabels } from '@/app/shared/visualization/base';
 import {
     BinaryParameters,
     MulticlassParameters,
