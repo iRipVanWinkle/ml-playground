@@ -13,6 +13,10 @@ export function deepMerge<T extends Record<string, unknown>>(
     const result = { ...target } as Record<string, unknown>;
 
     for (const key of Object.keys(source)) {
+        if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
+            continue;
+        }
+
         const targetValue = target[key as keyof typeof target];
         const sourceValue = source[key as keyof typeof source];
 
