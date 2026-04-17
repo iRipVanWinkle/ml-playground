@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { TrainingReport } from '@/app/models/types';
 import type { ParametersVisualizationProps } from '@/app/shared/registry';
 import type { Dataset, Transformation } from '@/app/shared/types';
-import { useAllFeatureLabels } from './hooks';
+import { useAllFeatureLabels } from '@/app/shared/visualization/base';
 import { ImageParameters, ViewSelector, RawParameters, TabularParameters } from './components';
 import type { NaiveBayesParams } from '@/ml/types';
 
