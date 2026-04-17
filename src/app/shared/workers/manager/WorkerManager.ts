@@ -11,9 +11,6 @@ type ResponseMessage<TResponse> = {
     sentAt?: number;
 };
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-type MessageCallback = (...args: any[]) => void;
-
 export class WorkerManager<TMessage, TResponse> {
     private workerFactory: () => Worker;
     private worker: Worker | null = null;
@@ -24,15 +21,16 @@ export class WorkerManager<TMessage, TResponse> {
         this.workerFactory = workerFactory;
     }
 
-    on(type: string, handler: MessageCallback): () => void {
+    on<T = unknown>(type: string, handler: (payload: T) => void): () => void {
+        const unknownHandler = handler as (payload: unknown) => void;
         if (!this.messageHandlers.has(type)) {
             this.messageHandlers.set(type, new Set());
         }
 
-        this.messageHandlers.get(type)!.add(handler);
+        this.messageHandlers.get(type)!.add(unknownHandler);
 
         return () => {
-            this.messageHandlers.get(type)?.delete(handler);
+            this.messageHandlers.get(type)?.delete(unknownHandler);
         };
     }
 
