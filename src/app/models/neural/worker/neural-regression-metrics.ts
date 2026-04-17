@@ -3,7 +3,6 @@ import type { Model, OptimizerCallbackParameters } from '@/ml/types';
 import type { DatasetManager, LiveMetrics, TensorContainer } from '@/app/shared/workers';
 import type { NeuralRegressionTrainingReport, NeuralSettings } from '../types';
 import type { TrainingSettings } from '../../types';
-import { getMatrixFromTensor } from '@/ml/matrix';
 import {
     createTensorContainer,
     getSafeMatrixFromTensor,
@@ -104,10 +103,10 @@ export class NeuralRegressionLiveMetrics
             testR2Value,
             testResidualsArray,
         ] = await Promise.all([
-            getMatrixFromTensor(theta),
+            getSafeMatrixFromTensor(theta),
             getSafeMatrixFromTensor(yPredictions),
             // train
-            getMatrixFromTensor(train.y),
+            getSafeMatrixFromTensor(train.y),
             getSafeTensorValue(train.loss),
             getSafeTensorValue(train.mae),
             getSafeTensorValue(train.mse),

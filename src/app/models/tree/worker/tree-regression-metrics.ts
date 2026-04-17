@@ -8,7 +8,6 @@ import {
     type LiveMetrics,
     type TensorContainer,
 } from '@/app/shared/workers';
-import { getMatrixFromTensor } from '@/ml/matrix';
 import {
     meanAbsoluteError,
     meanSquaredError,
@@ -103,7 +102,7 @@ export class TreeRegressionLiveMetrics
         ] = await Promise.all([
             getSafeMatrixFromTensor(yPredictions),
             // train
-            getMatrixFromTensor(train.y),
+            getSafeMatrixFromTensor(train.y),
             getSafeTensorValue(train.loss),
             getSafeTensorValue(train.mae),
             getSafeTensorValue(train.mse),

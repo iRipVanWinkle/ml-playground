@@ -1,5 +1,5 @@
 import type { Scalar, Tensor1D, Tensor2D } from '@tensorflow/tfjs';
-import { getMatrixFromTensor, type MatrixLike, type TypedArray } from '@/ml/matrix';
+import { getMatrixFromTensor, type MatrixLike, type TypedArray } from '@/ml/utils/matrix';
 
 /**
  * Gets a matrix from a tensor, safely handling undefined values.

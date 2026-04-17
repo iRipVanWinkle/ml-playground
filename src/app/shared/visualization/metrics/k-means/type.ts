@@ -1,4 +1,4 @@
-import type { MatrixLike, TypedArray } from '@/ml/matrix';
+import type { MatrixLike, TypedArray } from '@/app/shared/helpers';
 
 export type KMeansMetricsData = {
     silhouetteSampleScores: TypedArray;

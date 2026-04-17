@@ -1,4 +1,4 @@
-import { type TypedArray, type MatrixLike, EMPTY_MATRIX_LIKE } from '@/ml/matrix';
+import { type TypedArray, type MatrixLike, EMPTY_MATRIX_LIKE } from '@/ml/utils/matrix';
 
 export { type MatrixLike, type TypedArray, EMPTY_MATRIX_LIKE };
 
