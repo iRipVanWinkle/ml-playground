@@ -159,16 +159,18 @@ export function calculateInverseAndDeterminant(
 
     // Cholesky decomposition: A = LLᵀ
     for (let i = 0; i < n; i++) {
+        const rowI = i * n;
         for (let j = 0; j <= i; j++) {
+            const rowJ = j * n;
             let sum = 0;
             for (let k = 0; k < j; k++) {
-                sum += L[i * n + k] * L[j * n + k];
+                sum += L[rowI + k] * L[rowJ + k];
             }
 
             if (i === j) {
-                L[i * n + j] = Math.sqrt(Math.max(array[i * n + i] - sum, epsilon));
+                L[rowI + j] = Math.sqrt(Math.max(array[rowI + i] - sum, epsilon));
             } else {
-                L[i * n + j] = (array[i * n + j] - sum) / L[j * n + j];
+                L[rowI + j] = (array[rowI + j] - sum) / L[rowJ + j];
             }
         }
     }
@@ -182,23 +184,33 @@ export function calculateInverseAndDeterminant(
 
     // Compute inverse using forward and backward substitution
     const inverse = Matrix.create([n, n]);
+    const invArray = inverse.array;
+
+    const y = new Float32Array(n);
+    const x = new Float32Array(n);
 
     for (let i = 0; i < n; i++) {
-        const b = new Float32Array(n);
-        b[i] = 1;
-
         // Forward substitution: solve Ly = b
-        const y = new Float32Array(n);
-        for (let j = 0; j < n; j++) {
+        // b is a one-hot vector where b[i] = 1, otherwise 0
+        // When j < i, b[j] = 0.
+        // sum = sum(L[j, k] * y[k])
+        // Since y[k] = 0 for k < i, we can skip calculating y[j] for j < i
+        for (let j = 0; j < i; j++) {
+            y[j] = 0;
+        }
+
+        for (let j = i; j < n; j++) {
+            const rowJ = j * n;
             let sum = 0;
-            for (let k = 0; k < j; k++) {
-                sum += L[j * n + k] * y[k];
+            // Since y[k] = 0 for k < i, we can start k from i
+            for (let k = i; k < j; k++) {
+                sum += L[rowJ + k] * y[k];
             }
-            y[j] = (b[j] - sum) / L[j * n + j];
+            const bj = j === i ? 1 : 0;
+            y[j] = (bj - sum) / L[rowJ + j];
         }
 
         // Backward substitution: solve Lᵀx = y
-        const x = new Float32Array(n);
         for (let j = n - 1; j >= 0; j--) {
             let sum = 0;
             for (let k = j + 1; k < n; k++) {
@@ -209,7 +221,7 @@ export function calculateInverseAndDeterminant(
 
         // Store column i of inverse
         for (let j = 0; j < n; j++) {
-            inverse.array[j * n + i] = x[j];
+            invArray[j * n + i] = x[j];
         }
     }
 
