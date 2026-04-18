@@ -21,8 +21,9 @@ export class Gini implements CriterionFunction {
         // Sum along samples axis to get class counts
         const classCounts = new Array(numClasses).fill(0);
         for (let i = 0; i < numSamples; i++) {
+            const row = yValues[i];
             for (let j = 0; j < numClasses; j++) {
-                classCounts[j] += yValues[i][j];
+                classCounts[j] += row[j];
             }
         }
 

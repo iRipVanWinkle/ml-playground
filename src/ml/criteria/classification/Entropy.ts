@@ -33,8 +33,9 @@ export class Entropy extends BaseFunction {
         // Calculate class counts by summing each column
         const classCounts = new Array(numClasses).fill(0);
         for (let i = 0; i < totalSamples; i++) {
+            const row = yValues[i];
             for (let j = 0; j < numClasses; j++) {
-                classCounts[j] += yValues[i][j];
+                classCounts[j] += row[j];
             }
         }
 
