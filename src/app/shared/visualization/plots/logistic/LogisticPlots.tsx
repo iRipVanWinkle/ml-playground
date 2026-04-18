@@ -40,10 +40,10 @@ export function LogisticPlots({ dataset, report }: LogisticPlotsProps) {
 
         for (const cls of classes) {
             const z: number[][] = [];
-            for (const index in predictionPredictedLabels.array) {
-                const label = predictionPredictedLabels.array[index];
-                const xIndex = Math.floor(Number(index) / predictionsNum);
-                const yIndex = Number(index) % predictionsNum;
+            for (let i = 0, len = predictionPredictedLabels.array.length; i < len; i++) {
+                const label = predictionPredictedLabels.array[i];
+                const xIndex = Math.floor(i / predictionsNum);
+                const yIndex = i % predictionsNum;
                 if (!z[yIndex]) {
                     z[yIndex] = [];
                 }
