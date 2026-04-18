@@ -89,17 +89,29 @@ export function calculateCovarianceMatrix(
         return new Matrix({ array: covariance, shape: [numFeatures, numFeatures] });
     }
 
+    const diffs = new Float32Array(numFeatures);
+
     for (let i = 0; i < numSamples; i++) {
         const row = X[indices?.[i] ?? i];
 
+        for (let j = 0; j < numFeatures; j++) {
+            diffs[j] = row[j] - means[j];
+        }
+
         for (let rowIdx = 0; rowIdx < numFeatures; rowIdx++) {
             const rowOffset = rowIdx * numFeatures;
-            const diffRow = row[rowIdx] - means[rowIdx];
+            const diffRow = diffs[rowIdx];
 
-            for (let colIdx = 0; colIdx < numFeatures; colIdx++) {
-                const diffCol = row[colIdx] - means[colIdx];
-                covariance[rowOffset + colIdx] += diffRow * diffCol;
+            for (let colIdx = rowIdx; colIdx < numFeatures; colIdx++) {
+                covariance[rowOffset + colIdx] += diffRow * diffs[colIdx];
             }
+        }
+    }
+
+    for (let rowIdx = 0; rowIdx < numFeatures; rowIdx++) {
+        const rowOffset = rowIdx * numFeatures;
+        for (let colIdx = 0; colIdx < rowIdx; colIdx++) {
+            covariance[rowOffset + colIdx] = covariance[colIdx * numFeatures + rowIdx];
         }
     }
 
