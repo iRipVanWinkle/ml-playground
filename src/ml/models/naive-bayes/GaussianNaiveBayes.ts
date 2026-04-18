@@ -60,6 +60,9 @@ export class GaussianNaiveBayes extends BaseNaiveBayes<GaussianNaiveBayesParams>
             classPriors,
         };
 
+        // Pre-allocate buffer for class indices to optimize filtering loop
+        const classIndicesBuffer = new Int32Array(numSamples);
+
         // Calculate statistics for each class
         for (let clsIndex = 0; clsIndex < classes.length; clsIndex++) {
             await this.trainingController?.handleControlFlow(true);
@@ -71,12 +74,13 @@ export class GaussianNaiveBayes extends BaseNaiveBayes<GaussianNaiveBayesParams>
             const cls = classes[clsIndex];
 
             // Filter samples belonging to this class
-            const classIndices: number[] = [];
+            let count = 0;
             for (let i = 0; i < numSamples; i++) {
                 if (yArray[i] === cls) {
-                    classIndices.push(i);
+                    classIndicesBuffer[count++] = i;
                 }
             }
+            const classIndices = classIndicesBuffer.subarray(0, count);
 
             const classCount = classIndices.length;
             classPriors[clsIndex] = classCount / numSamples;

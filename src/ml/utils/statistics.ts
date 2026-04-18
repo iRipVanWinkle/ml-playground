@@ -47,7 +47,7 @@ export function calculateVariance(
     X: ArrayLike<ArrayLike<number>>,
     means: ArrayLike<number>,
     numFeatures: number,
-    indices?: number[],
+    indices?: ArrayLike<number>,
 ): Float32Array {
     const variances = new Float32Array(numFeatures);
     const numSamples = indices?.length ?? X.length;
