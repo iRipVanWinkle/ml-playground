@@ -27,9 +27,14 @@ export const createModelSettingsSlice: StateCreator<AppStore, [], [], ModelSetti
     },
 
     setModelType: (modelType) => {
-        const { taskType, resetModelSettings } = get();
+        const state = get();
+        const taskType = state.taskType;
 
-        set(resetModelSettings(modelType, taskType));
+        set({
+            ...state.resetModelSettings(modelType, taskType),
+            ...state.resetTrainingReport(modelType, taskType),
+            ...state.resetTrainingControls(),
+        });
     },
 });
 
