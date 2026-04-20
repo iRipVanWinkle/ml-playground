@@ -1,27 +1,18 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import type { TrainingReport } from '@/app/models/types';
-import type { Dataset } from '@/app/shared/types';
 import type { KMeansMetricsData } from './type';
 import { CategoryBlock, FeatureGrid } from '../../base';
 import { TrainTestSelector } from '@/app/shared/ui';
 
 interface KMeansMetricsProps {
-    dataset: Dataset;
     report: TrainingReport;
 }
 
-export function KMeansMetrics({ dataset, report }: KMeansMetricsProps) {
+export function KMeansMetrics({ report }: KMeansMetricsProps) {
     const [selectedDataset, setSelectedDataset] = useState<string>('train');
 
     const supportsKMeansMetrics = report.type === 'k-means';
     const hasKMeansMetrics = supportsKMeansMetrics && report.trainMetrics != null;
-
-    useEffect(() => {
-        // This is a workaround to avoid the issue: Calling setState synchronously within an effect can trigger cascading renders
-        setTimeout(() => {
-            setSelectedDataset('train');
-        }, 0);
-    }, [dataset]);
 
     if (!supportsKMeansMetrics) {
         return (

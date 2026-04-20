@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import type { NaiveBayesParams } from '@/ml/types';
-import { DEFAULT_PRECISION } from '../constants';
 import { row, type MatrixLike, type TypedArray } from '@/app/shared/helpers';
+import { DEFAULT_PRECISION } from '@/app/shared/visualization/base';
 
 type RawParametersProps = {
     params: NaiveBayesParams;

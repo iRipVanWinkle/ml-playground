@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Card, Separator } from '@/app/shared/ui';
 import { useDataset, useHasData, useModelSettings, useTransformations } from '@/app/store';
 import { Controls } from '@/app/features/control-training';
@@ -12,10 +13,15 @@ import {
 export function TrainingSection() {
     const hasData = useHasData();
     const modelSettings = useModelSettings();
-    const transformations = useTransformations();
+    const anyTransformations = useTransformations();
     const dataset = useDataset();
 
     const modelType = modelSettings.type;
+
+    const transformations = useMemo(
+        () => anyTransformations.filter((t) => t.type !== ''),
+        [anyTransformations],
+    );
 
     return (
         <Card key={modelType}>

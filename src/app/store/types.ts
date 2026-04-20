@@ -1,10 +1,10 @@
 import type {
+    AnyTransformation,
     Dataset,
     NormalizationMethod,
     SystemSettings,
     TaskType,
     TrainingState,
-    Transformation,
     TransformationSettings,
 } from '@/app/shared/types';
 import type {
@@ -33,7 +33,7 @@ export type AppActions = {
         modelType: ModelType,
         taskType: TaskType,
     ) => Pick<AppState, 'modelSettings'>;
-    setTransformations: (transformations: Transformation[]) => void;
+    setTransformations: (transformations: AnyTransformation[]) => void;
     setNormalization: (normalization: NormalizationMethod) => void;
     resetTransformations: () => Pick<AppState, 'transformations'>;
     setBackend: (backend: SystemSettings['backend']) => void;

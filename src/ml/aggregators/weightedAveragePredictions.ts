@@ -1,7 +1,7 @@
 import { tidy, type Tensor2D } from '@tensorflow/tfjs';
 import { EPSILON } from '../constants';
 
-export function weightedAvgPreds(predictions: Tensor2D, weights: Tensor2D): Tensor2D {
+export function weightedAveragePredictions(predictions: Tensor2D, weights: Tensor2D): Tensor2D {
     if (predictions.shape.length !== 2) {
         throw new Error('Predictions tensor must be 2D');
     }

@@ -6,7 +6,7 @@ export interface TrainingWorkerManager extends WorkerManager<UIToWorkerMessage, 
     on(type: 'state', handler: (state: string) => void): () => void;
     on(type: 'error', handler: (error: Error) => void): () => void;
     on(type: 'info', handler: (info: string) => void): () => void;
-    on(type: 'finished', handler: () => void): void;
+    on(type: 'finished', handler: () => void): () => void;
 }
 
 export type UIToWorkerMessage = (

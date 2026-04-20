@@ -78,8 +78,8 @@ test.describe('Decision Tree Training', () => {
         const DATASET_FILE = path.resolve(__dirname, './data/linear_regression_test_data.csv');
         const EXPECTED_RESULTS = {
             default: {
-                trainLoss: 'Train Loss: --',
-                testLoss: 'Test Loss: 0.8199',
+                trainR2: 'Train R²: 0.9990',
+                testR2: 'Test R²: 0.9744',
                 metrics: {
                     mse: '0.0609',
                     rmse: '0.2467',
@@ -88,8 +88,8 @@ test.describe('Decision Tree Training', () => {
                 },
             },
             withMAE: {
-                trainLoss: 'Train Loss: --',
-                testLoss: 'Test Loss: 0.7978',
+                trainR2: 'Train R²: 0.9987',
+                testR2: 'Test R²: 0.9717',
                 metrics: {
                     mse: '0.0738',
                     rmse: '0.2716',
@@ -98,8 +98,8 @@ test.describe('Decision Tree Training', () => {
                 },
             },
             withHuber: {
-                trainLoss: 'Train Loss: --',
-                testLoss: 'Test Loss: 0.2758',
+                trainR2: 'Train R²: 0.9988',
+                testR2: 'Test R²: 0.9735',
                 metrics: {
                     mse: '0.0687',
                     rmse: '0.2621',
@@ -108,8 +108,8 @@ test.describe('Decision Tree Training', () => {
                 },
             },
             withRandomForest: {
-                trainLoss: 'Train Loss: --',
-                testLoss: 'Test Loss: 1.0752',
+                trainR2: 'Train R²: 0.9963',
+                testR2: 'Test R²: 0.9665',
                 metrics: {
                     mse: '0.2173',
                     rmse: '0.4661',
@@ -132,8 +132,8 @@ test.describe('Decision Tree Training', () => {
 
             const defaultExpected = EXPECTED_RESULTS.default;
             await decisionTreePage.verifyTrainingResults(
-                defaultExpected.trainLoss,
-                defaultExpected.testLoss,
+                defaultExpected.trainR2,
+                defaultExpected.testR2,
             );
             await decisionTreePage.verifyRegressionMetrics(defaultExpected.metrics);
         });
@@ -144,10 +144,7 @@ test.describe('Decision Tree Training', () => {
             await decisionTreePage.waitForTrainingCompletion();
 
             const maeExpected = EXPECTED_RESULTS.withMAE;
-            await decisionTreePage.verifyTrainingResults(
-                maeExpected.trainLoss,
-                maeExpected.testLoss,
-            );
+            await decisionTreePage.verifyTrainingResults(maeExpected.trainR2, maeExpected.testR2);
             await decisionTreePage.verifyRegressionMetrics(maeExpected.metrics);
         });
 
@@ -158,8 +155,8 @@ test.describe('Decision Tree Training', () => {
 
             const huberExpected = EXPECTED_RESULTS.withHuber;
             await decisionTreePage.verifyTrainingResults(
-                huberExpected.trainLoss,
-                huberExpected.testLoss,
+                huberExpected.trainR2,
+                huberExpected.testR2,
             );
             await decisionTreePage.verifyRegressionMetrics(huberExpected.metrics);
         });
@@ -171,7 +168,7 @@ test.describe('Decision Tree Training', () => {
             await decisionTreePage.waitForTrainingCompletion();
 
             const rfExpected = EXPECTED_RESULTS.withRandomForest;
-            await decisionTreePage.verifyTrainingResults(rfExpected.trainLoss, rfExpected.testLoss);
+            await decisionTreePage.verifyTrainingResults(rfExpected.trainR2, rfExpected.testR2);
             await decisionTreePage.verifyRegressionMetrics(rfExpected.metrics);
         });
     });

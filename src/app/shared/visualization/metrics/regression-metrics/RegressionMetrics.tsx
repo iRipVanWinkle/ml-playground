@@ -1,23 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import type { TrainingReport } from '@/app/models/types';
 import { TrainTestSelector } from '@/app/shared/ui';
 import { MetricsDisplay } from './components';
-import type { Dataset } from '@/app/shared/types';
 
 interface RegressionMetricsProps {
     report: TrainingReport;
-    dataset: Dataset;
 }
 
-export function RegressionMetrics({ report, dataset }: RegressionMetricsProps) {
+export function RegressionMetrics({ report }: RegressionMetricsProps) {
     const [selectedDataset, setSelectedDataset] = useState<string>('train');
-
-    useEffect(() => {
-        // This is a workaround to avoid the issue: Calling setState synchronously within an effect can trigger cascading renders
-        setTimeout(() => {
-            setSelectedDataset('train');
-        }, 0);
-    }, [dataset]);
 
     const supportsRegressionMetrics = 'trainMetrics' in report && report.taskType === 'regression';
 

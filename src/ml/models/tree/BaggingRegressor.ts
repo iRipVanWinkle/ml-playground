@@ -1,6 +1,6 @@
 import { tensor2d, type Tensor2D } from '@tensorflow/tfjs';
 import type { EnsembleTree, PredictionMetadata } from '../../types';
-import { avgPreds } from '../../aggregators';
+import { averagePredictions } from '../../aggregators';
 import { BaseEnsembleTree, type BaseEnsembleOptions } from '../base/BaseEnsembleTree';
 import { computeMeanValue, findLeafNode, StandardSplitStrategy } from '../../tree-builders';
 import { assertModelTrained } from '../../utils';
@@ -9,7 +9,7 @@ export class BaggingRegressor extends BaseEnsembleTree {
     constructor(options: BaseEnsembleOptions) {
         super(options);
 
-        this.aggregator = options.aggregator ?? avgPreds;
+        this.aggregator = options.aggregator ?? averagePredictions;
     }
 
     async train(X: Tensor2D, y: Tensor2D): Promise<EnsembleTree> {

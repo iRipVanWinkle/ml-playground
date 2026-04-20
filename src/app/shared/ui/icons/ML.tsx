@@ -1,6 +1,6 @@
 import type { SVGProps } from 'react';
 
-export default function ML(props: SVGProps<SVGSVGElement>) {
+export function ML(props: SVGProps<SVGSVGElement>) {
     return (
         <svg
             stroke="currentColor"

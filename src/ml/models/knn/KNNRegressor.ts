@@ -1,7 +1,7 @@
 import { tidy, type Tensor2D } from '@tensorflow/tfjs';
 import type { KNNParams, PredictionMetadata } from '../../types';
 import { assertModelTrained } from '../../utils';
-import { avgPreds, weightedAvgPreds } from '../../aggregators';
+import { averagePredictions, weightedAveragePredictions } from '../../aggregators';
 import { BaseKNN } from './BaseKNN';
 
 export class KNNRegressor extends BaseKNN {
@@ -20,10 +20,10 @@ export class KNNRegressor extends BaseKNN {
             );
 
             if (this.weights === 'uniform') {
-                return avgPreds(neighborValues);
+                return averagePredictions(neighborValues);
             }
 
-            return weightedAvgPreds(neighborValues, neighborDistanceWeights);
+            return weightedAveragePredictions(neighborValues, neighborDistanceWeights);
         });
 
         return predictions;

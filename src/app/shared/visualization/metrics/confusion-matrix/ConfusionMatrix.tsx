@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import type { TrainingReport } from '@/app/models/types';
 import type { Dataset } from '@/app/shared/types';
 import { TrainTestSelector } from '@/app/shared/ui';
@@ -24,14 +24,6 @@ export const ConfusionMatrix = ({ dataset, report }: ConfusionMatrixProps) => {
     const matrixSize = categories?.length ?? 2;
     const isBinaryClassification = matrixSize === 2;
     const labels = categories ?? generateLabels(matrixSize);
-
-    useEffect(() => {
-        // This is a workaround to avoid the issue: Calling setState synchronously within an effect can trigger cascading renders
-        setTimeout(() => {
-            setSelectedView('full');
-            setSelectedDataset('train');
-        }, 0);
-    }, [dataset]);
 
     if (!supportsConfusionMatrix) {
         return (

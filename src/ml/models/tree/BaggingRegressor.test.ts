@@ -3,7 +3,7 @@ import * as tf from '@tensorflow/tfjs';
 import type { CriterionFunction } from '../../types';
 import { BaggingRegressor } from './BaggingRegressor';
 import { MeanSquaredError } from '../../criteria';
-import { avgPreds } from '../../aggregators';
+import { averagePredictions } from '../../aggregators';
 
 const XArr = [
     0.0005719, 0.0914414, 0.0968348, 0.136938, 0.1952739, 0.2497673, 0.2668127, 0.4252211, 0.461693,
@@ -44,7 +44,7 @@ describe('BaggingRegressor', () => {
             maxDepth: 2,
             bootstrap: true,
             estimators: 2,
-            aggregator: avgPreds,
+            aggregator: averagePredictions,
         });
     });
 
@@ -111,7 +111,7 @@ describe('BaggingRegressor', () => {
                 maxDepth: 2,
                 bootstrap: true,
                 estimators: 1,
-                aggregator: avgPreds,
+                aggregator: averagePredictions,
             });
 
             const X = tf.tensor2d(XArr);
@@ -135,7 +135,7 @@ describe('BaggingRegressor', () => {
                 maxDepth: 2,
                 bootstrap: true,
                 estimators: 5,
-                aggregator: avgPreds,
+                aggregator: averagePredictions,
             });
 
             const X = tf.tensor2d(XArr);
@@ -175,7 +175,7 @@ describe('BaggingRegressor', () => {
                 maxDepth: 1,
                 bootstrap: true,
                 estimators: 2,
-                aggregator: avgPreds,
+                aggregator: averagePredictions,
             });
 
             const X = tf.tensor2d(XArr);
@@ -201,7 +201,7 @@ describe('BaggingRegressor', () => {
                 maxDepth: 2,
                 bootstrap: false,
                 estimators: 2,
-                aggregator: avgPreds,
+                aggregator: averagePredictions,
             });
 
             const X = tf.tensor2d(XArr);
@@ -232,7 +232,7 @@ describe('BaggingRegressor', () => {
                 maxDepth: 2,
                 bootstrap: true,
                 estimators: 2,
-                aggregator: avgPreds,
+                aggregator: averagePredictions,
             });
 
             const trees = await modelSmall.train(XSmall, ySmall);
@@ -299,7 +299,7 @@ describe('BaggingRegressor', () => {
                 maxDepth: 2,
                 bootstrap: true,
                 estimators: 2,
-                aggregator: avgPreds,
+                aggregator: averagePredictions,
             });
 
             const trees = await modelMulti.train(XMulti, yMulti);
@@ -393,7 +393,7 @@ describe('BaggingRegressor', () => {
                 maxDepth: 3,
                 bootstrap: true,
                 estimators: 3,
-                aggregator: avgPreds,
+                aggregator: averagePredictions,
             });
 
             await modelLinear.train(XLinear, yLinear);
@@ -417,7 +417,7 @@ describe('BaggingRegressor', () => {
                 maxDepth: 2,
                 bootstrap: true,
                 estimators: 1,
-                aggregator: avgPreds,
+                aggregator: averagePredictions,
             });
 
             const X = tf.tensor2d(XArr);
@@ -443,7 +443,7 @@ describe('BaggingRegressor', () => {
                 maxDepth: 0,
                 bootstrap: true,
                 estimators: 2,
-                aggregator: avgPreds,
+                aggregator: averagePredictions,
             });
 
             const X = tf.tensor2d(XArr);
@@ -471,7 +471,7 @@ describe('BaggingRegressor', () => {
                 maxDepth: 2,
                 bootstrap: true,
                 estimators: 2,
-                aggregator: avgPreds,
+                aggregator: averagePredictions,
             });
 
             const trees = await modelUniform.train(XUniform, yUniform);
@@ -499,7 +499,7 @@ describe('BaggingRegressor', () => {
                 maxDepth: 1,
                 bootstrap: true,
                 estimators: 2,
-                aggregator: avgPreds,
+                aggregator: averagePredictions,
             });
 
             const trees = await modelSmall.train(XSmall, ySmall);

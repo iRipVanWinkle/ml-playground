@@ -25,7 +25,7 @@ export * from './basic/tooltip';
 export * from './basic/input-group';
 export * from './basic/textarea';
 
-export { default as GitHub } from './icons/GitHub';
-export { default as ML } from './icons/ML';
+export { GitHub } from './icons/GitHub';
+export { ML } from './icons/ML';
 
 export * from './common';

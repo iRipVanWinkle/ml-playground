@@ -1,25 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import type { TrainingReport } from '@/app/models/types';
-import type { Dataset } from '@/app/shared/types';
 import { TrainTestSelector } from '@/app/shared/ui';
 import { PlotlyScatter } from '../plotly';
 import { useColor } from '../../colors';
 
 type ResidualsPlotProps = {
-    dataset: Dataset;
     report: TrainingReport;
 };
 
-export function ResidualsPlot({ report, dataset }: ResidualsPlotProps) {
+export function ResidualsPlot({ report }: ResidualsPlotProps) {
     const [selectedDataset, setSelectedDataset] = useState<string>('train');
     const { getColor } = useColor();
-
-    useEffect(() => {
-        // This is a workaround to avoid the issue: Calling setState synchronously within an effect can trigger cascading renders
-        setTimeout(() => {
-            setSelectedDataset('train');
-        }, 0);
-    }, [dataset]);
 
     const supportsResiduals = 'trainResiduals' in report && report.taskType === 'regression';
 

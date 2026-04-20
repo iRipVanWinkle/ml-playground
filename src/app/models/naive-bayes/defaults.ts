@@ -9,8 +9,6 @@ export const DEFAULT_SETTINGS: SettingsOf<'naive-bayes'> = {
 export const DEFAULT_REPORT: TrainingReportOf<'naive-bayes'> = {
     type: 'naive-bayes',
     taskType: 'classification',
-    testAccuracy: 0,
-    trainAccuracy: 0,
     trainPredictedLabels: EMPTY_MATRIX_LIKE,
     iteration: 0,
     params: {

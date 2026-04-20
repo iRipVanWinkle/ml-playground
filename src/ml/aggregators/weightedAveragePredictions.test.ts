@@ -1,8 +1,8 @@
 import * as tf from '@tensorflow/tfjs';
 import { describe, expect, it } from 'vitest';
-import { weightedAvgPreds } from './weightedAvgPreds';
+import { weightedAveragePredictions } from './weightedAveragePredictions';
 
-describe('weightedAvgPreds', () => {
+describe('weightedAveragePredictions', () => {
     it('computes weighted averages per sample', () => {
         const predictions = tf.tensor2d([
             [1, 5, 9],
@@ -13,7 +13,7 @@ describe('weightedAvgPreds', () => {
             [3, 1, 2],
         ]);
 
-        const result = weightedAvgPreds(predictions, weights);
+        const result = weightedAveragePredictions(predictions, weights);
         const values = result.arraySync() as number[][];
 
         expect(result.shape).toEqual([2, 1]);
@@ -29,7 +29,7 @@ describe('weightedAvgPreds', () => {
         const predictions = tf.tensor2d([[1, 2, 3]]);
         const weights = tf.tensor2d([[0, 0, 0]]);
 
-        const result = weightedAvgPreds(predictions, weights);
+        const result = weightedAveragePredictions(predictions, weights);
         const values = result.arraySync() as number[][];
 
         expect(values[0][0]).toBeCloseTo(0, 5);
@@ -43,7 +43,7 @@ describe('weightedAvgPreds', () => {
         const predictions = tf.tensor2d([[1, 2]]);
         const weights = tf.tensor2d([[1, 2, 3]]);
 
-        expect(() => weightedAvgPreds(predictions, weights)).toThrow(
+        expect(() => weightedAveragePredictions(predictions, weights)).toThrow(
             'Predictions and weights must have the same shape',
         );
 

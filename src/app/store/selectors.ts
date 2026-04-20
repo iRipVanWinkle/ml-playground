@@ -1,5 +1,4 @@
 import { useAppStore } from './store';
-
 // Task
 export const useTaskType = () => useAppStore((s) => s.taskType);
 

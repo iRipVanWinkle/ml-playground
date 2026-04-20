@@ -9,7 +9,8 @@ export function createPreprocessingPipeline<T extends ModelRepresentation>(
     dataSettings: TransformationSettings,
     eventEmitter?: EventEmitter,
 ): PipelineModel<T> {
-    const transformations = transformationsFactory(dataSettings.transformations);
+    const preperedTransformations = dataSettings.transformations.filter((t) => t.type !== '');
+    const transformations = transformationsFactory(preperedTransformations);
     const preScaler = normalizeFunctionFactory(dataSettings.normalization);
     const postScaler = transformations.length
         ? normalizeFunctionFactory(dataSettings.normalization)

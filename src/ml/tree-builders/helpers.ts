@@ -5,19 +5,19 @@ import { Randomizer } from '../random/Randomizer';
 /**
  * Extracts values from a specific column in a 2D array based on provided row indices.
  * @param features - The 2D array to extract values from.
- * @param indexes - The indices of the rows to extract values from.
+ * @param indices - The indices of the rows to extract values from.
  * @param columnIndex - The index of the column to extract values from.
  * @returns An array containing the extracted values.
  */
 export function getColumnValues(
     features: number[][],
-    indexes: number[],
+    indices: number[],
     columnIndex: number,
 ): number[] {
-    const length = indexes.length;
+    const length = indices.length;
     const result = new Array(length);
     for (let i = 0; i < length; i++) {
-        result[i] = features[indexes[i]][columnIndex];
+        result[i] = features[indices[i]][columnIndex];
     }
     return result;
 }

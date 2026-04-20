@@ -1,13 +1,11 @@
 import { concat, tidy, type Tensor2D } from '@tensorflow/tfjs';
 
 /**
- * Extends data set with sinusoid features.
+ * Extends a dataset with cosinusoidal (cos) features up to the given degree.
  *
- * Returns a new tf.Tensor2D with more features, comprising of cos(x).
- *
- * @param dataset - tf.Tensor2D.
- * @param sinusoidDegree - Multiplier for sinusoid parameter multiplications.
- * @returns The new tf.Tensor2D with the sinusoid features added.
+ * @param data - Input feature tensor (samples × features).
+ * @param degree - Number of frequency harmonics to generate (must be ≥ 1).
+ * @returns A new Tensor2D with `degree * numFeatures` cos columns appended.
  */
 export function generateCosinusoidalFeatures(data: Tensor2D, degree: number): Tensor2D {
     if (degree < 1) {
@@ -15,12 +13,12 @@ export function generateCosinusoidalFeatures(data: Tensor2D, degree: number): Te
     }
 
     return tidy(() => {
-        const sinusoids: Tensor2D[] = [];
+        const cosinusoids: Tensor2D[] = [];
 
         for (let d = 1; d <= degree; d++) {
-            sinusoids.push(data.mul(d).cos() as Tensor2D);
+            cosinusoids.push(data.mul(d).cos() as Tensor2D);
         }
 
-        return concat(sinusoids, 1);
+        return concat(cosinusoids, 1);
     });
 }

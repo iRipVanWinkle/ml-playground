@@ -55,9 +55,17 @@ export type Transformation = {
     degree: number;
 };
 
+/** Represents a transformation entry before the type has been selected. */
+export type DraftTransformation = {
+    type: '';
+    degree: number;
+};
+
+export type AnyTransformation = Transformation | DraftTransformation;
+
 export type TransformationSettings = {
     normalization: NormalizationMethod;
-    transformations: Transformation[];
+    transformations: AnyTransformation[];
 };
 
 /**
@@ -78,7 +86,7 @@ export type BaseTrainingReport = {
 
 export type BaseRegressionReport = BaseTrainingReport & {
     taskType: 'regression';
-    trainLoss: number;
+    trainLoss?: number;
     testLoss?: number;
     trainPredictedLabels: MatrixLike;
     testPredictedLabels?: MatrixLike;
@@ -91,7 +99,7 @@ export type BaseRegressionReport = BaseTrainingReport & {
 
 export type BaseClassificationReport = BaseTrainingReport & {
     taskType: 'classification';
-    trainAccuracy: number;
+    trainAccuracy?: number;
     testAccuracy?: number;
     trainPredictedLabels: MatrixLike;
     testPredictedLabels?: MatrixLike;

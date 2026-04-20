@@ -1,15 +1,14 @@
 import { concat, ones, pow, tidy, type Tensor2D } from '@tensorflow/tfjs';
 
 /**
- * Extends data set with polynomial features of certain degree.
+ * Extends a dataset with full polynomial interaction features up to the given degree.
  *
- * Returns a new tf.Tensor2D with more features, comprising of
- * x1, x2, x1^2, x2^2, x1*x2, x1*x2^2, etc.
+ * Generates all combinations of features raised to powers summing to ≤ degree
+ * (e.g. x1², x2², x1·x2, x1·x2²).
  *
- * @param dataset - tf.Tensor2D to generate polynomials for.
- * @param polynomialDegree - The max power of new features.
- * @param normalizeData - Flag that indicates whether polynomials need to normalized or not.
- * @returns The new tf.Tensor2D with the polynomial features added.
+ * @param data - Input feature tensor (samples × features).
+ * @param degree - Maximum polynomial degree (must be ≥ 2; returns null for degree < 2).
+ * @returns A new Tensor2D with polynomial columns appended, or null if degree < 2.
  */
 export function generateFullPolynomialFeatures(data: Tensor2D, degree: number): Tensor2D | null {
     if (degree < 2) {

@@ -1,8 +1,8 @@
 import * as tf from '@tensorflow/tfjs';
 import { describe, it, expect } from 'vitest';
-import { avgPreds } from './avgPreds';
+import { averagePredictions } from './averagePredictions';
 
-describe('avgPreds', () => {
+describe('averagePredictions', () => {
     describe('basic functionality', () => {
         it('should average predictions correctly for regression', () => {
             // Create a 2D tensor: [3 samples, 2 models] for regression
@@ -12,7 +12,7 @@ describe('avgPreds', () => {
                 [8.0, 2.0], // Sample 3: model predictions 8.0 and 2.0
             ]);
 
-            const result = avgPreds(predictions);
+            const result = averagePredictions(predictions);
 
             expect(result.shape).toEqual([3, 1]);
 
@@ -34,7 +34,7 @@ describe('avgPreds', () => {
                 [2.0, 4.0, 6.0, 8.0], // Sample 2: 4 model predictions
             ]);
 
-            const result = avgPreds(predictions);
+            const result = averagePredictions(predictions);
 
             expect(result.shape).toEqual([2, 1]);
 
@@ -55,7 +55,7 @@ describe('avgPreds', () => {
                 [1.0], // Single model for sample 2
             ]);
 
-            const result = avgPreds(predictions);
+            const result = averagePredictions(predictions);
 
             expect(result.shape).toEqual([2, 1]);
 
@@ -72,7 +72,7 @@ describe('avgPreds', () => {
         it('should handle zero predictions', () => {
             const predictions = tf.tensor2d([[0.0, 0.0, 0.0]]);
 
-            const result = avgPreds(predictions);
+            const result = averagePredictions(predictions);
 
             expect(result.shape).toEqual([1, 1]);
 
@@ -89,7 +89,7 @@ describe('avgPreds', () => {
                 [-2.0, 4.0, -1.0], // Sample with mixed positive/negative predictions
             ]);
 
-            const result = avgPreds(predictions);
+            const result = averagePredictions(predictions);
 
             expect(result.shape).toEqual([1, 1]);
 
@@ -107,7 +107,7 @@ describe('avgPreds', () => {
                 [1000.0, 3000.0], // Sample with large values
             ]);
 
-            const result = avgPreds(predictions);
+            const result = averagePredictions(predictions);
 
             expect(result.shape).toEqual([1, 1]);
 
@@ -124,7 +124,7 @@ describe('avgPreds', () => {
                 [0.001, 0.003, 0.005], // Sample with small decimal values
             ]);
 
-            const result = avgPreds(predictions);
+            const result = averagePredictions(predictions);
 
             expect(result.shape).toEqual([1, 1]);
 
@@ -148,8 +148,8 @@ describe('avgPreds', () => {
 
             const scaledPredictions = basePredictions.mul(scale);
 
-            const baseResult = avgPreds(basePredictions);
-            const scaledResult = avgPreds(scaledPredictions);
+            const baseResult = averagePredictions(basePredictions);
+            const scaledResult = averagePredictions(scaledPredictions);
 
             const baseData = baseResult.arraySync() as number[][];
             const scaledData = scaledResult.arraySync() as number[][];
@@ -174,9 +174,9 @@ describe('avgPreds', () => {
 
             const predictionsSum = predictionsA.add(predictionsB);
 
-            const avgA = avgPreds(predictionsA);
-            const avgB = avgPreds(predictionsB);
-            const avgSum = avgPreds(predictionsSum);
+            const avgA = averagePredictions(predictionsA);
+            const avgB = averagePredictions(predictionsB);
+            const avgSum = averagePredictions(predictionsSum);
             const sumOfAvgs = avgA.add(avgB);
 
             const avgSumData = avgSum.arraySync() as number[][];
@@ -200,7 +200,7 @@ describe('avgPreds', () => {
                 [commonValue, commonValue, commonValue], // Sample with identical predictions
             ]);
 
-            const result = avgPreds(predictions);
+            const result = averagePredictions(predictions);
 
             expect(result.shape).toEqual([1, 1]);
 
@@ -230,7 +230,7 @@ describe('avgPreds', () => {
 
             const predictions = tf.tensor2d(predictionsArray);
 
-            const result = avgPreds(predictions);
+            const result = averagePredictions(predictions);
 
             expect(result.shape).toEqual([numSamples, 1]);
 
@@ -254,7 +254,7 @@ describe('avgPreds', () => {
                 [largeValue, 0], // Sample with extreme values
             ]);
 
-            const result = avgPreds(predictions);
+            const result = averagePredictions(predictions);
 
             expect(result.shape).toEqual([1, 1]);
 
@@ -272,7 +272,7 @@ describe('avgPreds', () => {
                 [1.0, NaN], // Sample with NaN
             ]);
 
-            const result = avgPreds(predictions);
+            const result = averagePredictions(predictions);
 
             expect(result.shape).toEqual([1, 1]);
 
@@ -290,7 +290,7 @@ describe('avgPreds', () => {
                 [1.0, Infinity], // Sample with Infinity
             ]);
 
-            const result = avgPreds(predictions);
+            const result = averagePredictions(predictions);
 
             expect(result.shape).toEqual([1, 1]);
 
@@ -310,7 +310,7 @@ describe('avgPreds', () => {
                 [1.0, 3.0], // Sample with 2 model predictions
             ]);
 
-            const result = avgPreds(predictions);
+            const result = averagePredictions(predictions);
 
             expect(result.rank).toBe(2);
             expect(result).toBeInstanceOf(tf.Tensor);
@@ -325,7 +325,7 @@ describe('avgPreds', () => {
                 [1.0, 3.0], // Sample with 2 predictions
             ]);
 
-            const result = avgPreds(predictions);
+            const result = averagePredictions(predictions);
 
             // Should maintain the reduced dimension
             expect(result.shape).toEqual([1, 1]);
@@ -344,7 +344,7 @@ describe('avgPreds', () => {
                 'float32',
             );
 
-            const result = avgPreds(predictions);
+            const result = averagePredictions(predictions);
 
             expect(result.shape).toEqual([1, 1]);
 
@@ -366,7 +366,7 @@ describe('avgPreds', () => {
                 [1.0, 3.0], // Sample with 2 predictions
             ]);
 
-            const result = avgPreds(predictions);
+            const result = averagePredictions(predictions);
             result.dispose();
             predictions.dispose();
 
@@ -382,7 +382,7 @@ describe('avgPreds', () => {
                 [1.0, 3.0], // Sample with 2 predictions
             ]);
 
-            const result = avgPreds(predictions);
+            const result = averagePredictions(predictions);
 
             // Only the result tensor should remain from the operation
             const memoryAfter = tf.memory();
@@ -410,7 +410,7 @@ describe('avgPreds', () => {
             const predictions = tf.tensor2d(predictionsData);
 
             const startTime = performance.now();
-            const result = avgPreds(predictions);
+            const result = averagePredictions(predictions);
             const endTime = performance.now();
 
             expect(result.shape).toEqual([numSamples, 1]);
@@ -427,7 +427,7 @@ describe('avgPreds', () => {
                 [1.0, 4.0, 7.0], // Sample with 3 model predictions
             ]);
 
-            const result = avgPreds(predictions);
+            const result = averagePredictions(predictions);
 
             // Memory usage should be reasonable
             const memoryUsed = tf.memory().numBytes - initialMemory;
@@ -447,7 +447,7 @@ describe('avgPreds', () => {
                 [5.8, 6.2, 5.6], // Sample 3: linear, tree, neural model predictions
             ]);
 
-            const result = avgPreds(predictions);
+            const result = averagePredictions(predictions);
 
             expect(result.shape).toEqual([3, 1]);
 
@@ -469,7 +469,7 @@ describe('avgPreds', () => {
                 [2.0, 2.1, 1.9], // Sample 2: 3 model predictions
             ]);
 
-            const result = avgPreds(predictions);
+            const result = averagePredictions(predictions);
 
             expect(result.shape).toEqual([2, 1]);
 

@@ -1,6 +1,6 @@
 import type { SVGProps } from 'react';
 
-export default function GitHub(props: SVGProps<SVGSVGElement>) {
+export function GitHub(props: SVGProps<SVGSVGElement>) {
     return (
         <svg
             stroke="currentColor"

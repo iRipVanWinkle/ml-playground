@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Button, Field } from '@/app/shared/ui';
 import { setTransformations, useTransformations } from '@/app/store';
 import {
@@ -17,38 +16,30 @@ type TransformationBuilderProps = {
 
 export function TransformationBuilder({ disabled, numFeatures }: TransformationBuilderProps) {
     const transformations = useTransformations();
-    const [localTransformations, setLocalTransformations] = useState(transformations);
 
     const handleNewTransformation = () => {
-        const updatedTransformations = [...localTransformations, createEmptyTransformation()];
-        setLocalTransformations(updatedTransformations);
+        const updatedTransformations = [...transformations, createEmptyTransformation()];
+        setTransformations(updatedTransformations);
     };
 
     const handleRemoveTransformation = (index: number) => {
-        const updatedTransformations = removeTransformation(localTransformations, index);
-        setLocalTransformations(updatedTransformations);
+        const updatedTransformations = removeTransformation(transformations, index);
         setTransformations(updatedTransformations);
     };
 
     const handleUpdateDegree = (index: number, degree: number) => {
-        const updatedTransformations = updateTransformationDegree(
-            localTransformations,
-            index,
-            degree,
-        );
-        setLocalTransformations(updatedTransformations);
+        const updatedTransformations = updateTransformationDegree(transformations, index, degree);
         setTransformations(updatedTransformations);
     };
 
     const handleUpdateType = (index: number, type: TransformationType) => {
-        const updatedTransformations = updateTransformationType(localTransformations, index, type);
-        setLocalTransformations(updatedTransformations);
+        const updatedTransformations = updateTransformationType(transformations, index, type);
         setTransformations(updatedTransformations);
     };
 
     return (
         <Field label="Transformations">
-            {localTransformations.map((transformation, index) => (
+            {transformations.map((transformation, index) => (
                 <TransformationItem
                     key={index}
                     transformation={transformation}

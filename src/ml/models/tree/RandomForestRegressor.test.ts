@@ -3,7 +3,7 @@ import * as tf from '@tensorflow/tfjs';
 import type { CriterionFunction } from '../../types';
 import { RandomForestRegressor } from './RandomForestRegressor';
 import { MeanSquaredError } from '../../criteria';
-import { avgPreds } from '../../aggregators';
+import { averagePredictions } from '../../aggregators';
 
 const XArr = [
     0.0005719, 0.0914414, 0.0968348, 0.136938, 0.1952739, 0.2497673, 0.2668127, 0.4252211, 0.461693,
@@ -45,7 +45,7 @@ describe('RandomForestRegressor', () => {
             bootstrap: true,
             estimators: 2,
             maxFeatures: 1,
-            aggregator: avgPreds,
+            aggregator: averagePredictions,
         });
     });
 
@@ -80,7 +80,7 @@ describe('RandomForestRegressor', () => {
                 bootstrap: true,
                 estimators: 3,
                 maxFeatures: 1,
-                aggregator: avgPreds,
+                aggregator: averagePredictions,
             });
 
             const trees = await regressor.train(X, y);
@@ -113,7 +113,7 @@ describe('RandomForestRegressor', () => {
                 bootstrap: true,
                 estimators: 2,
                 maxFeatures: 1,
-                aggregator: avgPreds,
+                aggregator: averagePredictions,
             });
 
             const trees = await regressor.train(X, y);
@@ -140,7 +140,7 @@ describe('RandomForestRegressor', () => {
                 bootstrap: false,
                 estimators: 2,
                 maxFeatures: 1,
-                aggregator: avgPreds,
+                aggregator: averagePredictions,
             });
 
             const trees = await regressor.train(X, y);
@@ -190,7 +190,7 @@ describe('RandomForestRegressor', () => {
                 bootstrap: true,
                 estimators: 3,
                 maxFeatures: 1,
-                aggregator: avgPreds,
+                aggregator: averagePredictions,
             });
 
             await regressor.train(X, y);
@@ -246,7 +246,7 @@ describe('RandomForestRegressor', () => {
                 bootstrap: true,
                 estimators: 2,
                 maxFeatures: 1,
-                aggregator: avgPreds,
+                aggregator: averagePredictions,
             });
 
             expect(() => {
@@ -279,7 +279,7 @@ describe('RandomForestRegressor', () => {
                 bootstrap: true,
                 estimators: 5,
                 maxFeatures: 1,
-                aggregator: avgPreds,
+                aggregator: averagePredictions,
             });
 
             await regressor.train(X, y);
@@ -322,7 +322,7 @@ describe('RandomForestRegressor', () => {
                 bootstrap: true,
                 estimators: 3,
                 maxFeatures: 1,
-                aggregator: avgPreds,
+                aggregator: averagePredictions,
             });
 
             await regressor.train(X, y);
@@ -351,7 +351,7 @@ describe('RandomForestRegressor', () => {
                 bootstrap: true,
                 estimators: 2,
                 maxFeatures: 1,
-                aggregator: avgPreds,
+                aggregator: averagePredictions,
             });
 
             const trees = await regressor.train(X, y);
@@ -388,7 +388,7 @@ describe('RandomForestRegressor', () => {
                 bootstrap: true,
                 estimators: 2,
                 maxFeatures: 1,
-                aggregator: avgPreds,
+                aggregator: averagePredictions,
             });
 
             const trees = await regressor.train(X, y);
@@ -422,7 +422,7 @@ describe('RandomForestRegressor', () => {
                 bootstrap: true,
                 estimators: 2,
                 maxFeatures: 10, // Larger than available features (1)
-                aggregator: avgPreds,
+                aggregator: averagePredictions,
             });
 
             const trees = await regressor.train(X, y);

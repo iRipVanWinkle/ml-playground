@@ -16,7 +16,6 @@ export const DEFAULT_REPORT: TrainingReportOf<'linear'> = {
     trainLossHistory: [],
     iteration: 0,
     optimizerLoss: 0,
-    trainLoss: 0,
     trainPredictedLabels: EMPTY_MATRIX_LIKE,
     theta: EMPTY_MATRIX_LIKE,
     trainMetrics: null,

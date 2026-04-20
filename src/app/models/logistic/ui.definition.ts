@@ -5,9 +5,9 @@ import {
     ConfusionMatrix,
     RocCurve,
     RegressionParameters,
+    AccuracyMetricsDisplay,
 } from '@/app/shared/visualization';
 import { LogisticSettings } from './ui/LogisticSettings';
-import { LogisticMainMetrics } from './ui/LogisticMainMetrics';
 import { DEFAULT_REPORT, DEFAULT_SETTINGS } from './defaults';
 
 function arrayAvg(arr: number[]): number {
@@ -25,7 +25,7 @@ export const logisticModelDefinition: ModelDefinition<'logistic'> = {
 
     defaultReport: () => DEFAULT_REPORT,
     visualization: {
-        metricsGridComponent: LogisticMainMetrics,
+        metricsGridComponent: AccuracyMetricsDisplay,
         modelDataPlotComponent: LogisticPlots,
         plots: [
             { title: 'Loss History', component: LossHistory },

@@ -1,3 +1,4 @@
+import { AccuracyMetricsDisplay, LossMetricsDisplay } from '@/app/shared/visualization';
 import type { NeuralClassificationTrainingReport, NeuralRegressionTrainingReport } from '../types';
 import type { MainMetricsProps } from '@/app/shared/registry';
 
@@ -6,51 +7,10 @@ type NeuralTrainingReport = NeuralClassificationTrainingReport | NeuralRegressio
 export function NeuralMainMetrics({ report }: MainMetricsProps<NeuralTrainingReport>) {
     switch (report.taskType) {
         case 'regression':
-            return <NeuralRegressionMainMetrics report={report} />;
+            return <LossMetricsDisplay report={report} />;
         case 'classification':
-            return <NeuralClassificationMainMetrics report={report} />;
+            return <AccuracyMetricsDisplay report={report} />;
         default:
             return null;
     }
-}
-
-function NeuralRegressionMainMetrics({ report }: MainMetricsProps<NeuralRegressionTrainingReport>) {
-    const { trainLoss, testLoss } = report;
-
-    return (
-        <>
-            <div>
-                Train Loss:{' '}
-                <div className="font-bold tabular-nums">
-                    {trainLoss ? trainLoss.toFixed(4) : '--'}
-                </div>
-            </div>
-            <div>
-                Test Loss:{' '}
-                <div className="font-bold tabular-nums">
-                    {testLoss ? testLoss.toFixed(4) : '--'}
-                </div>
-            </div>
-        </>
-    );
-}
-
-function NeuralClassificationMainMetrics({
-    report,
-}: MainMetricsProps<NeuralClassificationTrainingReport>) {
-    const { trainAccuracy, testAccuracy } = report;
-
-    const trainAccuracyValue = trainAccuracy ? (trainAccuracy * 100).toFixed(2) + '%' : '--';
-    const testAccuracyValue = testAccuracy ? (testAccuracy * 100).toFixed(2) + '%' : '--';
-
-    return (
-        <>
-            <div>
-                Train Accuracy: <div className="font-bold tabular-nums">{trainAccuracyValue}</div>
-            </div>
-            <div>
-                Test Accuracy: <div className="font-bold tabular-nums">{testAccuracyValue}</div>
-            </div>
-        </>
-    );
 }

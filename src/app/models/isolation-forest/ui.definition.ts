@@ -1,8 +1,11 @@
 import type { ModelDefinition } from '@/app/shared/registry/types';
 import { IsolationForestSettings } from './ui/IsolationForestSettings';
-import { IsolationForestMainMetrics } from './ui/IsolationForestMainMetrics';
 import { DEFAULT_REPORT, DEFAULT_SETTINGS } from './defaults';
-import { AnomalyPlots, DecisionTreeParameters } from '@/app/shared/visualization';
+import {
+    AnomaliesMetricsDisplay,
+    AnomalyPlots,
+    DecisionTreeParameters,
+} from '@/app/shared/visualization';
 
 export const isolationForestModelDefinition: ModelDefinition<'isolation-forest'> = {
     key: 'isolation-forest',
@@ -14,7 +17,7 @@ export const isolationForestModelDefinition: ModelDefinition<'isolation-forest'>
 
     defaultReport: () => DEFAULT_REPORT,
     visualization: {
-        metricsGridComponent: IsolationForestMainMetrics,
+        metricsGridComponent: AnomaliesMetricsDisplay,
         modelDataPlotComponent: AnomalyPlots,
         parametersComponent: DecisionTreeParameters,
     },

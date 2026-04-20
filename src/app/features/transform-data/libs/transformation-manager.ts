@@ -1,32 +1,36 @@
-import type { Transformation, TransformationType } from '@/app/shared/types';
+import type {
+    AnyTransformation,
+    DraftTransformation,
+    TransformationType,
+} from '@/app/shared/types';
 
-export function createEmptyTransformation(): Transformation {
-    return { type: '', degree: 1 } as unknown as Transformation;
+export function createEmptyTransformation(): DraftTransformation {
+    return { type: '', degree: 1 };
 }
 
 export function updateTransformationType(
-    transformations: Transformation[],
+    transformations: AnyTransformation[],
     index: number,
     type: TransformationType,
-): Transformation[] {
+): AnyTransformation[] {
     const updated = [...transformations];
     updated[index] = { ...updated[index], type };
     return updated;
 }
 
 export function updateTransformationDegree(
-    transformations: Transformation[],
+    transformations: AnyTransformation[],
     index: number,
     degree: number,
-): Transformation[] {
+): AnyTransformation[] {
     const updated = [...transformations];
     updated[index] = { ...updated[index], degree };
     return updated;
 }
 
 export function removeTransformation(
-    transformations: Transformation[],
+    transformations: AnyTransformation[],
     index: number,
-): Transformation[] {
+): AnyTransformation[] {
     return transformations.filter((_, i) => i !== index);
 }

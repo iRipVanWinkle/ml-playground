@@ -28,7 +28,6 @@ export const DEFAULT_CLASSIFICATION_SETTINGS: SettingsOf<'tree'> = {
 export const DEFAULT_REGRESSION_REPORT: TrainingReportOf<'tree'> = {
     type: 'tree',
     taskType: 'regression',
-    trainLoss: 0,
     trainPredictedLabels: EMPTY_MATRIX_LIKE,
     trainMetrics: null,
     trainResiduals: EMPTY_MATRIX_LIKE,
@@ -38,8 +37,6 @@ export const DEFAULT_REGRESSION_REPORT: TrainingReportOf<'tree'> = {
 export const DEFAULT_CLASSIFICATION_REPORT: TrainingReportOf<'tree'> = {
     type: 'tree',
     taskType: 'classification',
-    testAccuracy: 0,
-    trainAccuracy: 0,
     trainPredictedLabels: EMPTY_MATRIX_LIKE,
     params: [],
     trainConfusionMatrix: {

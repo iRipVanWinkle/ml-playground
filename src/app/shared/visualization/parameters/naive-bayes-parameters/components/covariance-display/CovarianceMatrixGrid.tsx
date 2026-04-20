@@ -1,8 +1,7 @@
 import { Fragment, useMemo, type ComponentType } from 'react';
 import { type MatrixLike } from '@/app/shared/helpers';
 import { Tooltip } from '@/app/shared/ui';
-import { MatrixGrid } from '../../../../base';
-import { GRID_TOOLTIP_DELAY_DURATION } from '../../constants';
+import { MatrixGrid, GRID_TOOLTIP_DELAY_DURATION } from '@/app/shared/visualization/base';
 
 type TooltipContentProps = {
     idx: number;

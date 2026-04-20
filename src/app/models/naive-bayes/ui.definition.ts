@@ -5,9 +5,9 @@ import {
     ConfusionMatrix,
     RocCurve,
     NaiveBayesParameters,
+    AccuracyMetricsDisplay,
 } from '@/app/shared/visualization';
 import { NaiveBayesSettings } from './ui/NaiveBayesSettings';
-import { NaiveBayesMainMetrics } from './ui/NaiveBayesMainMetrics';
 import { DEFAULT_REPORT, DEFAULT_SETTINGS } from './defaults';
 
 export const naiveBayesModelDefinition: ModelDefinition<'naive-bayes'> = {
@@ -20,7 +20,7 @@ export const naiveBayesModelDefinition: ModelDefinition<'naive-bayes'> = {
 
     defaultReport: () => DEFAULT_REPORT,
     visualization: {
-        metricsGridComponent: NaiveBayesMainMetrics,
+        metricsGridComponent: AccuracyMetricsDisplay,
         modelDataPlotComponent: LogisticPlots,
         plots: [
             { title: 'Conditional Distributions', component: ClassConditionalPlot },

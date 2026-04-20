@@ -20,17 +20,12 @@ export function ModelTypeSelector({ taskType, disabled }: ModelTypeProps) {
     const modelTypes = useMemo(() => modelRegistry.getForTask(taskType), [taskType]);
 
     const handleChange = (value: string) => {
-        const modelType = value as ModelType;
-        setModelType(modelType);
+        setModelType(value as ModelType);
     };
 
     return (
         <Field label="Model Type" htmlFor="modelType" info={MODEL_TYPE_INFO}>
-            <Select
-                disabled={disabled}
-                value={modelType}
-                onValueChange={(value) => handleChange(value)}
-            >
+            <Select disabled={disabled} value={modelType} onValueChange={handleChange}>
                 <Select.Trigger
                     className="w-full truncate"
                     id="modelType"

@@ -2,10 +2,10 @@ import { type ChangeEvent } from 'react';
 import { Button, Input, Select } from '@/app/shared/ui';
 import { TRANSFORMATION_TYPES } from '../constants';
 import { calculateTransformationOutputFeatures, isPolynomialWithDegreeOne } from '../libs';
-import type { Transformation, TransformationType } from '@/app/shared/types';
+import type { AnyTransformation, TransformationType } from '@/app/shared/types';
 
 export type TransformationItemProps = {
-    transformation: Transformation;
+    transformation: AnyTransformation;
     index: number;
     numFeatures: number;
     disabled?: boolean;
@@ -23,15 +23,17 @@ export function TransformationItem({
     onUpdateDegree,
     onRemove,
 }: TransformationItemProps) {
-    const outputFeatures = calculateTransformationOutputFeatures(
-        transformation.type,
-        transformation.degree,
-        numFeatures,
-    );
-    const isPolynomialWithOne = isPolynomialWithDegreeOne(
-        transformation.type,
-        transformation.degree,
-    );
+    let outputFeatures = 0;
+    let isPolynomialWithOne = false;
+
+    if (transformation.type) {
+        outputFeatures = calculateTransformationOutputFeatures(
+            transformation.type,
+            transformation.degree,
+            numFeatures,
+        );
+        isPolynomialWithOne = isPolynomialWithDegreeOne(transformation.type, transformation.degree);
+    }
 
     const handleDegreeChange = (e: ChangeEvent<HTMLInputElement>) => {
         const degree = parseInt(e.target.value) || 0;

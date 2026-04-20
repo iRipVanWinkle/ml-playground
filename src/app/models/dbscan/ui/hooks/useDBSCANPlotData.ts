@@ -26,7 +26,7 @@ export function useDBSCANPlotData({
     getColor,
 }: UseDBSCANPlotDataProps) {
     return useMemo(() => {
-        const is2DPlot = trainInputFeatures[0].length === 2;
+        const is2DPlot = trainInputFeatures[0]?.length === 2;
 
         if (!is2DPlot) return [];
 

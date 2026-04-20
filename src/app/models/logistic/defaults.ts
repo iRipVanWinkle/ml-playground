@@ -16,8 +16,6 @@ export const DEFAULT_REPORT: TrainingReportOf<'logistic'> = {
     taskType: 'classification',
     trainLossHistory: [],
     iterations: [],
-    testAccuracy: 0,
-    trainAccuracy: 0,
     trainPredictedLabels: EMPTY_MATRIX_LIKE,
     theta: EMPTY_MATRIX_LIKE,
     trainConfusionMatrix: {

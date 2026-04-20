@@ -3,7 +3,7 @@ import * as tf from '@tensorflow/tfjs';
 import type { CriterionFunction } from '../../types';
 import { ExtraTreesRegressor } from './ExtraTreesRegressor';
 import { MeanSquaredError } from '../../criteria';
-import { avgPreds } from '../../aggregators';
+import { averagePredictions } from '../../aggregators';
 
 const XArr = [
     0.0005719, 0.0914414, 0.0968348, 0.136938, 0.1952739, 0.2497673, 0.2668127, 0.4252211, 0.461693,
@@ -44,7 +44,7 @@ describe('ExtraTreesRegressor', () => {
             maxDepth: 2,
             bootstrap: true,
             estimators: 2,
-            aggregator: avgPreds,
+            aggregator: averagePredictions,
             numRandomThresholds: 5,
         });
     });
@@ -112,7 +112,7 @@ describe('ExtraTreesRegressor', () => {
                 maxDepth: 2,
                 bootstrap: true,
                 estimators: 1,
-                aggregator: avgPreds,
+                aggregator: averagePredictions,
                 numRandomThresholds: 5,
             });
 
@@ -136,7 +136,7 @@ describe('ExtraTreesRegressor', () => {
                 maxDepth: 2,
                 bootstrap: true,
                 estimators: 5,
-                aggregator: avgPreds,
+                aggregator: averagePredictions,
                 numRandomThresholds: 5,
             });
 
@@ -177,7 +177,7 @@ describe('ExtraTreesRegressor', () => {
                 maxDepth: 1,
                 bootstrap: true,
                 estimators: 2,
-                aggregator: avgPreds,
+                aggregator: averagePredictions,
                 numRandomThresholds: 5,
             });
 
@@ -204,7 +204,7 @@ describe('ExtraTreesRegressor', () => {
                 maxDepth: 2,
                 bootstrap: false,
                 estimators: 2,
-                aggregator: avgPreds,
+                aggregator: averagePredictions,
                 numRandomThresholds: 5,
             });
 
@@ -229,7 +229,7 @@ describe('ExtraTreesRegressor', () => {
                 maxDepth: 2,
                 bootstrap: true,
                 estimators: 2,
-                aggregator: avgPreds,
+                aggregator: averagePredictions,
                 numRandomThresholds: 3,
             });
 
@@ -257,7 +257,7 @@ describe('ExtraTreesRegressor', () => {
                 maxDepth: 2,
                 bootstrap: true,
                 estimators: 2,
-                aggregator: avgPreds,
+                aggregator: averagePredictions,
                 numRandomThresholds: 10,
             });
 
@@ -284,7 +284,7 @@ describe('ExtraTreesRegressor', () => {
                 maxDepth: 2,
                 bootstrap: true,
                 estimators: 2,
-                aggregator: avgPreds,
+                aggregator: averagePredictions,
                 numRandomThresholds: 5,
             });
 
@@ -320,7 +320,7 @@ describe('ExtraTreesRegressor', () => {
                 maxDepth: 2,
                 bootstrap: true,
                 estimators: 2,
-                aggregator: avgPreds,
+                aggregator: averagePredictions,
                 numRandomThresholds: 5,
             });
 
@@ -374,7 +374,7 @@ describe('ExtraTreesRegressor', () => {
                     maxDepth: 2,
                     bootstrap: true,
                     estimators: 1,
-                    aggregator: avgPreds,
+                    aggregator: averagePredictions,
                     numRandomThresholds: 5,
                 });
 
@@ -441,7 +441,7 @@ describe('ExtraTreesRegressor', () => {
                     maxDepth: 2,
                     bootstrap: false,
                     estimators: 2,
-                    aggregator: avgPreds,
+                    aggregator: averagePredictions,
                     numRandomThresholds: 5,
                 });
 
@@ -468,7 +468,7 @@ describe('ExtraTreesRegressor', () => {
                     maxDepth: 2,
                     bootstrap: true,
                     estimators: 2,
-                    aggregator: avgPreds,
+                    aggregator: averagePredictions,
                     numRandomThresholds: 3,
                 });
 
@@ -495,7 +495,7 @@ describe('ExtraTreesRegressor', () => {
                     maxDepth: 2,
                     bootstrap: true,
                     estimators: 2,
-                    aggregator: avgPreds,
+                    aggregator: averagePredictions,
                     numRandomThresholds: 5,
                 });
 
@@ -521,7 +521,7 @@ describe('ExtraTreesRegressor', () => {
                     maxDepth: 3,
                     bootstrap: true,
                     estimators: 3,
-                    aggregator: avgPreds,
+                    aggregator: averagePredictions,
                     numRandomThresholds: 5,
                 });
 
@@ -546,7 +546,7 @@ describe('ExtraTreesRegressor', () => {
                     maxDepth: 2,
                     bootstrap: true,
                     estimators: 1,
-                    aggregator: avgPreds,
+                    aggregator: averagePredictions,
                     numRandomThresholds: 5,
                 });
 
@@ -573,7 +573,7 @@ describe('ExtraTreesRegressor', () => {
                     maxDepth: 0,
                     bootstrap: true,
                     estimators: 2,
-                    aggregator: avgPreds,
+                    aggregator: averagePredictions,
                     numRandomThresholds: 5,
                 });
 
@@ -602,7 +602,7 @@ describe('ExtraTreesRegressor', () => {
                     maxDepth: 2,
                     bootstrap: true,
                     estimators: 2,
-                    aggregator: avgPreds,
+                    aggregator: averagePredictions,
                     numRandomThresholds: 5,
                 });
 
@@ -626,7 +626,7 @@ describe('ExtraTreesRegressor', () => {
                     maxDepth: 1,
                     bootstrap: true,
                     estimators: 2,
-                    aggregator: avgPreds,
+                    aggregator: averagePredictions,
                     numRandomThresholds: 5,
                 });
 
@@ -647,7 +647,7 @@ describe('ExtraTreesRegressor', () => {
                     maxDepth: 2,
                     bootstrap: true,
                     estimators: 2,
-                    aggregator: avgPreds,
+                    aggregator: averagePredictions,
                     numRandomThresholds: 1,
                 });
 

@@ -1,13 +1,11 @@
 import { concat, tidy, type Tensor2D } from '@tensorflow/tfjs';
 
 /**
- * Extends data set with sinusoid features.
+ * Extends a dataset with sinusoidal (sin) features up to the given degree.
  *
- * Returns a new tf.Tensor2D with more features, comprising of sin(x).
- *
- * @param dataset - tf.Tensor2D.
- * @param sinusoidDegree - Multiplier for sinusoid parameter multiplications.
- * @returns The new tf.Tensor2D with the sinusoid features added.
+ * @param data - Input feature tensor (samples × features).
+ * @param degree - Number of frequency harmonics to generate (must be ≥ 1).
+ * @returns A new Tensor2D with `degree * numFeatures` sin columns appended.
  */
 export function generateSinusoidalFeatures(data: Tensor2D, degree: number): Tensor2D {
     if (degree < 1) {

@@ -2,12 +2,12 @@ import type { ModelDefinition } from '@/app/shared/registry/types';
 import {
     LinearPlots,
     LossHistory,
+    LossMetricsDisplay,
     RegressionMetrics,
     RegressionParameters,
     ResidualsPlot,
 } from '@/app/shared/visualization';
 import { LinearSettings } from './ui/LinearSettings';
-import { LinearMainMetrics } from './ui/LinearMainMetrics';
 import { DEFAULT_REPORT, DEFAULT_SETTINGS } from './defaults';
 
 export const linearModelDefinition: ModelDefinition<'linear'> = {
@@ -19,7 +19,7 @@ export const linearModelDefinition: ModelDefinition<'linear'> = {
 
     defaultReport: () => DEFAULT_REPORT,
     visualization: {
-        metricsGridComponent: LinearMainMetrics,
+        metricsGridComponent: LossMetricsDisplay,
         modelDataPlotComponent: LinearPlots,
         plots: [
             { title: 'Loss History', component: LossHistory },

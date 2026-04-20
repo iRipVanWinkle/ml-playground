@@ -26,7 +26,6 @@ export const DEFAULT_REGRESSION_REPORT: TrainingReportOf<'neural'> = {
     trainLossHistory: [],
     iteration: 0,
     optimizerLoss: 0,
-    trainLoss: 0,
     trainPredictedLabels: EMPTY_MATRIX_LIKE,
     theta: EMPTY_MATRIX_LIKE,
     trainMetrics: null,
@@ -38,8 +37,6 @@ export const DEFAULT_CLASSIFICATION_REPORT: TrainingReportOf<'neural'> = {
     taskType: 'classification',
     trainLossHistory: [],
     iteration: 0,
-    testAccuracy: 0,
-    trainAccuracy: 0,
     trainPredictedLabels: EMPTY_MATRIX_LIKE,
     theta: EMPTY_MATRIX_LIKE,
     trainConfusionMatrix: {

@@ -36,19 +36,26 @@ function FeatureGridRoot({
 
     const Item = itemComponent;
 
+    function renderItems(slice: number[], startIndex: number) {
+        return slice.map((item, i) => {
+            const actualIndex = startIndex + i;
+            return (
+                <Item
+                    key={actualIndex}
+                    label={labels[actualIndex] || `Feature ${actualIndex + 1}`}
+                    value={item}
+                    maxAbs={maxAbsItem}
+                />
+            );
+        });
+    }
+
     return (
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
             <div
                 className={`grid grid-cols-1 gap-x-8 gap-y-3 ${!oneColumn ? 'md:grid-cols-2' : ''} `}
             >
-                {visibleItems.map((item, index) => (
-                    <Item
-                        key={index}
-                        label={labels[index] || `Feature ${index + 1}`}
-                        value={item}
-                        maxAbs={maxAbsItem}
-                    />
-                ))}
+                {renderItems(visibleItems, 0)}
             </div>
             {hasMore && (
                 <>
@@ -56,17 +63,7 @@ function FeatureGridRoot({
                         <div
                             className={`mt-2 grid grid-cols-1 gap-2 gap-x-8 ${!oneColumn ? 'md:grid-cols-2' : ''}`}
                         >
-                            {hiddenItems.map((item, index) => {
-                                const actualIndex = index + visibleIndices;
-                                return (
-                                    <Item
-                                        key={actualIndex}
-                                        label={labels[actualIndex] || `Feature ${actualIndex + 1}`}
-                                        value={item}
-                                        maxAbs={maxAbsItem}
-                                    />
-                                );
-                            })}
+                            {renderItems(hiddenItems, visibleIndices)}
                         </div>
                     </Collapsible.Content>
                     <Collapsible.Trigger className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors mt-2">
