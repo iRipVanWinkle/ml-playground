@@ -16,6 +16,7 @@ export type UIToWorkerMessage = (
     | PauseMessage
     | ResumeMessage
     | StepForwardMessage
+    | ReadyMessage
 ) & { sentAt?: number };
 
 export type TrainMessage = {
@@ -50,6 +51,12 @@ export type ResumeMessage = {
 
 export type StepForwardMessage = {
     type: 'step-forward';
+    payload?: never;
+    requestId?: string;
+};
+
+export type ReadyMessage = {
+    type: 'ready';
     payload?: never;
     requestId?: string;
 };

@@ -1,4 +1,4 @@
-import { Tensor, memory, ready, setBackend } from '@tensorflow/tfjs';
+import { Tensor, ready, setBackend } from '@tensorflow/tfjs';
 import '@tensorflow/tfjs-backend-webgpu';
 import '@tensorflow/tfjs-backend-wasm';
 import { setWasmPaths } from '@tensorflow/tfjs-backend-wasm';
@@ -13,7 +13,13 @@ import { PipelineModel } from '@/ml/models';
 import { EventEmitter } from '@/ml/events/EventEmitter';
 import { TrainingController } from '@/ml/controllers/TrainingController';
 import { Randomizer } from '@/ml/random/Randomizer';
-import { DatasetManager, type LiveMetrics } from '@/app/shared/workers';
+import {
+    DatasetManager,
+    type LiveMetrics,
+    performanceUtils,
+    MemoryLeakDetector,
+    workerLogUtils,
+} from '@/app/shared/workers';
 import type { ModelType, TrainingReport } from '@/app/models/types';
 import { getWorkerRegistry } from '@/app/models/worker-registry';
 import type { TrainingSettings } from '@/app/models/types';
@@ -32,8 +38,6 @@ type TrainedModel = PipelineModel<RepresentationOf<ModelType>>;
 
 const workerRegistry = getWorkerRegistry();
 
-const CONSECUTIVE_TENSOR_INCREASE_THRESHOLD = 5;
-
 export class TrainingOrchestrator {
     private model: TrainedModel;
     private datasetManager: DatasetManager;
@@ -41,11 +45,12 @@ export class TrainingOrchestrator {
     private trainingController: TrainingControl;
     private callbacks: TrainingCallbacks;
     private liveMetrics: LiveMetrics<CallbackParameters, TrainingReport>;
+    private memoryLeakDetector: MemoryLeakDetector;
 
     private isTraining = false;
     private byStep = false;
-    private previousTensorCount: number | null = null;
-    private consecutiveTensorIncreases = 0;
+    private isReady = true;
+    private pendingReport: TrainingReport | null = null;
 
     private scalerParams?: ScalerState;
     private hasExtractedScalerParams = false;
@@ -79,13 +84,12 @@ export class TrainingOrchestrator {
 
         this.datasetManager = new DatasetManager(dataset);
         this.liveMetrics = this.createLiveMetrics(settings, this.model, this.datasetManager);
+        this.memoryLeakDetector = new MemoryLeakDetector();
 
         this.callbacks = callbacks;
 
         Randomizer.setSeed(systemSettings.randomSeed);
-        // Set up event handling
         this.setupEventHandlers();
-        this.initializeTensorTracking();
     }
 
     async train(byStep: boolean): Promise<void> {
@@ -96,7 +100,7 @@ export class TrainingOrchestrator {
         this.byStep = byStep;
         this.isTraining = true;
 
-        console.info('Training started', memory());
+        workerLogUtils.logTrainingLifecycle('started');
 
         try {
             await this.executeTraining();
@@ -108,7 +112,7 @@ export class TrainingOrchestrator {
             this.isTraining = false;
         }
 
-        console.info('Training finished', memory());
+        workerLogUtils.logTrainingLifecycle('finished');
     }
 
     stop() {
@@ -127,10 +131,25 @@ export class TrainingOrchestrator {
         this.trainingController.step();
     }
 
+    setReady(ready: boolean) {
+        this.isReady = ready;
+
+        if (ready && this.pendingReport) {
+            this.callbacks.onReport(this.pendingReport);
+            this.pendingReport = null;
+            this.isReady = false;
+        }
+    }
+
     private async executeTraining(): Promise<void> {
         const { model, datasetManager, callbacks } = this;
 
         await this.trainModel(model, datasetManager);
+
+        if (this.pendingReport) {
+            callbacks.onReport(this.pendingReport);
+            this.pendingReport = null;
+        }
 
         callbacks.onFinished();
     }
@@ -204,18 +223,16 @@ export class TrainingOrchestrator {
         }
 
         if (import.meta.env.DEV) {
-            const duration = performance.now() - startTime;
-            console.log(
-                `%c[Worker] %ccalculateMetrics %cduration: ${duration.toFixed(2)}ms`,
-                'color: #9c27b0; font-weight: bold',
-                'color: inherit',
-                'color: #4caf50',
-            );
-
-            this.checkTensorMemory();
+            performanceUtils.logDuration('[Worker]', 'calculateMetrics', startTime);
+            this.memoryLeakDetector.check();
         }
 
-        callbacks.onReport(report);
+        if (this.isReady) {
+            callbacks.onReport(report);
+            this.isReady = false;
+        } else {
+            this.pendingReport = report;
+        }
 
         // Handle step-by-step learning mode
         if (this.shouldStopAfterIteration(params.iteration)) {
@@ -253,13 +270,15 @@ export class TrainingOrchestrator {
         this.trainingEventEmitter.clear();
         this.datasetManager.dispose();
         this.liveMetrics.dispose?.();
-        this.resetTensorTracking();
+        this.memoryLeakDetector.reset();
+        this.pendingReport = null;
+        this.isReady = true;
         this.scalerParams = undefined;
         this.hasExtractedScalerParams = false;
     }
 
     private handleTrainingError(error: Error): void {
-        console.error('Training failed:', error);
+        workerLogUtils.logError('Training failed:', error);
         this.callbacks.onError(`Training failed: ${error.message}`);
     }
 
@@ -293,40 +312,5 @@ export class TrainingOrchestrator {
         const worker = workerRegistry.get(settings.modelSettings.type);
 
         return worker.liveMetricsFactory(model, datasetManager, settings);
-    }
-
-    private initializeTensorTracking(): void {
-        this.previousTensorCount = memory().numTensors;
-        this.consecutiveTensorIncreases = 0;
-    }
-
-    private checkTensorMemory(): void {
-        const currentMemory = memory();
-        const currentTensorCount = currentMemory.numTensors;
-
-        if (this.previousTensorCount !== null) {
-            if (currentTensorCount > this.previousTensorCount) {
-                this.consecutiveTensorIncreases++;
-
-                if (this.consecutiveTensorIncreases >= CONSECUTIVE_TENSOR_INCREASE_THRESHOLD) {
-                    console.warn(
-                        `%c[Worker] %cMemory Leak Warning: %cTensor count has increased for ${this.consecutiveTensorIncreases} consecutive iterations (${this.previousTensorCount} → ${currentTensorCount})`,
-                        'color: #ff9800; font-weight: bold',
-                        'color: #f44336; font-weight: bold',
-                        'color: inherit',
-                    );
-                    console.warn('Current memory:', currentMemory);
-                }
-            } else {
-                this.consecutiveTensorIncreases = 0;
-            }
-        }
-
-        this.previousTensorCount = currentTensorCount;
-    }
-
-    private resetTensorTracking(): void {
-        this.previousTensorCount = null;
-        this.consecutiveTensorIncreases = 0;
     }
 }

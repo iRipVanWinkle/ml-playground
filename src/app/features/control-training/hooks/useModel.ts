@@ -4,8 +4,15 @@ import { setTrainingReport, setTrainingState, snapshotTrainingSettings } from '@
 import type { TrainingWorkerManager, UIToWorkerMessage } from '../workers/types';
 import { WorkerManager } from '@/app/shared/workers/manager';
 import type { TrainingReport } from '@/app/models/types';
+import { uiLogUtils } from '@/app/shared/helpers';
 
 import TrainingWorker from '../workers/trainingOrchestrator.worker.ts?worker';
+
+function getIteration(report: TrainingReport): number | string {
+    if ('iterations' in report) return report.iterations[0];
+    if ('iteration' in report) return report.iteration;
+    return 'N/A';
+}
 
 export const useModel = () => {
     const workerRef = useRef<TrainingWorkerManager | null>(null);
@@ -27,12 +34,23 @@ export const useModel = () => {
             TrainingReport
         >(() => new TrainingWorker());
 
+        let metricsReceivedCount = 0;
+
         workerManager.on('report', (report: TrainingReport) => {
+            metricsReceivedCount++;
+
+            const iteration = getIteration(report);
+            uiLogUtils.logMetricsReceived(metricsReceivedCount, iteration);
+
             latest = report;
             if (!animationFrame) {
                 animationFrame = requestAnimationFrame(() => {
-                    setTrainingReport(latest!);
-                    animationFrame = null;
+                    try {
+                        setTrainingReport(latest!);
+                        animationFrame = null;
+                    } finally {
+                        workerManager.postMessage({ type: 'ready' });
+                    }
                 });
             }
         });
@@ -68,6 +86,8 @@ export const useModel = () => {
         });
 
         workerManager.on('finished', () => {
+            uiLogUtils.logTrainingComplete(metricsReceivedCount);
+
             setTrainingState('init');
             terminateWorker();
             toast.success('Training finished');

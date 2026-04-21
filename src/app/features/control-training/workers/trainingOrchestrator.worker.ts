@@ -2,6 +2,7 @@ import { TrainingOrchestrator } from './training/training-orchestrator';
 import type { TrainingState } from '@/ml/types';
 import type { UIToWorkerMessage } from './types';
 import type { TrainingReport } from '@/app/models/types';
+import { performanceUtils, workerLogUtils } from '@/app/shared/workers';
 
 let orchestrator: TrainingOrchestrator | null = null;
 
@@ -9,16 +10,7 @@ self.onmessage = (event: MessageEvent<UIToWorkerMessage>) => {
     try {
         const { type, payload, requestId, sentAt } = event.data;
 
-        if (import.meta.env.DEV && sentAt) {
-            const now = performance.now() + performance.timeOrigin;
-            const latency = now - sentAt;
-            console.log(
-                `%c[Client -> Worker] %c${type} %clatency: ${latency.toFixed(2)}ms`,
-                'color: #ff9800; font-weight: bold',
-                'color: inherit',
-                'color: #4caf50',
-            );
-        }
+        performanceUtils.logLatency('[Client -> Worker]', type, sentAt, '#ff9800');
 
         switch (type) {
             case 'train':
@@ -49,11 +41,14 @@ self.onmessage = (event: MessageEvent<UIToWorkerMessage>) => {
                 orchestrator?.step();
                 send('state', requestId, 'stepped-forward');
                 break;
+            case 'ready':
+                orchestrator?.setReady(true);
+                break;
             default:
                 throw new Error(`Unknown message type: ${type}`);
         }
     } catch (error) {
-        console.error('Worker error:', error);
+        workerLogUtils.logError('Worker error:', error);
         const errorMessage = error instanceof Error ? error.message : String(error);
         send('error', `Worker error: ${errorMessage}`);
     }
@@ -75,7 +70,7 @@ function send(
     payload?: string | object | Error,
     transfer?: Transferable[],
 ) {
-    const sentAt = import.meta.env.DEV ? performance.now() + performance.timeOrigin : undefined;
+    const sentAt = performanceUtils.getTimestamp();
     if (transfer) {
         self.postMessage({ type, payload, requestId, sentAt }, { transfer });
     } else {

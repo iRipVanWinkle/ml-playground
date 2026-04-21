@@ -16,6 +16,7 @@ import {
     rootMeanSquaredError,
 } from '@/ml/metrics';
 import { lossFunctionFactory } from '@/ml/factories';
+import { EMPTY_MATRIX_LIKE } from '@/app/shared/helpers';
 
 type MetricsTensors = {
     y: Tensor2D;
@@ -84,7 +85,6 @@ export class NeuralRegressionLiveMetrics
             : createTensorContainer<MetricsTensors, 'partial'>();
 
         const [
-            thetaArray,
             predictionPredictedLabels,
             // train
             trainPredictedLabels,
@@ -103,7 +103,6 @@ export class NeuralRegressionLiveMetrics
             testR2Value,
             testResidualsArray,
         ] = await Promise.all([
-            getSafeMatrixFromTensor(theta),
             getSafeMatrixFromTensor(yPredictions),
             // train
             getSafeMatrixFromTensor(train.y),
@@ -145,7 +144,7 @@ export class NeuralRegressionLiveMetrics
             trainPredictedLabels: trainPredictedLabels!,
             testPredictedLabels: testPredictedLabels!,
             predictionPredictedLabels: predictionPredictedLabels,
-            theta: thetaArray,
+            theta: EMPTY_MATRIX_LIKE, // For now it isn't handled on UI side, so we can return an empty matrix
             trainMetrics: {
                 mae: trainMaeValue,
                 mse: trainMseValue,

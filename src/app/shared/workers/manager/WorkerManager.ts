@@ -1,3 +1,6 @@
+// Import only performanceUtils to prevent TensorFlow.js from being bundled in the main UI bundle
+import { performanceUtils } from '../utils/performance';
+
 type PendingRequest<TResponse> = {
     resolve: (response: TResponse) => void;
     reject: (error: Error) => void;
@@ -44,7 +47,7 @@ export class WorkerManager<TMessage, TResponse> {
         const messageWithId = {
             ...message,
             requestId,
-            sentAt: import.meta.env.DEV ? performance.now() + performance.timeOrigin : undefined,
+            sentAt: performanceUtils.getTimestamp(),
         };
 
         if (options?.transfer) {
@@ -79,9 +82,7 @@ export class WorkerManager<TMessage, TResponse> {
             const messageWithId = {
                 ...message,
                 requestId,
-                sentAt: import.meta.env.DEV
-                    ? performance.now() + performance.timeOrigin
-                    : undefined,
+                sentAt: performanceUtils.getTimestamp(),
             };
 
             if (options?.transfer) {
@@ -129,16 +130,7 @@ export class WorkerManager<TMessage, TResponse> {
     private handleMessage = (event: MessageEvent<TResponse>): void => {
         const { type, payload, requestId, sentAt } = event.data as ResponseMessage<TResponse>;
 
-        if (import.meta.env.DEV && sentAt) {
-            const now = performance.now() + performance.timeOrigin;
-            const latency = now - sentAt;
-            console.log(
-                `%c[Worker -> Client] %c${type} %clatency: ${latency.toFixed(2)}ms`,
-                'color: #00bcd4; font-weight: bold',
-                'color: inherit',
-                'color: #4caf50',
-            );
-        }
+        performanceUtils.logLatency('[Worker -> Client]', type, sentAt);
 
         const pending = this.pendingRequests.get(requestId!);
         if (pending) {
