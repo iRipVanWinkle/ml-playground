@@ -8,14 +8,12 @@ import { ModelSection } from './widgets/model-section';
 import { SystemSettings } from './widgets/settings-section';
 import { TrainingSection } from './widgets/training-section';
 
-import './App.css';
-
 function App() {
     return (
         <ThemeProvider>
             <div className="App">
                 <Header />
-                <main className="grid gap-3">
+                <main className="grid gap-6 px-2 py-6 m-auto max-w-7xl">
                     <TaskSwitcher />
 
                     <div className="grid gap-6 grid-cols-1 lg:grid-cols-3">

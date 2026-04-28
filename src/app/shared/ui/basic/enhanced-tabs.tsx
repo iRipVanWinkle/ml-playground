@@ -12,6 +12,7 @@ const tabsListVariants = cva('inline-flex w-fit items-center', {
             default: 'bg-muted text-muted-foreground h-9 rounded-lg p-[3px]',
             pills: 'gap-1 p-1',
             underline: 'relative gap-1',
+            outlined: 'gap-1',
         },
         scrollable: {
             false: '',
@@ -146,6 +147,8 @@ const tabsVariants = cva(
                 pills: 'rounded-full border data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-md data-[state=active]:scale-105 data-[state=inactive]:bg-card data-[state=inactive]:text-muted-foreground data-[state=inactive]:border-border hover:bg-accent hover:text-foreground hover:border-primary/30 hover:shadow-sm',
                 underline:
                     'border-b-2 border-t-2 border-t-transparent rounded-none data-[state=active]:text-primary data-[state=active]:border-b-primary data-[state=active]:bg-accent/30 data-[state=inactive]:text-muted-foreground data-[state=inactive]:border-b-transparent data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:border-b-primary/50 data-[state=inactive]:hover:bg-accent/10',
+                outlined:
+                    'border px-3 py-1.5 data-[state=active]:border-primary data-[state=active]:text-foreground data-[state=active]:[&_svg]:text-primary data-[state=inactive]:border-input data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground',
             },
         },
         defaultVariants: {

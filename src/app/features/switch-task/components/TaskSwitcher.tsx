@@ -29,9 +29,9 @@ export function TaskSwitcher({ disabled }: TaskSwitcherProps) {
 
     return (
         <EnhancedTabs
-            defaultValue={taskType}
+            value={taskType}
             onValueChange={handleTaskTypeChange}
-            variant="underline"
+            variant="outlined"
             scrollable
         >
             <EnhancedTabs.List data-testid="task-switcher-list">
