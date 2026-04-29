@@ -70,7 +70,7 @@ export class WorkerManager<TMessage, TResponse> {
             const timeoutHandle = timeout
                 ? setTimeout(() => {
                       this.pendingRequests.delete(requestId);
-                      reject(new Error(`Request timeout after ${timeout}ms`));
+                      reject(new WorkerTimeoutError(timeout));
                   }, timeout)
                 : undefined;
 
@@ -96,7 +96,7 @@ export class WorkerManager<TMessage, TResponse> {
     terminate(): void {
         for (const [, pending] of this.pendingRequests) {
             clearTimeout(pending.timeout);
-            pending.reject(new Error('Worker terminated'));
+            pending.reject(new WorkerTerminationError());
         }
         this.pendingRequests.clear();
 
@@ -135,7 +135,7 @@ export class WorkerManager<TMessage, TResponse> {
         const pending = this.pendingRequests.get(requestId!);
         if (pending) {
             if (type === 'error') {
-                pending.reject(new Error(payload as string));
+                pending.reject(new WorkerError(payload as string));
             } else {
                 pending.resolve(payload);
             }
@@ -151,7 +151,7 @@ export class WorkerManager<TMessage, TResponse> {
     };
 
     private handleError = (error: ErrorEvent): void => {
-        const wrappedError = new Error(error.message);
+        const wrappedError = new WorkerError(error.message);
         const handlers = this.messageHandlers.get('error');
         if (handlers) {
             handlers.forEach((handler) => handler(wrappedError));
@@ -159,10 +159,38 @@ export class WorkerManager<TMessage, TResponse> {
     };
 
     private handleMessageError = (event: MessageEvent): void => {
-        const wrappedError = new Error(`Message serialization error: ${event}`);
+        const wrappedError = new WorkerSerializationError(event);
         const handlers = this.messageHandlers.get('error');
         if (handlers) {
             handlers.forEach((handler) => handler(wrappedError));
         }
     };
+}
+
+export class WorkerTerminationError extends Error {
+    constructor() {
+        super('Worker has been terminated');
+        this.name = 'WorkerTerminationError';
+    }
+}
+
+export class WorkerTimeoutError extends Error {
+    constructor(timeout: number) {
+        super(`Request timeout after ${timeout}ms`);
+        this.name = 'WorkerTimeoutError';
+    }
+}
+
+export class WorkerSerializationError extends Error {
+    constructor(event: MessageEvent) {
+        super(`Worker serialization error: ${event}`);
+        this.name = 'WorkerSerializationError';
+    }
+}
+
+export class WorkerError extends Error {
+    constructor(message: string) {
+        super(`Worker error: ${message}`);
+        this.name = 'WorkerError';
+    }
 }
