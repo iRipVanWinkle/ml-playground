@@ -1,79 +1,34 @@
-import { useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { line as d3line, scaleLinear } from 'd3';
 import type { TrainingReport } from '@/app/models/types';
 import type { Dataset } from '@/app/shared/types';
 import { useColor } from '../../colors';
+import { useContainerSize } from './hooks/useContainerSize';
+import { useLossChart } from './hooks/useLossChart';
 
 type LossHistoryProps = {
     dataset: Dataset;
     report: TrainingReport;
-    testLossHistory?: number[][];
 };
 
 const PAD = { top: 16, right: 20, bottom: 30, left: 50 };
 const Y_TICKS = 4;
 const FALLBACK_SIZE = { width: 820, height: 260 };
 
-export function LossHistory({ dataset, report, testLossHistory }: LossHistoryProps) {
+export function LossHistory({ dataset, report }: LossHistoryProps) {
     const { getColor } = useColor();
-    const containerRef = useRef<HTMLDivElement>(null);
-    const [size, setSize] = useState(FALLBACK_SIZE);
+    const { containerRef, size } = useContainerSize(FALLBACK_SIZE);
 
-    const trainLossHistory =
-        'trainLossHistory' in report ? report.trainLossHistory : undefined;
+    const chart = useLossChart({
+        train: 'trainLossHistory' in report ? report.trainLossHistory : undefined,
+        test: 'testLossHistory' in report ? report.testLossHistory : undefined,
+        size,
+        padding: PAD,
+        yTickCount: Y_TICKS,
+    });
 
-    useLayoutEffect(() => {
-        const el = containerRef.current;
-        if (!el) return;
-        const ro = new ResizeObserver((entries) => {
-            const entry = entries[0];
-            if (!entry) return;
-            const { width, height } = entry.contentRect;
-            if (width > 0 && height > 0) setSize({ width, height });
-        });
-        ro.observe(el);
-        return () => ro.disconnect();
-    }, []);
+    if (!chart) return null;
 
-    const chart = useMemo(() => {
-        if (!trainLossHistory?.length) return null;
-
-        const train = trainLossHistory;
-        const test = testLossHistory ?? [];
-        const maxLen = Math.max(
-            1,
-            ...train.map((s) => s.length),
-            ...test.map((s) => s.length),
-        );
-        const allValues = [...train.flat(), ...test.flat()];
-        const yMaxRaw = allValues.length ? Math.max(...allValues) : 1;
-        const yMax = Math.max(1, yMaxRaw * 1.1);
-
-        const innerW = Math.max(1, size.width - PAD.left - PAD.right);
-        const innerH = Math.max(1, size.height - PAD.top - PAD.bottom);
-
-        const xScale = scaleLinear()
-            .domain([0, Math.max(1, maxLen - 1)])
-            .range([PAD.left, PAD.left + innerW]);
-        const yScale = scaleLinear()
-            .domain([0, yMax])
-            .range([PAD.top + innerH, PAD.top]);
-
-        const buildPath = d3line<number>()
-            .x((_, i) => xScale(i))
-            .y((v) => yScale(v));
-
-        const yTicks = Array.from({ length: Y_TICKS + 1 }, (_, i) => ({
-            value: yMax - (i / Y_TICKS) * yMax,
-            y: PAD.top + (i / Y_TICKS) * innerH,
-        }));
-
-        return { train, test, maxLen, xScale, yScale, buildPath, yTicks, innerW, innerH };
-    }, [trainLossHistory, testLossHistory, size.width, size.height]);
-
-    if (!trainLossHistory?.length || !chart) return null;
-
-    const { train, test, maxLen, xScale, yScale, buildPath, yTicks, innerW, innerH } = chart;
+    const { train, test, maxLen, yTicks, innerW, innerH, trainPaths, testPaths, trainEnds } =
+        chart;
     const showTest = test.length > 0;
     const categories = dataset.categories;
     const showClassLegend = train.length > 1 || Boolean(categories?.length);
@@ -134,10 +89,8 @@ export function LossHistory({ dataset, report, testLossHistory }: LossHistoryPro
                     </text>
 
                     {showTest &&
-                        test.map((vals, idx) => {
-                            const path = buildPath(vals);
-                            if (!path) return null;
-                            return (
+                        testPaths.map((path, idx) =>
+                            path ? (
                                 <path
                                     key={`test-${idx}`}
                                     d={path}
@@ -147,13 +100,11 @@ export function LossHistory({ dataset, report, testLossHistory }: LossHistoryPro
                                     strokeDasharray="3 3"
                                     opacity={0.85}
                                 />
-                            );
-                        })}
+                            ) : null,
+                        )}
 
-                    {train.map((vals, idx) => {
-                        const path = buildPath(vals);
-                        if (!path) return null;
-                        return (
+                    {trainPaths.map((path, idx) =>
+                        path ? (
                             <path
                                 key={`train-${idx}`}
                                 d={path}
@@ -161,24 +112,22 @@ export function LossHistory({ dataset, report, testLossHistory }: LossHistoryPro
                                 stroke={getColor(idx)}
                                 strokeWidth={1.75}
                             />
-                        );
-                    })}
+                        ) : null,
+                    )}
 
-                    {train.map((vals, idx) => {
-                        if (!vals.length) return null;
-                        const lastI = vals.length - 1;
-                        return (
+                    {trainEnds.map((end, idx) =>
+                        end ? (
                             <circle
                                 key={`dot-${idx}`}
-                                cx={xScale(lastI)}
-                                cy={yScale(vals[lastI])}
+                                cx={end.cx}
+                                cy={end.cy}
                                 r={3}
                                 className="fill-background"
                                 stroke={getColor(idx)}
                                 strokeWidth={1.5}
                             />
-                        );
-                    })}
+                        ) : null,
+                    )}
                 </svg>
             </div>
 

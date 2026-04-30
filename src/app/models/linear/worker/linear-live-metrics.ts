@@ -35,7 +35,9 @@ export class LinearLiveMetrics
     private datasetManager: DatasetManager;
     private modelSettings: LinearSettings;
 
-    private lossHistory: number[] = [];
+    private trainLossHistory: number[] = [];
+    private testLossHistory: number[] = [];
+    private optimizerLossHistory: number[] = [];
     private theta?: Tensor2D;
 
     static factory(
@@ -72,7 +74,6 @@ export class LinearLiveMetrics
         const { iteration, theta, loss } = params;
 
         this.theta = theta;
-        this.lossHistory.push(loss);
 
         let yPredictions: Tensor2D | undefined;
         if (predictionData) {
@@ -83,6 +84,7 @@ export class LinearLiveMetrics
         const test = testData
             ? this.evaluateMetrics(testData.X, testData.y, theta)
             : createTensorContainer<MetricsTensors, 'partial'>();
+
 
         const [
             thetaArray,
@@ -129,6 +131,12 @@ export class LinearLiveMetrics
         train.dispose();
         test.dispose();
 
+        this.optimizerLossHistory.push(loss);
+        this.trainLossHistory.push(trainLossValue);
+        if (testLossValue !== undefined) {
+            this.testLossHistory.push(testLossValue);
+        }
+
         const hasTestMetrics =
             testMaeValue !== undefined &&
             testMseValue !== undefined &&
@@ -138,7 +146,9 @@ export class LinearLiveMetrics
         return {
             type: 'linear',
             taskType: 'regression',
-            trainLossHistory: [this.lossHistory],
+            trainLossHistory: this.trainLossHistory,
+            testLossHistory: this.testLossHistory,
+            optimizerLossHistory: [this.optimizerLossHistory],
             iteration: iteration + 1,
             optimizerLoss: loss,
             trainLoss: trainLossValue,

@@ -29,8 +29,10 @@ export type LinearCallbackParameters = {
 
 export type LinearTrainingReport = BaseRegressionReport & {
     type: 'linear';
-    trainLossHistory: number[][];
+    trainLossHistory: number[];
+    testLossHistory?: number[];
+    optimizerLossHistory: number[][];
     iteration: number;
-    optimizerLoss: number; // optimizer loss
+    optimizerLoss: number;
     theta: MatrixLike;
 };
