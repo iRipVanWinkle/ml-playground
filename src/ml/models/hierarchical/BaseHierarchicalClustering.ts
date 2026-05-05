@@ -176,10 +176,12 @@ export abstract class BaseHierarchicalClustering implements Model<HierarchicalCl
 
             await this.eventEmitter.emit('callback', {
                 threadId: 0,
-                assignments,
+                // Snapshot — these buffers continue to live on the model past the
+                // callback; the worker may transfer them, which would detach ours.
+                assignments: assignments.slice(),
                 iteration,
                 numClusters,
-                params,
+                params: structuredClone(params),
             });
         }
     }

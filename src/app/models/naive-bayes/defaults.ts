@@ -1,4 +1,4 @@
-import { EMPTY_MATRIX_LIKE } from '@/app/shared/helpers';
+import { createEmptyMatrix } from '@/app/shared/helpers';
 import type { SettingsOf, TrainingReportOf } from '@/app/shared/registry';
 
 export const DEFAULT_SETTINGS: SettingsOf<'naive-bayes'> = {
@@ -9,14 +9,14 @@ export const DEFAULT_SETTINGS: SettingsOf<'naive-bayes'> = {
 export const DEFAULT_REPORT: TrainingReportOf<'naive-bayes'> = {
     type: 'naive-bayes',
     taskType: 'classification',
-    trainPredictedLabels: EMPTY_MATRIX_LIKE,
+    trainPredictedLabels: createEmptyMatrix(),
     iteration: 0,
     params: {
         type: 'gaussian',
         classes: [],
         classPriors: new Float32Array(),
-        classMeans: EMPTY_MATRIX_LIKE,
-        classVariances: EMPTY_MATRIX_LIKE,
+        classMeans: createEmptyMatrix(),
+        classVariances: createEmptyMatrix(),
     },
     trainConfusionMatrix: {
         matrix: [] as number[][],

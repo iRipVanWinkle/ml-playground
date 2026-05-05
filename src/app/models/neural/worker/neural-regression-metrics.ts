@@ -16,7 +16,7 @@ import {
     rootMeanSquaredError,
 } from '@/ml/metrics';
 import { lossFunctionFactory } from '@/ml/factories';
-import { EMPTY_MATRIX_LIKE } from '@/app/shared/helpers';
+import { createEmptyMatrix } from '@/app/shared/helpers';
 
 type MetricsTensors = {
     y: Tensor2D;
@@ -144,7 +144,7 @@ export class NeuralRegressionLiveMetrics
             trainPredictedLabels: trainPredictedLabels!,
             testPredictedLabels: testPredictedLabels!,
             predictionPredictedLabels: predictionPredictedLabels,
-            theta: EMPTY_MATRIX_LIKE, // For now it isn't handled on UI side, so we can return an empty matrix
+            theta: createEmptyMatrix(), // For now it isn't handled on UI side, so we can return an empty matrix
             trainMetrics: {
                 mae: trainMaeValue,
                 mse: trainMseValue,

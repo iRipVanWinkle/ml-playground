@@ -11,8 +11,7 @@ import {
     zerosInitializer,
     type ThetaInitializer,
 } from '../../factories/theta-initialization/initializers';
-import { getMatrixFromTensor, type MatrixLike } from '../../utils/matrix';
-import { assertModelTrained } from '../../utils';
+import { type MatrixLike } from '../../utils/matrix';
 
 export type ModelOptions = {
     lossFunc: LossFunction;
@@ -41,12 +40,6 @@ export abstract class BaseEstimator implements Model<Tensor2D> {
     abstract predict(X: Tensor2D, theta?: Tensor2D): Tensor2D;
 
     abstract predictWithMetadata(X: Tensor2D, theta?: Tensor2D): PredictionMetadata;
-
-    async extractParameters(): Promise<MatrixLike> {
-        assertModelTrained(this.theta);
-
-        return getMatrixFromTensor(this.theta);
-    }
 
     restoreParameters(params: MatrixLike): void {
         this.theta = tensor2d(params.array, params.shape);

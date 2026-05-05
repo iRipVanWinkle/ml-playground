@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react';
-import { element, EMPTY_MATRIX_LIKE, type MatrixLike } from '@/app/shared/helpers';
+import { element, createEmptyMatrix, type MatrixLike } from '@/app/shared/helpers';
 import { FeatureBlock, GRID_VIEW_THRESHOLD, ImageGrid } from '@/app/shared/visualization/base';
 import { CovarianceMatrixGrid } from './CovarianceMatrixGrid';
 
@@ -7,7 +7,7 @@ const CovarianceMatrixContext = createContext<{
     covariances: MatrixLike;
     featureLabels: string[];
 }>({
-    covariances: EMPTY_MATRIX_LIKE,
+    covariances: createEmptyMatrix(),
     featureLabels: [],
 });
 

@@ -116,7 +116,9 @@ export class QuadraticNaiveBayes extends BaseNaiveBayes<QuadraticNaiveBayesParam
             await this.eventEmitter?.emit('callback', {
                 threadId: 0,
                 iteration: clsIndex,
-                params: this.params,
+                // Snapshot — `this.params` keeps living past the callback; the
+                // worker may transfer the buffers, which would detach ours.
+                params: structuredClone(this.params),
             });
         }
 

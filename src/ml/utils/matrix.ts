@@ -1,4 +1,4 @@
-import type { Tensor2D } from '@tensorflow/tfjs';
+import { getBackend, type Tensor2D } from '@tensorflow/tfjs';
 import { EPSILON } from '../constants';
 
 export type TypedArray = Float32Array | Uint8Array | Int32Array;
@@ -11,16 +11,31 @@ export type MatrixLike = {
     shape: [number, number];
 };
 
-export const EMPTY_MATRIX_LIKE: MatrixLike = { array: new Uint8Array([]), shape: [0, 0] };
+/**
+ * Returns a fresh, uniquely-owned empty matrix.
+ */
+export const createEmptyMatrix = (): MatrixLike => ({
+    array: new Uint8Array(0),
+    shape: [0, 0],
+});
 
 /**
  * Gets a matrix from a tensor.
+ *
  * @param tensor - The tensor to get the matrix from.
  * @returns A matrix.
  */
 export async function getMatrixFromTensor(tensor: Tensor2D): Promise<MatrixLike> {
     const shape = tensor.shape as [number, number];
-    const array = await tensor.data();
+    const data = await tensor.data();
+
+    // On the `cpu` backend `tensor.data()` returns the tensor's own TypedArray, so
+    // the result is sliced to give the caller a uniquely-owned buffer (safe to
+    // transfer or hold past the tensor's lifetime). Other backends (`webgpu`,
+    // `webgl`, `wasm`) already materialize a fresh allocation as part of the
+    // GPU -> CPU / heap -> JS readback, so no extra copy is needed.
+    const array = getBackend() === 'cpu' ? data.slice() : data;
+
     return { array, shape };
 }
 

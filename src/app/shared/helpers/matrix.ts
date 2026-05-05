@@ -1,6 +1,6 @@
-import { type TypedArray, type MatrixLike, EMPTY_MATRIX_LIKE } from '@/ml/utils/matrix';
+import { type TypedArray, type MatrixLike, createEmptyMatrix } from '@/ml/utils/matrix';
 
-export { type MatrixLike, type TypedArray, EMPTY_MATRIX_LIKE };
+export { type MatrixLike, type TypedArray, createEmptyMatrix };
 
 export function row(matrix: MatrixLike, rowIndex: number): TypedArray {
     return matrix.array.subarray(rowIndex * matrix.shape[1], (rowIndex + 1) * matrix.shape[1]);

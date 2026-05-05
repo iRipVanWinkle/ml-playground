@@ -1,5 +1,5 @@
 import type { SettingsOf, TrainingReportOf } from '@/app/shared/registry';
-import { EMPTY_MATRIX_LIKE } from '@/app/shared/helpers';
+import { createEmptyMatrix } from '@/app/shared/helpers';
 
 export const DEFAULT_SETTINGS: SettingsOf<'knn'> = {
     type: 'knn',
@@ -27,7 +27,7 @@ export const DEFAULT_CLASSIFICATION_REPORT: TrainingReportOf<'knn'> = {
     taskType: 'classification',
     trainAccuracy: 0,
     testAccuracy: 0,
-    trainPredictedLabels: EMPTY_MATRIX_LIKE,
+    trainPredictedLabels: createEmptyMatrix(),
     trainConfusionMatrix: {
         matrix: [],
         metrics: {
@@ -55,7 +55,7 @@ export const DEFAULT_REGRESSION_REPORT: TrainingReportOf<'knn'> = {
     type: 'knn',
     taskType: 'regression',
     trainLoss: 0,
-    trainPredictedLabels: EMPTY_MATRIX_LIKE,
+    trainPredictedLabels: createEmptyMatrix(),
     trainMetrics: null,
-    trainResiduals: EMPTY_MATRIX_LIKE,
+    trainResiduals: createEmptyMatrix(),
 };

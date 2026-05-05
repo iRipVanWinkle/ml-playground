@@ -270,11 +270,13 @@ export class DBSCAN implements Model<DBSCANParams> {
         await this.eventEmitter.emit('callback', {
             threadId: 0,
             iteration: this.iteration++,
-            assignments: labels,
+            // Snapshot — these buffers continue to live on the model past the
+            // callback; the worker may transfer them, which would detach ours.
+            assignments: labels.slice(),
             numClusters,
             activePointIndex,
             epsilon: this.epsilon,
-            params: this.params,
+            params: structuredClone(this.params),
         });
     }
 

@@ -2,7 +2,7 @@ import { TrainingOrchestrator } from './training/training-orchestrator';
 import type { TrainingState } from '@/ml/types';
 import type { UIToWorkerMessage } from './types';
 import type { TrainingReport } from '@/app/models/types';
-import { performanceUtils, workerLogUtils } from '@/app/shared/workers';
+import { collectTransferables, performanceUtils, workerLogUtils } from '@/app/shared/workers';
 
 let orchestrator: TrainingOrchestrator | null = null;
 
@@ -56,7 +56,8 @@ self.onmessage = (event: MessageEvent<UIToWorkerMessage>) => {
 
 function createCallbacks(requestId?: string) {
     return {
-        onReport: (report: TrainingReport) => send('report', requestId, report),
+        onReport: (report: TrainingReport) =>
+            send('report', requestId, report, collectTransferables(report)),
         onState: (state: TrainingState) => send('state', requestId, state),
         onInfo: (message: string) => send('info', requestId, message),
         onError: (message: string) => send('error', requestId, new Error(message)),

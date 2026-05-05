@@ -1,4 +1,4 @@
-import { EMPTY_MATRIX_LIKE } from '@/app/shared/helpers';
+import { createEmptyMatrix } from '@/app/shared/helpers';
 import type { SettingsOf, TrainingReportOf } from '@/app/shared/registry';
 
 export const DEFAULT_REGRESSION_SETTINGS: SettingsOf<'tree'> = {
@@ -28,16 +28,16 @@ export const DEFAULT_CLASSIFICATION_SETTINGS: SettingsOf<'tree'> = {
 export const DEFAULT_REGRESSION_REPORT: TrainingReportOf<'tree'> = {
     type: 'tree',
     taskType: 'regression',
-    trainPredictedLabels: EMPTY_MATRIX_LIKE,
+    trainPredictedLabels: createEmptyMatrix(),
     trainMetrics: null,
-    trainResiduals: EMPTY_MATRIX_LIKE,
+    trainResiduals: createEmptyMatrix(),
     params: [],
 };
 
 export const DEFAULT_CLASSIFICATION_REPORT: TrainingReportOf<'tree'> = {
     type: 'tree',
     taskType: 'classification',
-    trainPredictedLabels: EMPTY_MATRIX_LIKE,
+    trainPredictedLabels: createEmptyMatrix(),
     params: [],
     trainConfusionMatrix: {
         matrix: [],

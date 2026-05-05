@@ -1,4 +1,4 @@
-import { EMPTY_MATRIX_LIKE } from '@/app/shared/helpers';
+import { createEmptyMatrix } from '@/app/shared/helpers';
 import type { SettingsOf, TrainingReportOf } from '@/app/shared/registry';
 import { DEFAULT_OPTIMIZER } from '../defaults';
 
@@ -16,8 +16,8 @@ export const DEFAULT_REPORT: TrainingReportOf<'logistic'> = {
     taskType: 'classification',
     trainLossHistory: [],
     iterations: [],
-    trainPredictedLabels: EMPTY_MATRIX_LIKE,
-    theta: EMPTY_MATRIX_LIKE,
+    trainPredictedLabels: createEmptyMatrix(),
+    theta: createEmptyMatrix(),
     trainConfusionMatrix: {
         matrix: [],
         metrics: {

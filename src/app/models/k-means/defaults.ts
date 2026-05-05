@@ -1,4 +1,4 @@
-import { EMPTY_MATRIX_LIKE } from '@/app/shared/helpers';
+import { createEmptyMatrix } from '@/app/shared/helpers';
 import type { SettingsOf, TrainingReportOf } from '@/app/shared/registry';
 
 export const DEFAULT_SETTINGS: SettingsOf<'k-means'> = {
@@ -13,7 +13,7 @@ export const DEFAULT_REPORT: TrainingReportOf<'k-means'> = {
     type: 'k-means',
     taskType: 'clustering',
     iteration: 0,
-    trainAssignments: EMPTY_MATRIX_LIKE,
-    centroids: EMPTY_MATRIX_LIKE,
+    trainAssignments: createEmptyMatrix(),
+    centroids: createEmptyMatrix(),
     inertiaHistory: [],
 };

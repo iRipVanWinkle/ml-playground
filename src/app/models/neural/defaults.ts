@@ -1,4 +1,4 @@
-import { EMPTY_MATRIX_LIKE } from '@/app/shared/helpers';
+import { createEmptyMatrix } from '@/app/shared/helpers';
 import type { SettingsOf, TrainingReportOf } from '@/app/shared/registry';
 import { DEFAULT_OPTIMIZER } from '../defaults';
 
@@ -26,10 +26,10 @@ export const DEFAULT_REGRESSION_REPORT: TrainingReportOf<'neural'> = {
     trainLossHistory: [],
     iteration: 0,
     optimizerLoss: 0,
-    trainPredictedLabels: EMPTY_MATRIX_LIKE,
-    theta: EMPTY_MATRIX_LIKE,
+    trainPredictedLabels: createEmptyMatrix(),
+    theta: createEmptyMatrix(),
     trainMetrics: null,
-    trainResiduals: EMPTY_MATRIX_LIKE,
+    trainResiduals: createEmptyMatrix(),
 };
 
 export const DEFAULT_CLASSIFICATION_REPORT: TrainingReportOf<'neural'> = {
@@ -37,8 +37,8 @@ export const DEFAULT_CLASSIFICATION_REPORT: TrainingReportOf<'neural'> = {
     taskType: 'classification',
     trainLossHistory: [],
     iteration: 0,
-    trainPredictedLabels: EMPTY_MATRIX_LIKE,
-    theta: EMPTY_MATRIX_LIKE,
+    trainPredictedLabels: createEmptyMatrix(),
+    theta: createEmptyMatrix(),
     trainConfusionMatrix: {
         matrix: [],
         metrics: {

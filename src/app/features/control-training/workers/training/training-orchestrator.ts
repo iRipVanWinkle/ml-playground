@@ -219,7 +219,9 @@ export class TrainingOrchestrator {
         const report = await liveMetrics.calculateMetrics(params);
 
         if (this.scalerParams) {
-            report.scaler = this.scalerParams;
+            // Deep-clone so each report owns its scaler buffers — required because
+            // the report's typed-array buffers are transferred to the main thread.
+            report.scaler = structuredClone(this.scalerParams);
         }
 
         if (import.meta.env.DEV) {
