@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import type { MatrixLike } from '@/app/shared/helpers';
 
 type ClustersType = {
@@ -26,16 +25,14 @@ export function useKMeansPlotData({
     trainAssignments,
     testAssignments,
 }: UseKMeansPlotDataProps): UseKMeansPlotDataReturn {
-    return useMemo(() => {
-        const hasTestData = testInputFeatures && testAssignments;
+    const hasTestData = testInputFeatures && testAssignments;
 
-        return {
-            trainClusterData: convertToClustersData(trainInputFeatures, trainAssignments),
-            testClusterData: hasTestData
-                ? convertToClustersData(testInputFeatures, testAssignments)
-                : undefined,
-        };
-    }, [trainInputFeatures, testInputFeatures, trainAssignments, testAssignments]);
+    return {
+        trainClusterData: convertToClustersData(trainInputFeatures, trainAssignments),
+        testClusterData: hasTestData
+            ? convertToClustersData(testInputFeatures, testAssignments)
+            : undefined,
+    };
 }
 
 function convertToClustersData(inputFeatures: number[][], assignments: MatrixLike) {

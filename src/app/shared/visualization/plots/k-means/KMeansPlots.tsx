@@ -2,7 +2,6 @@ import type { Dataset } from '@/app/shared/types';
 import type { KMeansTrainingReport } from '@/app/models/k-means/types';
 import { PlotlyScatter, PlotlyScatter3D } from '../plotly';
 import { useColor } from '../../colors';
-import { useMemo } from 'react';
 import { useKMeansPlotData } from './hooks/useKMeansPlotData';
 
 type KMeansPlotsProps = {
@@ -27,7 +26,7 @@ export function KMeansPlots({ dataset, report }: KMeansPlotsProps) {
         testAssignments,
     });
 
-    const centroidData = useMemo(() => {
+    const centroidData = (() => {
         if (!centroids?.array || centroids.array.length === 0 || !centroids.shape) {
             return { x: [], y: [], z: [] };
         }
@@ -46,7 +45,7 @@ export function KMeansPlots({ dataset, report }: KMeansPlotsProps) {
         }
 
         return { x, y, z };
-    }, [centroids, is3DPlot]);
+    })();
 
     const [x1Label, x2Label, x3Label] = headers;
 

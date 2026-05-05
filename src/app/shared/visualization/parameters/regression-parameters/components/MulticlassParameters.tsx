@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { ParametersDisplay } from './ParametersDisplay';
 import type { MatrixLike } from '@/app/shared/helpers';
 
@@ -17,17 +16,15 @@ export function MulticlassParameters({
 }: MulticlassParametersProps) {
     const [numClasses, numFeatures] = theta.shape;
 
-    const classParameters = useMemo(() => {
-        return Array.from({ length: numClasses }, (_, c) => {
-            const rowStart = c * numFeatures;
+    const classParameters = Array.from({ length: numClasses }, (_, c) => {
+        const rowStart = c * numFeatures;
 
-            return {
-                classIndex: c,
-                bias: theta.array[rowStart],
-                weights: Array.from(theta.array.subarray(rowStart + 1, rowStart + numFeatures)),
-            };
-        });
-    }, [theta, numClasses, numFeatures]);
+        return {
+            classIndex: c,
+            bias: theta.array[rowStart],
+            weights: Array.from(theta.array.subarray(rowStart + 1, rowStart + numFeatures)),
+        };
+    });
 
     const displayedClasses = classParameters.filter(
         ({ classIndex }) => selectedClassIndex === undefined || classIndex === selectedClassIndex,

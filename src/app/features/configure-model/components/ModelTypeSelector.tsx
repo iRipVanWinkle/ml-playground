@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { Field, Select } from '@/app/shared/ui';
 import type { ModelType } from '@/app/models/types';
 import type { TaskType } from '@/app/shared/types';
@@ -17,7 +16,7 @@ const MODEL_TYPE_INFO = 'The algorithm used to find patterns in the data and mak
 export function ModelTypeSelector({ taskType, disabled }: ModelTypeProps) {
     const modelType = useModelType();
 
-    const modelTypes = useMemo(() => modelRegistry.getForTask(taskType), [taskType]);
+    const modelTypes = modelRegistry.getForTask(taskType);
 
     const handleChange = (value: string) => {
         setModelType(value as ModelType);

@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import type { MatrixLike } from '@/app/shared/helpers';
 
 type RawParametersProps = {
@@ -9,18 +8,15 @@ type RawParametersProps = {
 export function RawParameters({ theta, precision = 6 }: RawParametersProps) {
     const [numClasses, numFeatures] = theta.shape;
 
-    const formattedRows = useMemo(() => {
-        const rows: string[][] = [];
-        for (let c = 0; c < numClasses; c++) {
-            const rowStart = c * numFeatures;
-            const row: string[] = [];
-            for (let f = 0; f < numFeatures; f++) {
-                row.push(theta.array[rowStart + f].toFixed(precision));
-            }
-            rows.push(row);
+    const formattedRows: string[][] = [];
+    for (let c = 0; c < numClasses; c++) {
+        const rowStart = c * numFeatures;
+        const row: string[] = [];
+        for (let f = 0; f < numFeatures; f++) {
+            row.push(theta.array[rowStart + f].toFixed(precision));
         }
-        return rows;
-    }, [theta, numClasses, numFeatures, precision]);
+        formattedRows.push(row);
+    }
 
     return (
         <div className="rounded-lg border bg-muted/50 p-4">

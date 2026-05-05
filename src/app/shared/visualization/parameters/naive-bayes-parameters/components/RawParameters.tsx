@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import type { NaiveBayesParams } from '@/ml/types';
 import { row, type MatrixLike, type TypedArray } from '@/app/shared/helpers';
 import { DEFAULT_PRECISION } from '@/app/shared/visualization/base';
@@ -12,34 +11,28 @@ export function RawParameters({ params, categories }: RawParametersProps) {
     const numClasses = params.classes.length;
     const numFeatures = params.classMeans.shape[1];
 
-    const formattedData = useMemo(() => {
-        const data: {
-            classIndex: number;
-            classLabel: string;
-            prior: number;
-            means: TypedArray;
-            variances?: TypedArray;
-            covariances?: MatrixLike;
-        }[] = [];
+    const formattedData: {
+        classIndex: number;
+        classLabel: string;
+        prior: number;
+        means: TypedArray;
+        variances?: TypedArray;
+        covariances?: MatrixLike;
+    }[] = [];
 
-        for (let c = 0; c < numClasses; c++) {
-            const means = row(params.classMeans, c);
-            const variances =
-                params.type === 'gaussian' ? row(params.classVariances, c) : undefined;
-            const covariances =
-                params.type === 'quadratic' ? params.classCovariances[c] : undefined;
-            data.push({
-                classIndex: c,
-                classLabel: categories[params.classes[c]],
-                prior: params.classPriors[c],
-                means,
-                variances,
-                covariances,
-            });
-        }
-
-        return data;
-    }, [numClasses, params, categories]);
+    for (let c = 0; c < numClasses; c++) {
+        const means = row(params.classMeans, c);
+        const variances = params.type === 'gaussian' ? row(params.classVariances, c) : undefined;
+        const covariances = params.type === 'quadratic' ? params.classCovariances[c] : undefined;
+        formattedData.push({
+            classIndex: c,
+            classLabel: categories[params.classes[c]],
+            prior: params.classPriors[c],
+            means,
+            variances,
+            covariances,
+        });
+    }
 
     return (
         <div className="rounded-lg border bg-muted/50 p-4">

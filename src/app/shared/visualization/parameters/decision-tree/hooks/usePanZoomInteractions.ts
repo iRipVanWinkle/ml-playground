@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback, type RefObject } from 'react';
+import { useRef, useEffect, type RefObject } from 'react';
 import { MAX_SCALE, MIN_SCALE } from '../constants';
 
 interface Transform {
@@ -19,8 +19,11 @@ export function usePanZoomInteractions({
     const isDragging = useRef(false);
     const lastMousePos = useRef({ x: 0, y: 0 });
 
-    const handleWheel = useCallback(
-        (e: WheelEvent) => {
+    useEffect(() => {
+        const container = containerRef.current;
+        if (!container) return;
+
+        const handleWheel = (e: WheelEvent) => {
             e.preventDefault();
 
             const scaleAmount = -e.deltaY * 0.001;
@@ -28,18 +31,15 @@ export function usePanZoomInteractions({
                 ...prev,
                 scale: Math.min(Math.max(MIN_SCALE, prev.scale + scaleAmount), MAX_SCALE),
             }));
-        },
-        [setTransform],
-    );
+        };
 
-    const handleMouseDown = useCallback((e: MouseEvent) => {
-        isDragging.current = true;
-        lastMousePos.current = { x: e.clientX, y: e.clientY };
-        e.preventDefault();
-    }, []);
+        const handleMouseDown = (e: MouseEvent) => {
+            isDragging.current = true;
+            lastMousePos.current = { x: e.clientX, y: e.clientY };
+            e.preventDefault();
+        };
 
-    const handleMouseMove = useCallback(
-        (e: MouseEvent) => {
+        const handleMouseMove = (e: MouseEvent) => {
             if (!isDragging.current) return;
 
             const dx = e.clientX - lastMousePos.current.x;
@@ -52,17 +52,11 @@ export function usePanZoomInteractions({
             }));
 
             lastMousePos.current = { x: e.clientX, y: e.clientY };
-        },
-        [setTransform],
-    );
+        };
 
-    const handleMouseUp = useCallback(() => {
-        isDragging.current = false;
-    }, []);
-
-    useEffect(() => {
-        const container = containerRef.current;
-        if (!container) return;
+        const handleMouseUp = () => {
+            isDragging.current = false;
+        };
 
         container.addEventListener('mousedown', handleMouseDown);
         document.addEventListener('mousemove', handleMouseMove);
@@ -77,5 +71,5 @@ export function usePanZoomInteractions({
             document.removeEventListener('mouseleave', handleMouseUp);
             container.removeEventListener('wheel', handleWheel);
         };
-    }, [handleMouseDown, handleMouseMove, handleMouseUp, handleWheel, containerRef]);
+    }, [containerRef, setTransform]);
 }

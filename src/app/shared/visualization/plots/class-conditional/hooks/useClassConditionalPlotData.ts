@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import type {
     GaussianNaiveBayesParams,
     NaiveBayesParams,
@@ -26,14 +25,12 @@ export function useClassConditionalPlotData(
 ): PlotData | null {
     const { getColor } = useColor();
 
-    return useMemo(() => {
-        if (params?.type === 'gaussian') {
-            return calculateGaussianPlotData(params, categories, headers, featureIndex, getColor);
-        } else if (params?.type === 'quadratic') {
-            return calculateQuadraticPlotData(params, categories, headers, featureIndex, getColor);
-        }
-        return null;
-    }, [params, categories, headers, featureIndex, getColor]);
+    if (params?.type === 'gaussian') {
+        return calculateGaussianPlotData(params, categories, headers, featureIndex, getColor);
+    } else if (params?.type === 'quadratic') {
+        return calculateQuadraticPlotData(params, categories, headers, featureIndex, getColor);
+    }
+    return null;
 }
 
 /**

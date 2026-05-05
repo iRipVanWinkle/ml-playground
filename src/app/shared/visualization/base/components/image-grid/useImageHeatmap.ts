@@ -1,5 +1,4 @@
 import type { TypedArray } from '@/app/shared/helpers';
-import { useMemo } from 'react';
 import { useColor } from '../../../colors';
 
 type RGB = { r: number; g: number; b: number };
@@ -29,68 +28,61 @@ export function useImageHeatmap({
     const context = useCanvasImageData(gridSize);
     const { getColor } = useColor();
 
-    const colorSchema = useMemo(
-        () => ({
-            neg: {
-                dark: hexToRgb(getColor('blue', 'darken')),
-                base: hexToRgb(getColor('blue', 'base')),
-                light: hexToRgb(getColor('blue', 'lighten')),
-            },
-            diag: {
-                dark: hexToRgb(getColor('green', 'darken')),
-                base: hexToRgb(getColor('green', 'base')),
-                light: hexToRgb(getColor('green', 'lighten')),
-            },
-            pos: {
-                dark: hexToRgb(getColor('red', 'darken')),
-                base: hexToRgb(getColor('red', 'base')),
-                light: hexToRgb(getColor('red', 'lighten')),
-            },
-            zero: {
-                dark: hexToRgb(getColor('zero', 'darken')),
-                base: hexToRgb(getColor('zero', 'base')),
-                light: hexToRgb(getColor('zero', 'lighten')),
-            },
-        }),
-        [getColor],
-    );
+    const colorSchema = {
+        neg: {
+            dark: hexToRgb(getColor('blue', 'darken')),
+            base: hexToRgb(getColor('blue', 'base')),
+            light: hexToRgb(getColor('blue', 'lighten')),
+        },
+        diag: {
+            dark: hexToRgb(getColor('green', 'darken')),
+            base: hexToRgb(getColor('green', 'base')),
+            light: hexToRgb(getColor('green', 'lighten')),
+        },
+        pos: {
+            dark: hexToRgb(getColor('red', 'darken')),
+            base: hexToRgb(getColor('red', 'base')),
+            light: hexToRgb(getColor('red', 'lighten')),
+        },
+        zero: {
+            dark: hexToRgb(getColor('zero', 'darken')),
+            base: hexToRgb(getColor('zero', 'base')),
+            light: hexToRgb(getColor('zero', 'lighten')),
+        },
+    };
 
-    return useMemo(() => {
-        if (!context) return '';
+    if (!context) return '';
 
-        const imageData = context.createImageData(gridSize, gridSize);
-        const data = imageData.data;
+    const imageData = context.createImageData(gridSize, gridSize);
+    const data = imageData.data;
 
-        for (let i = 0; i < values.length && i < gridSize * gridSize; i++) {
-            const row = Math.floor(i / gridSize);
-            const col = i % gridSize;
-            const showDiagonalElement = showDiagonal && row === col;
+    for (let i = 0; i < values.length && i < gridSize * gridSize; i++) {
+        const row = Math.floor(i / gridSize);
+        const col = i % gridSize;
+        const showDiagonalElement = showDiagonal && row === col;
 
-            const rgb = getValueColorRGB(values[i], min, max, showDiagonalElement, colorSchema);
-            const pixelIndex = i * 4;
-            data[pixelIndex] = rgb.r;
-            data[pixelIndex + 1] = rgb.g;
-            data[pixelIndex + 2] = rgb.b;
-            data[pixelIndex + 3] = 255;
-        }
+        const rgb = getValueColorRGB(values[i], min, max, showDiagonalElement, colorSchema);
+        const pixelIndex = i * 4;
+        data[pixelIndex] = rgb.r;
+        data[pixelIndex + 1] = rgb.g;
+        data[pixelIndex + 2] = rgb.b;
+        data[pixelIndex + 3] = 255;
+    }
 
-        context.putImageData(imageData, 0, 0);
+    context.putImageData(imageData, 0, 0);
 
-        return context.canvas.toDataURL();
-    }, [context, gridSize, values, min, max, showDiagonal, colorSchema]);
+    return context.canvas.toDataURL();
 }
 
 function useCanvasImageData(gridSize: number) {
-    return useMemo(() => {
-        const canvas = document.createElement('canvas');
-        canvas.width = gridSize;
-        canvas.height = gridSize;
-        const context = canvas.getContext('2d');
+    const canvas = document.createElement('canvas');
+    canvas.width = gridSize;
+    canvas.height = gridSize;
+    const context = canvas.getContext('2d');
 
-        if (!context) return null;
+    if (!context) return null;
 
-        return context;
-    }, [gridSize]);
+    return context;
 }
 
 function getValueColorRGB(

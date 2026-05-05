@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo } from 'react';
+import { createContext, useContext } from 'react';
 import { element, EMPTY_MATRIX_LIKE, type MatrixLike } from '@/app/shared/helpers';
 import { FeatureBlock, GRID_VIEW_THRESHOLD, ImageGrid } from '@/app/shared/visualization/base';
 import { CovarianceMatrixGrid } from './CovarianceMatrixGrid';
@@ -21,10 +21,7 @@ export function CovarianceDisplay({ covariances, featureLabels }: CovarianceDisp
     const gridSize = covariances.shape[0];
     const useGridView = gridSize <= GRID_VIEW_THRESHOLD;
 
-    const contextValue = useMemo(
-        () => ({ covariances, featureLabels }),
-        [covariances, featureLabels],
-    );
+    const contextValue = { covariances, featureLabels };
 
     return (
         <FeatureBlock title="Covariance Matrix">

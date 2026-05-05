@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import type { TrainingReport } from '@/app/models/types';
 import type { ParametersVisualizationProps } from '@/app/shared/registry';
 import type { Dataset, Transformation } from '@/app/shared/types';
@@ -73,7 +73,7 @@ function RegressionParametersContent({
     const allFeatureLabels = useAllFeatureLabels(dataset.headers, transformations);
     const categories = dataset.categories ?? [];
 
-    const colBasedTheta = useMemo(() => transposeMatrix(theta), [theta]);
+    const colBasedTheta = transposeMatrix(theta);
 
     // Parse the view value
     const isRawView = view === 'raw';

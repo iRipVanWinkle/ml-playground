@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import type { ParametersVisualizationProps } from '@/app/shared/registry';
 import type { TrainingReport } from '@/app/models/types';
 import { DecisionTreeVisualizer } from './DecisionTreeVisualizer';
@@ -8,7 +7,7 @@ export function DecisionTreeParameters({
     dataset,
 }: ParametersVisualizationProps<TrainingReport>) {
     const supportsTreeParameters = report.type === 'tree' || report.type === 'isolation-forest';
-    const featureLabels = useMemo(() => dataset.headers.slice(1), [dataset.headers]);
+    const featureLabels = dataset.headers.slice(1);
 
     if (!supportsTreeParameters) {
         return (

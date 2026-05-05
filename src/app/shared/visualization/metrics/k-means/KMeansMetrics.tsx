@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import type { TrainingReport } from '@/app/models/types';
 import type { KMeansMetricsData } from './type';
 import { CategoryBlock, FeatureGrid } from '../../base';
@@ -56,8 +56,8 @@ type KMeansMetricsContentProps = {
 };
 
 function KMeansMetricsContent({ metrics }: KMeansMetricsContentProps) {
-    const preparedMetrics = useMemo(() => {
-        return Array.from(metrics.silhouetteClusterScores).map((silhouetteScore, clusterId) => {
+    const preparedMetrics = Array.from(metrics.silhouetteClusterScores).map(
+        (silhouetteScore, clusterId) => {
             const clusterLabel = `Cluster ${clusterId}`;
 
             const radius = metrics.maxDistanceToCenter[clusterId];
@@ -70,8 +70,8 @@ function KMeansMetricsContent({ metrics }: KMeansMetricsContentProps) {
                 metrics: [silhouetteScore, radius, cohesion, separation],
                 labels: ['Silhouette Score', 'Radius', 'Cohesion', 'Separation'],
             };
-        });
-    }, [metrics]);
+        },
+    );
 
     return (
         <div className="w-full grid grid-cols-2 gap-3">

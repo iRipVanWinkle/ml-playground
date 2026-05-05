@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import type { Dataset } from '@/app/shared/types';
 import type { HierarchicalClusteringTrainingReport } from '../types';
 import { PlotlyScatter, PlotlyScatter3D } from '@/app/shared/visualization/plots/plotly';
@@ -52,7 +51,7 @@ export function HierarchicalClusteringPlots({ dataset, report }: Props) {
 
     const [x1Label, x2Label, x3Label] = headers;
 
-    const data2D = useMemo(() => {
+    const data2D = (() => {
         if (!is2DPlot) return [];
 
         if (!hasAssignments) {
@@ -109,18 +108,9 @@ export function HierarchicalClusteringPlots({ dataset, report }: Props) {
         }
 
         return traces;
-    }, [
-        is2DPlot,
-        hasAssignments,
-        trainInputFeatures,
-        testInputFeatures,
-        trainAssignments,
-        testAssignments,
-        numClusters,
-        getColor,
-    ]);
+    })();
 
-    const data3D = useMemo(() => {
+    const data3D = (() => {
         if (!is3DPlot) return [];
 
         if (!hasAssignments) {
@@ -185,16 +175,7 @@ export function HierarchicalClusteringPlots({ dataset, report }: Props) {
         }
 
         return traces;
-    }, [
-        is3DPlot,
-        hasAssignments,
-        trainInputFeatures,
-        testInputFeatures,
-        trainAssignments,
-        testAssignments,
-        numClusters,
-        getColor,
-    ]);
+    })();
 
     if (is2DPlot) {
         return (

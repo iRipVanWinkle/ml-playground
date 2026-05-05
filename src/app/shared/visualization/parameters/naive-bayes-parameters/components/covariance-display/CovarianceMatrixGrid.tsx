@@ -1,4 +1,4 @@
-import { Fragment, useMemo, type ComponentType } from 'react';
+import { Fragment, type ComponentType } from 'react';
 import { type MatrixLike } from '@/app/shared/helpers';
 import { Tooltip } from '@/app/shared/ui';
 import { MatrixGrid, GRID_TOOLTIP_DELAY_DURATION } from '@/app/shared/visualization/base';
@@ -20,14 +20,11 @@ export function CovarianceMatrixGrid({
     tooltipContent,
 }: CovarianceMatrixGridProps) {
     const size = covariances.shape[0];
-    const absMax = useMemo(() => {
-        let max = -Infinity;
-        for (const val of covariances.array) {
-            const absVal = Math.abs(val);
-            if (absVal > max) max = absVal;
-        }
-        return max;
-    }, [covariances]);
+    let absMax = -Infinity;
+    for (const val of covariances.array) {
+        const absVal = Math.abs(val);
+        if (absVal > absMax) absMax = absVal;
+    }
 
     return (
         <MatrixGrid size={size}>

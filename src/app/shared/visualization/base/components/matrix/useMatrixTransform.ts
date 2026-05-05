@@ -1,5 +1,3 @@
-import { useCallback } from 'react';
-
 interface UseMatrixTransformReturn {
     matrixGridRef: (element: HTMLDivElement) => void;
 }
@@ -8,7 +6,7 @@ interface UseMatrixTransformReturn {
  * Hook to calculate and apply transform offset for centering the matrix grid
  */
 export function useMatrixTransform(): UseMatrixTransformReturn {
-    const matrixGridRef = useCallback((element: HTMLDivElement) => {
+    const matrixGridRef = (element: HTMLDivElement) => {
         const grid = element;
         const container = element.parentElement;
 
@@ -67,7 +65,7 @@ export function useMatrixTransform(): UseMatrixTransformReturn {
             window.removeEventListener('resize', updateTransformation);
             resizeObserver.disconnect();
         };
-    }, []);
+    };
 
     return {
         matrixGridRef,

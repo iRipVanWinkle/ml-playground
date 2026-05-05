@@ -1,4 +1,4 @@
-import { Fragment, useMemo } from 'react';
+import { Fragment } from 'react';
 import { MatrixCell } from './MatrixCell';
 import { MatrixGrid as BaseMatrixGrid } from '../../../base';
 
@@ -23,10 +23,7 @@ export function MatrixGrid({
     const size = displayMatrix.length;
     const isBinaryClassification = size === 2;
 
-    const rowTotals = useMemo(
-        () => displayMatrix.map((row) => row.reduce((sum, value) => sum + value, 0)),
-        [displayMatrix],
-    );
+    const rowTotals = displayMatrix.map((row) => row.reduce((sum, value) => sum + value, 0));
 
     return (
         <BaseMatrixGrid size={size} topLabel="Predicted" leftLabel="Expected">

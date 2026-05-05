@@ -1,4 +1,4 @@
-import { memo, useMemo, useState, type ComponentType } from 'react';
+import { memo, useState, type ComponentType } from 'react';
 import type { TypedArray } from '@/app/shared/helpers';
 import { Tooltip } from '@/app/shared/ui';
 import { useImageHeatmap } from './useImageHeatmap';
@@ -16,15 +16,12 @@ type ImageGridProps = {
 };
 
 export function ImageGrid({ values, gridSize, tooltipContent }: ImageGridProps) {
-    const { min, max } = useMemo(() => {
-        let min = Infinity;
-        let max = -Infinity;
-        for (const val of values) {
-            min = Math.min(min, val);
-            max = Math.max(max, val);
-        }
-        return { min, max };
-    }, [values]);
+    let min = Infinity;
+    let max = -Infinity;
+    for (const val of values) {
+        min = Math.min(min, val);
+        max = Math.max(max, val);
+    }
 
     const imageDataUrl = useImageHeatmap({ values, gridSize, min, max });
 

@@ -1,4 +1,4 @@
-import { lazy, Suspense, useMemo, type ComponentType, type CSSProperties } from 'react';
+import { lazy, Suspense, type ComponentType, type CSSProperties } from 'react';
 import type Plotly from 'plotly.js';
 import type { Config } from 'plotly.js';
 import type { PlotParams } from 'react-plotly.js';
@@ -53,17 +53,9 @@ function createLazyChart(loadTraceModules: TraceModuleLoader): ComponentType<Plo
     function ThemedChart(props: PlotParams) {
         const baseLayout = usePlotlyLayout();
 
-        const layout = useMemo(() => {
-            return deepMerge(baseLayout, props.layout ?? {});
-        }, [baseLayout, props.layout]);
-
-        const config = useMemo(() => {
-            return deepMerge(BASE_CONFIG, props.config ?? {});
-        }, [props.config]);
-
-        const style = useMemo(() => {
-            return { ...BASE_STYLE, ...(props.style ?? {}) };
-        }, [props.style]);
+        const layout = deepMerge(baseLayout, props.layout ?? {});
+        const config = deepMerge(BASE_CONFIG, props.config ?? {});
+        const style = { ...BASE_STYLE, ...(props.style ?? {}) };
 
         return (
             <Suspense fallback={<div>Loading visualization...</div>}>

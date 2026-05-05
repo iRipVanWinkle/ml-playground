@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { EnhancedTabs } from '@/app/shared/ui';
 import type { TaskType } from '@/app/shared/types';
 import { getModelRegistry } from '@/app/models/ui-registry';
@@ -17,15 +16,12 @@ export function TaskSwitcher({ disabled }: TaskSwitcherProps) {
         switchTask(taskType as TaskType);
     };
 
-    const availableTaskTypes = useMemo(() => {
-        const registry = getModelRegistry();
+    const registry = getModelRegistry();
+    const availableTaskTypes = TASK_TYPES.filter((tt) => {
+        const modelDefinitions = registry.getForTask(tt.value);
 
-        return TASK_TYPES.filter((tt) => {
-            const modelDefinitions = registry.getForTask(tt.value);
-
-            return modelDefinitions.length > 0;
-        });
-    }, []);
+        return modelDefinitions.length > 0;
+    });
 
     return (
         <EnhancedTabs

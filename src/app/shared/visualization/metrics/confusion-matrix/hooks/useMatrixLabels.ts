@@ -1,5 +1,3 @@
-import { useMemo } from 'react';
-
 interface UseMatrixLabelsParams {
     labels: string[];
     selectedView: string;
@@ -23,29 +21,27 @@ export function useMatrixLabels({
     const isOneVsRest = selectedView !== 'full';
     const targetClassIndex = isOneVsRest ? labels.findIndex((label) => label === selectedView) : -1;
 
-    return useMemo<UseMatrixLabelsReturn>(() => {
-        if (isBinaryClassification) {
-            const [positiveClass, negativeClass] = labels;
-            return {
-                rowLabels: [`${positiveClass} (+ve)`, `${negativeClass} (-ve)`],
-                columnLabels: [`${positiveClass} (+ve)`, `${negativeClass} (-ve)`],
-                classLabels: labels,
-            };
-        }
-
-        if (isOneVsRest) {
-            const baseLabels = [labels[targetClassIndex], 'Rest'];
-            return {
-                rowLabels: baseLabels,
-                columnLabels: baseLabels,
-                classLabels: [labels[targetClassIndex], 'Rest'],
-            };
-        }
-
+    if (isBinaryClassification) {
+        const [positiveClass, negativeClass] = labels;
         return {
-            rowLabels: labels,
-            columnLabels: labels,
+            rowLabels: [`${positiveClass} (+ve)`, `${negativeClass} (-ve)`],
+            columnLabels: [`${positiveClass} (+ve)`, `${negativeClass} (-ve)`],
             classLabels: labels,
         };
-    }, [isBinaryClassification, isOneVsRest, labels, targetClassIndex]);
+    }
+
+    if (isOneVsRest) {
+        const baseLabels = [labels[targetClassIndex], 'Rest'];
+        return {
+            rowLabels: baseLabels,
+            columnLabels: baseLabels,
+            classLabels: [labels[targetClassIndex], 'Rest'],
+        };
+    }
+
+    return {
+        rowLabels: labels,
+        columnLabels: labels,
+        classLabels: labels,
+    };
 }

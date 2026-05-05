@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import type { TrainingReport } from '@/app/models/types';
 import type { ParametersVisualizationProps } from '@/app/shared/registry';
 import type { Dataset } from '@/app/shared/types';
@@ -42,24 +41,20 @@ interface KMeansParametersContentProps {
 function KMeansParametersContent({ centroids, dataset }: KMeansParametersContentProps) {
     const [numClusters, numFeatures] = centroids.shape;
 
-    const featureLabels = useMemo(() => {
-        return dataset.headers.length >= numFeatures
+    const featureLabels =
+        dataset.headers.length >= numFeatures
             ? dataset.headers.slice(0, numFeatures)
             : Array.from({ length: numFeatures }, (_, i) => `Feature ${i + 1}`);
-    }, [dataset.headers, numFeatures]);
 
-    const clusterCentroids = useMemo(() => {
-        const clusters: number[][] = [];
-        for (let c = 0; c < numClusters; c++) {
-            const rowStart = c * numFeatures;
-            const centroid: number[] = [];
-            for (let f = 0; f < numFeatures; f++) {
-                centroid.push(centroids.array[rowStart + f]);
-            }
-            clusters.push(centroid);
+    const clusterCentroids: number[][] = [];
+    for (let c = 0; c < numClusters; c++) {
+        const rowStart = c * numFeatures;
+        const centroid: number[] = [];
+        for (let f = 0; f < numFeatures; f++) {
+            centroid.push(centroids.array[rowStart + f]);
         }
-        return clusters;
-    }, [centroids, numClusters, numFeatures]);
+        clusterCentroids.push(centroid);
+    }
 
     return (
         <div className="w-full grid grid-cols-1 gap-3 p-4">
