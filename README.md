@@ -20,14 +20,14 @@ From simple linear regression to neural networks and decision trees, the app pro
 ## ✨ Features
 
 - **Train interactively**: Watch models learn in real time with live progress updates
-- **Experiment with algorithms**: Try linear/logistic regression, neural networks, and more
+- **Experiment with algorithms**: Try linear/logistic regression, neural networks, decision trees, KNN, and more
 - **Visualize your data**: Explore results with interactive Plotly.js charts
 - **Bring your own data**: Upload CSVs or use built-in sample datasets
 
 ## 🎮 Usage Guide
 
 1. **Choose Your Task**  
-   Select a machine learning task: **Regression** (predicting continuous values), **Classification** (categorizing data), or **Clustering** (grouping similar data points).
+   Select a machine learning task: **Regression** (predicting continuous values), **Classification** (categorizing data), **Clustering** (grouping similar data points), or **Anomaly Detection** (identifying outliers and unusual patterns).
 
 2. **Select or Upload Data**  
    Use a sample dataset or upload your own CSV. The app takes care of preprocessing and visualization.
@@ -47,20 +47,28 @@ From simple linear regression to neural networks and decision trees, the app pro
 
 - **Linear Regression**: Simple and multiple linear regression with various optimizers
 - **Neural Networks**: Multi-layer perceptrons with customizable architectures
-- **Decision Trees**: Tree-based regressors with ensemble methods
+- **Decision Trees**: Decision tree, Random Forest, Extra Trees, and Bagging regressors
+- **K-Nearest Neighbors**: Instance-based regression using neighbor averaging
 
 #### Classification
 
-- **Logistic Regression**: Binary and multi-class classification
-- **Softmax Regression**: Multi-class classification with softmax output
-- **One-vs-Rest**: Multi-class classification using binary classifiers
+- **Logistic Regression**: Binary, Softmax (multi-class), and One-vs-Rest classification
 - **Neural Networks**: Deep learning for classification tasks
-- **Decision Trees**: Tree-based classification with ensemble methods
-- **Naive Bayes**: Probabilistic classifier based on Bayes' theorem
+- **Decision Trees**: Decision tree, Random Forest, Extra Trees, and Bagging classifiers
+- **Naive Bayes**: Gaussian and Quadratic Naive Bayes probabilistic classifiers
+- **K-Nearest Neighbors**: Instance-based classification by majority vote
 
 #### Clustering
 
-- **K-Means**: Unsupervised clustering algorithm for grouping similar data points
+- **K-Means**: Unsupervised clustering for grouping similar data points
+- **DBSCAN**: Density-based clustering that can identify arbitrarily shaped clusters
+- **Hierarchical Clustering**: Agglomerative and divisive linkage-based clustering
+
+#### Anomaly Detection
+
+- **Gaussian Distribution**: Anomaly detection via multivariate Gaussian density estimation
+- **Isolation Forest**: Ensemble-based outlier detection using random partitioning
+- **DBSCAN**: Density-based outlier detection alongside cluster discovery
 
 ## 🚀 Quick Start
 
@@ -143,6 +151,14 @@ We welcome contributions! Please follow these steps:
 - [Logistic Regression](https://en.wikipedia.org/wiki/Logistic_regression)
 - [Neural Networks](https://en.wikipedia.org/wiki/Neural_network)
 - [Gradient Descent](https://en.wikipedia.org/wiki/Gradient_descent)
+- [Decision Trees](https://en.wikipedia.org/wiki/Decision_tree_learning)
+- [Random Forest](https://en.wikipedia.org/wiki/Random_forest)
+- [K-Nearest Neighbors](https://en.wikipedia.org/wiki/K-nearest_neighbors_algorithm)
+- [K-Means Clustering](https://en.wikipedia.org/wiki/K-means_clustering)
+- [DBSCAN](https://en.wikipedia.org/wiki/DBSCAN)
+- [Naive Bayes](https://en.wikipedia.org/wiki/Naive_Bayes_classifier)
+- [Isolation Forest](https://en.wikipedia.org/wiki/Isolation_forest)
+- [Hierarchical Clustering](https://en.wikipedia.org/wiki/Hierarchical_clustering)
 
 ### Technologies Used
 
