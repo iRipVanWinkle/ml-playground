@@ -9,7 +9,6 @@ type Props = {
 };
 
 type ClusterBucket2D = { x: number[]; y: number[] };
-type ClusterBucket3D = { x: number[]; y: number[]; z: number[] };
 
 function buildClusterBuckets2D(
     features: number[][],

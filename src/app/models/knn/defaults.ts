@@ -54,7 +54,6 @@ export const DEFAULT_CLASSIFICATION_REPORT: TrainingReportOf<'knn'> = {
 export const DEFAULT_REGRESSION_REPORT: TrainingReportOf<'knn'> = {
     type: 'knn',
     taskType: 'regression',
-    trainLoss: 0,
     trainPredictedLabels: createEmptyMatrix(),
     trainMetrics: null,
     trainResiduals: createEmptyMatrix(),

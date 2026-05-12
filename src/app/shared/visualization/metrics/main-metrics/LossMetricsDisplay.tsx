@@ -10,7 +10,7 @@ interface LossMetricsDisplayProps {
 
 export function LossMetricsDisplay({ report }: LossMetricsDisplayProps) {
     const { trainLoss, testLoss } = report;
-
+    console.info(report);
     const trainLossValue = isNumber(trainLoss) ? trainLoss.toFixed(4) : '--';
     const testLossValue = isNumber(testLoss) ? testLoss.toFixed(4) : '--';
 

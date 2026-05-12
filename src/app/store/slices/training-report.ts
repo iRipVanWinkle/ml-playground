@@ -16,7 +16,6 @@ const INIT_REPORT: TrainingReport = {
     taskType: 'regression',
     trainLossHistory: [],
     iteration: 0,
-    trainLoss: 0,
     optimizerLoss: 0,
     trainPredictedLabels: createEmptyMatrix(),
     testPredictedLabels: createEmptyMatrix(),
