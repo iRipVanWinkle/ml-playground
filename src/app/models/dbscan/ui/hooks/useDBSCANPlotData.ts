@@ -35,14 +35,14 @@ export function useDBSCANPlotData({
                 y: trainInputFeatures.map((p) => p[1]),
                 mode: 'markers',
                 name: 'Training Data',
-                marker: { color: 'grey', size: 8 },
+                marker: { color: 'grey' },
             },
             {
                 x: testInputFeatures.map((p) => p[0]),
                 y: testInputFeatures.map((p) => p[1]),
                 mode: 'markers',
                 name: 'Test Data',
-                marker: { color: 'grey', size: 8, symbol: 'circle-open' },
+                marker: { color: 'grey', symbol: 'circle-open' },
             },
         ];
     }
@@ -60,7 +60,7 @@ export function useDBSCANPlotData({
             y: trainBuckets[UNVISITED_LABEL].y,
             mode: 'markers',
             name: 'Unvisited',
-            marker: { color: 'grey', size: 8, symbol: 'circle' },
+            marker: { color: 'grey', symbol: 'circle' },
             legendgroup: 'unvisited',
         });
     }
@@ -71,7 +71,7 @@ export function useDBSCANPlotData({
             y: testBuckets[UNVISITED_LABEL].y,
             mode: 'markers',
             name: 'Unvisited (Test)',
-            marker: { color: 'grey', size: 8, symbol: 'circle-open' },
+            marker: { color: 'grey', symbol: 'circle-open' },
             legendgroup: 'unvisited',
             showlegend: false,
         });
@@ -83,7 +83,7 @@ export function useDBSCANPlotData({
             y: trainBuckets[NOISE_LABEL].y,
             mode: 'markers',
             name: 'Noise',
-            marker: { color: 'grey', size: 5, symbol: 'x' },
+            marker: { color: 'grey', symbol: 'x' },
             legendgroup: 'noise',
         });
     }
@@ -94,7 +94,7 @@ export function useDBSCANPlotData({
             y: testBuckets[NOISE_LABEL].y,
             mode: 'markers',
             name: 'Noise (Test)',
-            marker: { color: 'grey', size: 5, symbol: 'x-open' },
+            marker: { color: 'grey', symbol: 'x-open' },
             legendgroup: 'noise',
             showlegend: false,
         });
@@ -107,7 +107,7 @@ export function useDBSCANPlotData({
                 y: trainBuckets[clusterId].y,
                 mode: 'markers',
                 name: `Cluster ${clusterId + 1}`,
-                marker: { color: getColor(clusterId), size: 8, symbol: 'circle' },
+                marker: { color: getColor(clusterId), symbol: 'circle' },
                 legendgroup: `cluster-${clusterId}`,
             });
         }
@@ -117,7 +117,7 @@ export function useDBSCANPlotData({
                 y: testBuckets[clusterId].y,
                 mode: 'markers',
                 name: `Cluster ${clusterId + 1}`,
-                marker: { color: getColor(clusterId), size: 8, symbol: 'circle-open' },
+                marker: { color: getColor(clusterId), symbol: 'circle-open' },
                 legendgroup: `cluster-${clusterId}`,
                 showlegend: false,
             });
@@ -134,7 +134,7 @@ export function useDBSCANPlotData({
             marker: {
                 color: 'rgba(0, 0, 0, 0)',
                 size: 16,
-                line: { color: '#ef4444', width: 3 },
+                line: { color: '#ef4444', width: 1 },
             },
             showlegend: false,
         });

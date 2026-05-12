@@ -34,7 +34,6 @@ export function AnomalyPlots({ dataset, report }: AnomalyPlotsProps) {
             name: 'Train Normal',
             marker: {
                 color: hasTrainPredictions ? getColor(0) : 'grey',
-                size: 8,
                 symbol: 'circle',
             },
         },
@@ -43,7 +42,7 @@ export function AnomalyPlots({ dataset, report }: AnomalyPlotsProps) {
             y: trainAnomaly.y,
             mode: 'markers',
             name: 'Train Anomaly',
-            marker: { color: getColor('red'), size: 8, symbol: 'x' },
+            marker: { color: getColor('red'), symbol: 'x' },
         },
         {
             x: testNormal.x,
@@ -52,7 +51,6 @@ export function AnomalyPlots({ dataset, report }: AnomalyPlotsProps) {
             name: 'Test Normal',
             marker: {
                 color: hasTestPredictions ? getColor(0) : 'grey',
-                size: 8,
                 symbol: 'circle-open',
             },
         },
@@ -61,7 +59,7 @@ export function AnomalyPlots({ dataset, report }: AnomalyPlotsProps) {
             y: testAnomaly.y,
             mode: 'markers',
             name: 'Test Anomaly',
-            marker: { color: getColor('red'), size: 8, symbol: 'x-open' },
+            marker: { color: getColor('red'), symbol: 'x-open' },
         },
     ];
 
