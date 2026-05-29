@@ -7,6 +7,7 @@ import { createTransformationsSlice } from './slices/transformations';
 import { createSystemSlice } from './slices/system';
 import { createTrainingControlSlice } from './slices/training-control';
 import { createTrainingReportSlice } from './slices/training-report';
+import { createUserExampleSlice } from './slices/user-example';
 
 export const useAppStore = create<AppStore>()((...args) => ({
     ...createTaskSlice(...args),
@@ -16,6 +17,7 @@ export const useAppStore = create<AppStore>()((...args) => ({
     ...createSystemSlice(...args),
     ...createTrainingControlSlice(...args),
     ...createTrainingReportSlice(...args),
+    ...createUserExampleSlice(...args),
 
     snapshotTrainingSettings: () => {
         const state = args[1]();

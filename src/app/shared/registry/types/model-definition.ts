@@ -12,6 +12,8 @@ type PlotsVisualization<TKey extends ModelType> =
     | Array<PlotVisualization<TKey>>
     | ((taskType: TaskType) => Array<PlotVisualization<TKey>>);
 
+type PredictionVisualization = ComponentType<PredictionComponentProps>;
+
 export interface ModelDefinition<TKey extends ModelType = ModelType> {
     key: TKey;
     label: string;
@@ -28,6 +30,7 @@ export interface ModelDefinition<TKey extends ModelType = ModelType> {
         >;
         plots?: PlotsVisualization<TKey>;
         parametersComponent?: ComponentType<ParametersVisualizationProps<TrainingReportOf<TKey>>>;
+        predictionComponent?: PredictionVisualization;
     };
 
     progress: {
@@ -57,6 +60,10 @@ export type ModelDataPlotProps<TTrainingReport, TSettings = ModelSettings> = {
     dataset: Dataset;
     report: TTrainingReport;
     modelSettings: TSettings;
+    userExample?: {
+        inputs?: number[];
+        result?: { prediction: number; probabilities?: number[] };
+    };
 };
 
 export type PlotProps<TTrainingReport> = {
@@ -69,6 +76,14 @@ export type ParametersVisualizationProps<TTrainingReport> = {
     modelSettings: ModelSettings;
     transformations: Transformation[];
     report: TTrainingReport;
+};
+
+export type PredictionComponentProps = {
+    prediction: number;
+    probabilities?: number[];
+    categories?: string[];
+    target: string;
+    taskType: TaskType;
 };
 
 export type ProgressInfo =

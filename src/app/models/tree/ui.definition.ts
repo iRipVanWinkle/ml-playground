@@ -1,13 +1,15 @@
 import type { ModelDefinition } from '@/app/shared/registry/types';
-import { TreeSettings } from './ui/TreeSettings';
-import { TreeMainMetrics } from './ui/TreeMainMetrics';
-import { TreeModelDataPlots } from './ui/TreeModelDataPlots';
+
 import {
     ConfusionMatrix,
     DecisionTreeParameters,
     RegressionMetrics,
     ResidualsPlot,
+    TaskAwarePrediction,
 } from '@/app/shared/visualization';
+import { TreeSettings } from './ui/TreeSettings';
+import { TreeMainMetrics } from './ui/TreeMainMetrics';
+import { TreeModelDataPlots } from './ui/TreeModelDataPlots';
 import {
     DEFAULT_CLASSIFICATION_REPORT,
     DEFAULT_CLASSIFICATION_SETTINGS,
@@ -44,6 +46,7 @@ export const treeModelDefinition: ModelDefinition<'tree'> = {
                   ]
                 : [{ title: 'Confusion Matrix', component: ConfusionMatrix }],
         parametersComponent: DecisionTreeParameters,
+        predictionComponent: TaskAwarePrediction,
     },
 
     progress: {

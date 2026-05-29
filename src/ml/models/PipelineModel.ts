@@ -87,6 +87,18 @@ export class PipelineModel<T extends ModelRepresentation> implements Model<T> {
         };
     }
 
+    restoreParameters(parameters?: ScalerState): void {
+        const { preScaler, postScaler } = this.featureTransform ?? {};
+
+        if (preScaler?.restoreParameters && parameters?.preScaler) {
+            preScaler.restoreParameters(parameters.preScaler);
+        }
+
+        if (postScaler?.restoreParameters && parameters?.postScaler) {
+            postScaler.restoreParameters(parameters.postScaler);
+        }
+    }
+
     dispose(withDependencies?: boolean): void {
         this._cachedProcessedData.forEach((tensor) => tensor?.dispose());
         this._cachedProcessedData.clear();

@@ -68,6 +68,14 @@ export type TransformationSettings = {
     transformations: AnyTransformation[];
 };
 
+export type UserExample = {
+    inputs?: number[];
+    result?: {
+        prediction: number;
+        probabilities?: number[];
+    };
+};
+
 /**
  * Training Control
  */

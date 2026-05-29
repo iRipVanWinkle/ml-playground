@@ -6,6 +6,7 @@ import type {
     TaskType,
     TrainingState,
     TransformationSettings,
+    UserExample,
 } from '@/app/shared/types';
 import type {
     ModelSettings,
@@ -13,6 +14,11 @@ import type {
     TrainingReport,
     TrainingSettings,
 } from '@/app/models/types';
+
+type UserResult = {
+    prediction: number;
+    probabilities?: number[];
+};
 
 export type AppState = {
     taskType: TaskType;
@@ -24,6 +30,7 @@ export type AppState = {
         state: TrainingState;
     };
     trainingReport: TrainingReport;
+    userExample: UserExample;
 };
 
 export type AppActions = {
@@ -50,6 +57,10 @@ export type AppActions = {
     setDataset: (dataset: Dataset) => void;
 
     snapshotTrainingSettings: () => TrainingSettings;
+
+    setUserExampleInputs: (inputs: number[]) => void;
+    setUserExamplePrediction: (result: UserResult) => void;
+    resetUserExample: () => void;
 };
 
 export type AppStore = AppState & AppActions;

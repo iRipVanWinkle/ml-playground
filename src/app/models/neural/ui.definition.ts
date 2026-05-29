@@ -5,6 +5,7 @@ import {
     RocCurve,
     ResidualsPlot,
     RegressionMetrics,
+    TaskAwarePrediction,
 } from '@/app/shared/visualization';
 import { NeuralSettings } from './ui/NeuralSettings';
 import { NeuralMainMetrics } from './ui/NeuralMainMetrics';
@@ -49,6 +50,7 @@ export const neuralModelDefinition: ModelDefinition<'neural'> = {
                       { title: 'Confusion Matrix', component: ConfusionMatrix },
                       { title: 'ROC Curve', component: RocCurve },
                   ],
+        predictionComponent: TaskAwarePrediction,
     },
 
     progress: {

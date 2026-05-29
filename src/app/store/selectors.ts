@@ -28,3 +28,8 @@ export const useIsTraining = () =>
 
 // Training Report
 export const useTrainingReport = () => useAppStore((s) => s.trainingReport);
+
+// User Example
+export const useUserExample = () => useAppStore((s) => s.userExample);
+export const useUserExampleInputs = () => useAppStore((s) => s.userExample.inputs);
+export const useUserExampleResult = () => useAppStore((s) => s.userExample.result);

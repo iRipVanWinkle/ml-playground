@@ -6,6 +6,7 @@ import {
     RegressionMetrics,
     RegressionParameters,
     ResidualsPlot,
+    RegressionPrediction,
 } from '@/app/shared/visualization';
 import { LinearSettings } from './ui/LinearSettings';
 import { DEFAULT_REPORT, DEFAULT_SETTINGS } from './defaults';
@@ -14,6 +15,7 @@ export const linearModelDefinition: ModelDefinition<'linear'> = {
     key: 'linear',
     label: 'Linear Regression',
     taskTypes: ['regression'],
+
     defaultSettings: () => DEFAULT_SETTINGS,
     settingsComponent: LinearSettings,
 
@@ -27,6 +29,7 @@ export const linearModelDefinition: ModelDefinition<'linear'> = {
             { title: 'Residuals', component: ResidualsPlot },
         ],
         parametersComponent: RegressionParameters,
+        predictionComponent: RegressionPrediction,
     },
 
     progress: {

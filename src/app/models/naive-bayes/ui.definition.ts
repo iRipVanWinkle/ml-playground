@@ -6,6 +6,7 @@ import {
     RocCurve,
     NaiveBayesParameters,
     AccuracyMetricsDisplay,
+    ClassificationPrediction,
 } from '@/app/shared/visualization';
 import { NaiveBayesSettings } from './ui/NaiveBayesSettings';
 import { DEFAULT_REPORT, DEFAULT_SETTINGS } from './defaults';
@@ -28,6 +29,7 @@ export const naiveBayesModelDefinition: ModelDefinition<'naive-bayes'> = {
             { title: 'ROC Curve', component: RocCurve },
         ],
         parametersComponent: NaiveBayesParameters,
+        predictionComponent: ClassificationPrediction,
     },
 
     progress: {

@@ -92,7 +92,7 @@ export function MNISTGrid({ data, labels, originalLabels, predictions }: MNISTGr
         <PlotlyHeatmap
             data={plotData}
             layout={layout}
-            style={{ width: '100%', aspectRatio: '1 / 1' }}
+            style={{ width: '100%', aspectRatio: '1 / 1', cursor: 'pointer' }}
         />
     );
 }

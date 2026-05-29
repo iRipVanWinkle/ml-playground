@@ -1,6 +1,11 @@
 import type { ModelDefinition } from '@/app/shared/registry/types';
 import { KMeansPlots } from '@/app/shared/visualization/plots/k-means/KMeansPlots';
-import { InertiaHistory, KMeansMetrics, KMeansParameters } from '@/app/shared/visualization';
+import {
+    InertiaHistory,
+    KMeansMetrics,
+    KMeansParameters,
+    ClusteringPrediction,
+} from '@/app/shared/visualization';
 import { KMeansSettings } from './ui/KMeansSettings';
 import { KMeansMainMetrics } from './ui/KMeansMainMetrics';
 import { DEFAULT_REPORT, DEFAULT_SETTINGS } from './defaults';
@@ -22,6 +27,7 @@ export const kMeansModelDefinition: ModelDefinition<'k-means'> = {
             { title: 'Metrics', component: KMeansMetrics },
         ],
         parametersComponent: KMeansParameters,
+        predictionComponent: ClusteringPrediction,
     },
 
     progress: {

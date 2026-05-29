@@ -8,6 +8,7 @@ import {
     TrainingMetricsGrid,
     TrainingProgress,
 } from '@/app/features/visualize-training';
+import { UserExample } from '@/app/features/user-example';
 
 export function TrainingSection() {
     const hasData = useHasData();
@@ -37,6 +38,7 @@ export function TrainingSection() {
                         dataset={dataset}
                         modelSettings={modelSettings}
                     />
+                    <UserExample dataset={dataset} />
 
                     <Separator />
 

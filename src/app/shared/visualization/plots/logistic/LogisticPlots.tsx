@@ -1,5 +1,5 @@
-import type { Dataset } from '@/app/shared/types';
 import type { TrainingReport } from '@/app/models/types';
+import type { Dataset, UserExample } from '@/app/shared/types';
 import { PlotlyScatterContour } from '../plotly';
 import { MNISTGrid } from './components';
 import { useLogisticPlotData } from './hooks';
@@ -8,9 +8,10 @@ import { useColor } from '../../colors';
 type LogisticPlotsProps = {
     dataset: Dataset;
     report: TrainingReport;
+    userExample?: UserExample;
 };
 
-export function LogisticPlots({ dataset, report }: LogisticPlotsProps) {
+export function LogisticPlots({ dataset, report, userExample }: LogisticPlotsProps) {
     const {
         trainTargetLabels,
         trainInputFeatures,
@@ -27,6 +28,9 @@ export function LogisticPlots({ dataset, report }: LogisticPlotsProps) {
     const { groupedData, groupedPredictions } = useLogisticPlotData(dataset);
 
     const { getColor } = useColor();
+
+    const { inputs: userInputs, result } = userExample ?? {};
+    const userPrediction = result?.prediction;
 
     const predictionPredictedLabels =
         'predictionPredictedLabels' in report ? report.predictionPredictedLabels : undefined;
@@ -98,6 +102,22 @@ export function LogisticPlots({ dataset, report }: LogisticPlotsProps) {
                     },
                 ])
                 .flat(),
+            ...(userInputs && userInputs.length >= 2
+                ? [
+                      {
+                          x: [userInputs[0]],
+                          y: [userInputs[1]],
+                          mode: 'markers' as const,
+                          name: `Example${userPrediction != null && categories ? ` (${categories[userPrediction]})` : ''}`,
+                          marker: {
+                              color: userPrediction != null ? getColor(userPrediction) : '#ffffff',
+                              size: 8,
+                              symbol: 'star',
+                          },
+                          legendgroup: 'User Example',
+                      },
+                  ]
+                : []),
         ] as Partial<Plotly.PlotData>[];
 
         plot = (

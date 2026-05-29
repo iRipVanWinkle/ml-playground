@@ -6,6 +6,7 @@ import {
     RocCurve,
     RegressionParameters,
     AccuracyMetricsDisplay,
+    ClassificationPrediction,
 } from '@/app/shared/visualization';
 import { LogisticSettings } from './ui/LogisticSettings';
 import { DEFAULT_REPORT, DEFAULT_SETTINGS } from './defaults';
@@ -33,6 +34,7 @@ export const logisticModelDefinition: ModelDefinition<'logistic'> = {
             { title: 'ROC Curve', component: RocCurve },
         ],
         parametersComponent: RegressionParameters,
+        predictionComponent: ClassificationPrediction,
     },
 
     progress: {

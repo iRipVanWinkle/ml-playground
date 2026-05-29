@@ -1,7 +1,11 @@
 import type { ModelDefinition } from '@/app/shared/registry/types';
 import { GaussianDistributionSettings } from './ui/GaussianDistributionSettings';
 import { DEFAULT_REPORT, DEFAULT_SETTINGS } from './defaults';
-import { AnomaliesMetricsDisplay, AnomalyPlots } from '@/app/shared/visualization';
+import {
+    AnomaliesMetricsDisplay,
+    AnomalyPlots,
+    AnomalyPrediction,
+} from '@/app/shared/visualization';
 
 export const gaussianDistributionModelDefinition: ModelDefinition<'gaussian-distribution'> = {
     key: 'gaussian-distribution',
@@ -15,6 +19,7 @@ export const gaussianDistributionModelDefinition: ModelDefinition<'gaussian-dist
     visualization: {
         metricsGridComponent: AnomaliesMetricsDisplay,
         modelDataPlotComponent: AnomalyPlots,
+        predictionComponent: AnomalyPrediction,
     },
 
     progress: {

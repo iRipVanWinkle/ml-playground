@@ -1,7 +1,7 @@
 import type { Dataset } from '@/app/shared/types';
 import type { ModelSettings, ModelType } from '@/app/models/types';
 import { useModelDefinition } from '@/app/models/ui-registry';
-import { useTrainingReport } from '@/app/store';
+import { useTrainingReport, useUserExample } from '@/app/store';
 
 type ModelDataPlotProps = {
     modelType: ModelType;
@@ -11,6 +11,7 @@ type ModelDataPlotProps = {
 
 export function ModelDataPlot({ modelType, modelSettings, dataset }: ModelDataPlotProps) {
     const report = useTrainingReport();
+    const userExample = useUserExample();
     const modelDefinition = useModelDefinition(modelType);
     const ModelDataPlotComponent = modelDefinition.visualization.modelDataPlotComponent;
 
@@ -20,6 +21,7 @@ export function ModelDataPlot({ modelType, modelSettings, dataset }: ModelDataPl
                 dataset={dataset}
                 report={report}
                 modelSettings={modelSettings}
+                userExample={userExample}
             />
         </div>
     );

@@ -18,4 +18,8 @@ export const {
     setTrainingReport,
 
     snapshotTrainingSettings,
+
+    setUserExampleInputs,
+    setUserExamplePrediction,
+    resetUserExample,
 } = useAppStore.getState();

@@ -4,6 +4,7 @@ import { DEFAULT_REPORT, DEFAULT_SETTINGS } from './defaults';
 import {
     AnomaliesMetricsDisplay,
     AnomalyPlots,
+    AnomalyPrediction,
     DecisionTreeParameters,
 } from '@/app/shared/visualization';
 
@@ -20,6 +21,7 @@ export const isolationForestModelDefinition: ModelDefinition<'isolation-forest'>
         metricsGridComponent: AnomaliesMetricsDisplay,
         modelDataPlotComponent: AnomalyPlots,
         parametersComponent: DecisionTreeParameters,
+        predictionComponent: AnomalyPrediction,
     },
 
     progress: {
