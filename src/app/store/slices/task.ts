@@ -20,7 +20,7 @@ export const createTaskSlice: StateCreator<AppStore, [], [], TaskSlice> = (set, 
 
             ...state.resetModelSettings(modelType, taskType),
             ...state.resetTrainingReport(modelType, taskType),
-            ...state.resetTrainingControls(),
+            ...state.resetTrainingControls('idle'),
             ...state.resetTransformations(),
         });
     },

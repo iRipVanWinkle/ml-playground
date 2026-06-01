@@ -80,7 +80,14 @@ export type UserExample = {
  * Training Control
  */
 
-export type TrainingState = 'init' | 'preparing' | 'training' | 'paused';
+export type TrainingState =
+    | 'idle'
+    | 'init'
+    | 'preparing'
+    | 'training'
+    | 'paused'
+    | 'completed'
+    | 'error';
 
 /**
  * Base Training Reports

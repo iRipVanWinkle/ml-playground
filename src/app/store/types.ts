@@ -51,7 +51,7 @@ export type AppActions = {
         modelType?: ModelType,
         taskType?: TaskType,
     ) => Pick<AppState, 'trainingReport'>;
-    resetTrainingControls: () => Pick<AppState, 'training'>;
+    resetTrainingControls: (initState?: TrainingState) => Pick<AppState, 'training'>;
 
     switchTask: (taskType: TaskType) => void;
     setDataset: (dataset: Dataset) => void;

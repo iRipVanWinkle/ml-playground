@@ -64,7 +64,7 @@ export const useModel = () => {
                     setTrainingState('training');
                     break;
                 case 'stopped':
-                    setTrainingState('init');
+                    setTrainingState('completed');
                     break;
                 case 'stepped-forward':
                 case 'paused':
@@ -74,7 +74,7 @@ export const useModel = () => {
         });
 
         workerManager.on('error', (error: Error) => {
-            setTrainingState('init');
+            setTrainingState('error');
             console.error(error);
             toast.error(error.message);
             terminateWorker();
@@ -88,7 +88,7 @@ export const useModel = () => {
         workerManager.on('finished', () => {
             uiLogUtils.logTrainingComplete(metricsReceivedCount);
 
-            setTrainingState('init');
+            setTrainingState('completed');
             terminateWorker();
             toast.success('Training finished');
         });

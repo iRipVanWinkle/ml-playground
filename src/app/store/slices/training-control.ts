@@ -1,5 +1,6 @@
 import type { StateCreator } from 'zustand';
 import type { AppStore } from '../types';
+import type { TrainingState } from '@/app/shared/types';
 
 type TrainingControlSlice = Pick<
     AppStore,
@@ -10,10 +11,12 @@ export const createTrainingControlSlice: StateCreator<AppStore, [], [], Training
     set,
 ) => ({
     training: {
-        state: 'init',
+        state: 'idle',
     },
 
     setTrainingState: (state) => set((prev) => ({ training: { ...prev.training, state } })),
 
-    resetTrainingControls: () => ({ training: { state: 'init' } }),
+    resetTrainingControls: (initState?: TrainingState) => ({
+        training: { state: initState ?? 'init' },
+    }),
 });
