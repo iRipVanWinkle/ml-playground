@@ -58,6 +58,11 @@ export class AgglomerativeClustering extends BaseHierarchicalClustering {
         });
         this.linkage = options.linkage ?? 'ward';
         this.distanceMetric = options.distanceMetric ?? euclideanDistance;
+
+        assert(
+            !(this.linkage === 'ward' && this.distanceMetric !== euclideanDistance),
+            "Ward's linkage method requires the Euclidean distance metric.",
+        );
     }
 
     /**

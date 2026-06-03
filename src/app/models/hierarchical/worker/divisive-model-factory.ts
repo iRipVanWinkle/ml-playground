@@ -13,8 +13,13 @@ export function hierarchicalModelFactory(
     const distanceMetric = distanceFactory(distance);
 
     if (method === 'agglomerative') {
+        const { linkage } = settings.modelSettings;
+        if (linkage === 'ward' && distance.type !== 'euclidean') {
+            throw new Error("Ward's linkage method requires the Euclidean distance metric.");
+        }
         return new AgglomerativeClustering({
             numClusters,
+            linkage,
             distanceMetric,
             eventEmitter,
             trainingController,

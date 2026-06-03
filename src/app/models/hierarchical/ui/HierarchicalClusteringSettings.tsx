@@ -17,7 +17,11 @@ const BISECT_RESTARTS_INFO =
     'Number of random-seed restarts per bisection step. The split with the lowest SSE is kept.';
 const LINKAGE_INFO = 'Linkage method for agglomerative clustering.';
 const LINKAGE_OPTIONS: { value: Linkage; label: string; info: string }[] = [
-    { value: 'ward', label: 'Ward', info: 'Minimizes the variance of the clusters being merged.' },
+    {
+        value: 'ward',
+        label: 'Ward',
+        info: 'Minimizes the variance of the clusters being merged (Euclidean distance only).',
+    },
     {
         value: 'complete',
         label: 'Complete',
@@ -49,12 +53,38 @@ export function HierarchicalClusteringSettings({
     disabled,
     onChange,
 }: ModelSettingsComponentProps<HierarchicalClusteringSettingsType>) {
+    const handleChangeMethod = (value: HierarchicalMethod) => {
+        if (value === 'agglomerative') {
+            onChange({
+                method: value,
+                linkage: settings.distance.type !== 'euclidean' ? 'complete' : 'ward',
+            });
+        } else {
+            onChange({ method: value });
+        }
+    };
+
+    const handleChangeDistance = (value: DistanceConfig) => {
+        if (
+            settings.method === 'agglomerative' &&
+            value.type !== 'euclidean' &&
+            settings.linkage === 'ward'
+        ) {
+            onChange({
+                distance: value,
+                linkage: 'complete',
+            });
+        } else {
+            onChange({ distance: value });
+        }
+    };
+
     return (
         <>
             <Field label="Clustering Method" info={CLUSTERING_METHOD_INFO}>
                 <RadioGroup
                     value={settings.method}
-                    onValueChange={(value) => onChange({ method: value as HierarchicalMethod })}
+                    onValueChange={handleChangeMethod}
                     disabled={disabled}
                     className="w-full justify-between gap-3 rounded-lg border p-3 transition-colors"
                     aria-label="Model Variant"
@@ -92,7 +122,7 @@ export function HierarchicalClusteringSettings({
             <Distance
                 settings={settings.distance}
                 disabled={disabled}
-                onChange={(value: DistanceConfig) => onChange({ distance: value })}
+                onChange={handleChangeDistance}
             />
 
             {settings.method === 'divisive' && (
@@ -142,7 +172,7 @@ export function HierarchicalClusteringSettings({
                     <Select
                         disabled={disabled}
                         value={settings.linkage}
-                        onValueChange={(value) => onChange({ linkage: value as Linkage })}
+                        onValueChange={(value: Linkage) => onChange({ linkage: value })}
                     >
                         <Select.Trigger
                             className="w-full truncate"
@@ -153,7 +183,15 @@ export function HierarchicalClusteringSettings({
                         </Select.Trigger>
                         <Select.Content>
                             {LINKAGE_OPTIONS.map((opt) => (
-                                <Select.Item key={opt.value} value={opt.value} title={opt.info}>
+                                <Select.Item
+                                    key={opt.value}
+                                    value={opt.value}
+                                    title={opt.info}
+                                    disabled={
+                                        opt.value === 'ward' &&
+                                        settings.distance.type !== 'euclidean'
+                                    }
+                                >
                                     {opt.label}
                                 </Select.Item>
                             ))}

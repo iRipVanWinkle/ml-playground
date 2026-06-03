@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { tensor2d } from '@tensorflow/tfjs';
 import { AgglomerativeClustering } from './AgglomerativeClustering';
 import { EventEmitter } from '../../events/EventEmitter';
+import { manhattanDistance } from '../../distance';
 
 describe('AgglomerativeClustering', () => {
     // Three well-separated 2-D clusters (4 points each)
@@ -219,6 +220,17 @@ describe('AgglomerativeClustering', () => {
             const model = new AgglomerativeClustering({ numClusters: 2 });
             expect(() => model.predict(X)).toThrow('Model has not been trained yet');
             model.dispose();
+        });
+
+        it('should throw when linkage is ward and distance is non-Euclidean', () => {
+            expect(
+                () =>
+                    new AgglomerativeClustering({
+                        numClusters: 3,
+                        linkage: 'ward',
+                        distanceMetric: manhattanDistance,
+                    }),
+            ).toThrow("Ward's linkage method requires the Euclidean distance metric.");
         });
     });
 
