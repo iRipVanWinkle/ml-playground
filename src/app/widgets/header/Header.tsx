@@ -1,4 +1,5 @@
 import { ThemeToggle } from '@/app/features/change-theme';
+import { DesignSwitch } from '@/app/features/switch-design';
 import { ML } from '@/app/shared/ui';
 
 export function Header() {
@@ -15,7 +16,10 @@ export function Header() {
                     </h1>
                 </div>
 
-                <ThemeToggle />
+                <div className="flex items-center gap-1">
+                    <DesignSwitch />
+                    <ThemeToggle />
+                </div>
             </div>
         </header>
     );
