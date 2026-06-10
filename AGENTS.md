@@ -50,6 +50,7 @@ This runs lint, format check, typecheck, unit tests, and e2e tests.
 - Inside `src/ml/` use relative imports (`../`, `./`) instead of `@/ml/...` — the ML layer must stay independent of the app alias
 - Conventional commit messages
 - Tests live next to source files (Vitest) or in `e2e/` (Playwright)
+- **React Compiler is enabled** — it automatically memoizes components and values. Avoid adding manual `useCallback`, `useMemo`, or `memo`; only use them when there is a proven need that the compiler does not cover, and remove redundant memoization.
 
 ## Testing
 
