@@ -1,37 +1,30 @@
-import { TaskSwitcher } from '@/app/features/switch-task';
-import { DataSection } from '@/app/widgets/data-section';
-import { ModelSection } from '@/app/widgets/model-section';
-import { SystemSettings } from '@/app/widgets/settings-section';
-import { TrainingSection } from '@/app/widgets/training-section';
+import { TaskSection } from './features/task-section';
+import { DatasetSection } from './features/dataset-section';
+import { TransformSection } from './features/transform-section';
+import { ModelSection } from './features/model-section';
+import { TrainingSection } from './features/training-section';
+import { VisualizeSection } from './features/visualize-section';
+import { UserExample } from './features/user-example';
 
-/**
- * Notebook design — scaffold.
- *
- * A deliberately distinct, single-column "notebook" arrangement (training-first,
- * stacked cells) that currently reuses the shared widgets. As the notebook design
- * matures, replace these with notebook-specific widgets/features under
- * `designs/notebook/widgets` and `designs/notebook/features`, resolving model
- * views via `composedRegistry.getView(modelType, 'notebook')`.
- */
 export function NotebookApp() {
     return (
         <main
             className="flex flex-col gap-6 px-4 py-6 m-auto w-full max-w-5xl"
             data-design="notebook"
         >
-            <TaskSwitcher />
+            <TaskSection />
 
-            <section className="flex flex-col gap-6">
-                <TrainingSection />
+            <DatasetSection />
 
-                <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
-                    <DataSection />
+            <TransformSection />
 
-                    <ModelSection />
-                </div>
+            <ModelSection />
 
-                <SystemSettings />
-            </section>
+            <TrainingSection />
+
+            <VisualizeSection />
+
+            <UserExample />
         </main>
     );
 }
