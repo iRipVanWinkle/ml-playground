@@ -14,7 +14,7 @@ export function NormalizationSelector({ disabled }: NormalizationSelectorProps) 
 
     return (
         <Field label="Normalization" htmlFor="normalizationSelect" info={NORMALIZATION_INFO}>
-            <Select disabled={disabled} value={normalization} onValueChange={setNormalization}>
+            <Select disabled={disabled} value={normalization ?? 'none'} onValueChange={setNormalization}>
                 <Select.Trigger
                     id="normalizationSelect"
                     className="w-50"

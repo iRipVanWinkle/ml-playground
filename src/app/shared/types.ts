@@ -46,7 +46,7 @@ export type SystemSettings = {
  * Transformation Settings
  */
 
-export type NormalizationMethod = 'none' | 'zscore' | 'linear' | 'log';
+export type NormalizationMethod = null | 'none' | 'zscore' | 'linear' | 'log';
 
 export type TransformationType = 'sinusoid' | 'cosinusoid' | 'fourier' | 'polynomial';
 

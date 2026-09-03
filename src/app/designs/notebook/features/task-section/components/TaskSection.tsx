@@ -10,10 +10,10 @@ type TaskTypeObject = {
     description: React.ReactNode;
 };
 
-export const TASK_TYPES = [
+const TASK_TYPES = [
     {
         value: 'regression',
-        label: 'Regression',
+        label: 'predict a number',
         hint: 'regression',
         description: (
             <>
@@ -23,7 +23,7 @@ export const TASK_TYPES = [
     },
     {
         value: 'classification',
-        label: 'Classification',
+        label: 'predict a category',
         hint: 'classification',
         description: (
             <>
@@ -33,21 +33,21 @@ export const TASK_TYPES = [
     },
     {
         value: 'clustering',
-        label: 'Clustering',
+        label: 'find natural groups',
         hint: 'clustering',
         description: (
             <>
-                Groups similar rows together <strong>without using labels.</strong>. There\'s no ground truth to check against: the algorithm proposes structure, and you decide whether the groups mean anything. Use it to explore data, not to predict.
+                Groups similar rows together <strong>without using labels</strong>. There's no ground truth to check against: the algorithm proposes structure, and you decide whether the groups mean anything. Use it to explore data, not to predict.
             </>
         ),
     },
     {
         value: 'anomaly',
-        label: 'Anomaly',
+        label: 'flag the unusual ',
         hint: 'anomaly detection',
         description: (
             <>
-                Learns <strong>what normal looks like</strong> and flags points that don\'t fit. You usually have plenty of normal examples and few or no labeled anomalies, so it\'s a one-class problem rather than a two-class one. Use it when the answer is "is this unusual?"
+                Learns <strong>what normal looks like</strong> and flags points that don't fit. You usually have plenty of normal examples and few or no labeled anomalies, so it's a one-class problem rather than a two-class one. Use it when the answer is "is this unusual?"
             </>
         ),
     },
