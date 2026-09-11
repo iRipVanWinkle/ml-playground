@@ -64,7 +64,7 @@ function BubbleRoot({
             onClick={handleClick}
             className={cn(
                 'inline-flex items-center gap-1 rounded-full border border-input bg-transparent px-3.5 py-2',
-                'text-sm font-medium whitespace-nowrap text-foreground transition-colors',
+                'text-xs font-medium whitespace-nowrap text-foreground transition-colors',
                 'hover:bg-accent',
                 'focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none',
                 'disabled:cursor-not-allowed disabled:opacity-50',
@@ -97,17 +97,17 @@ function BubbleCounter({ value, onValueChange, min = -Infinity, max = Infinity }
                 aria-label="Decrease"
                 disabled={value <= min}
                 onClick={() => onValueChange(Math.max(min, value - 1))}
-                className="inline-grid size-5 place-items-center rounded-full transition-colors hover:bg-primary-foreground/15 disabled:pointer-events-none disabled:opacity-40"
+                className="text-2xs inline-grid size-5 place-items-center rounded-full transition-colors hover:bg-primary-foreground/15 disabled:pointer-events-none disabled:opacity-40"
             >
                 <MinusIcon className="size-3" />
             </button>
-            <span className="w-5 text-center font-mono text-xs font-bold tabular-nums">{value}</span>
+            <span className="w-5 text-center font-mono text-2xs font-bold tabular-nums">{value}</span>
             <button
                 type="button"
                 aria-label="Increase"
                 disabled={value >= max}
                 onClick={() => onValueChange(Math.min(max, value + 1))}
-                className="inline-grid size-5 place-items-center rounded-full transition-colors hover:bg-primary-foreground/15 disabled:pointer-events-none disabled:opacity-40"
+                className="text-2xs inline-grid size-5 place-items-center rounded-full transition-colors hover:bg-primary-foreground/15 disabled:pointer-events-none disabled:opacity-40"
             >
                 <PlusIcon className="size-3" />
             </button>

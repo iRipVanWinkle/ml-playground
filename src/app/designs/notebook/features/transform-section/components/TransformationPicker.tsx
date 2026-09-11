@@ -1,6 +1,7 @@
-import type { TransformationType } from '@/app/shared/types';
+import type { AnyTransformation, TransformationType } from '@/app/shared/types';
 import { setTransformations, useTransformations } from '@/app/store';
 import { Block, Bubble, BubbleGroup } from '../../../shared';
+import { calculateTransformationOutputFeatures } from '@/app/features/transform-data/libs';
 
 const TRANSFORMATION_TYPES = [
     {
@@ -67,7 +68,11 @@ const TRANSFORMATIONS: Record<
     },
 };
 
-export function TransformationPicker() {
+type TransformationPickerProps = {
+    numFeatures: number;
+};
+
+export function TransformationPicker({ numFeatures }: TransformationPickerProps) {
     const transformations = useTransformations();
     const values = Array.from(new Set(transformations.map((t) => t.type)));
 
@@ -88,9 +93,11 @@ export function TransformationPicker() {
         );
     }
 
+    const outputFeatures = calculateOutputFeatures(transformations, numFeatures);
+
     return (
         <>
-            <BubbleGroup type="multiple" value={values} onValueChange={handleTransformationsChange}>
+            <BubbleGroup type="multiple" className="my-2" value={values} onValueChange={handleTransformationsChange}>
                 <BubbleGroup.Label>Transformations</BubbleGroup.Label>
 
                 {TRANSFORMATION_TYPES.map((option) => (
@@ -103,7 +110,7 @@ export function TransformationPicker() {
                     />
                 ))}
             </BubbleGroup>
-
+            {transformations.length > 0 && <div className="my-2 text-xs">Expanded to {outputFeatures} features fed to the model.</div>}
             {transformations.map((t) => {
                 const tx = TRANSFORMATIONS[t.type as TransformationType];
                 if (!tx) return null;
@@ -145,4 +152,16 @@ function TransformationBubble({ value, label, degree, onDegreeChange }: Transfor
             )}
         </Bubble>
     );
+}
+
+function calculateOutputFeatures(transformations: AnyTransformation[], numFeatures: number): number {
+    return transformations.reduce((sum, transformation) => {
+        if (transformation.type === '') return sum;
+
+        return sum + calculateTransformationOutputFeatures(
+            transformation.type as TransformationType,
+            transformation.degree,
+            numFeatures
+        );
+    }, 0);
 }

@@ -9,13 +9,12 @@ function App() {
     return (
         <DesignProvider>
             <ThemeProvider>
-                <div className="App">
-                    <Header />
+                <Header />
 
-                    <DesignRoot />
+                <DesignRoot />
 
-                    <Footer />
-                </div>
+                <Footer />
+
                 <Toaster position="top-right" expand closeButton richColors />
             </ThemeProvider>
         </DesignProvider>

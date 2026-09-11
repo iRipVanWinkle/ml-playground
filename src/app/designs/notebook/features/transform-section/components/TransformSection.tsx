@@ -1,8 +1,12 @@
+import { useNumTrainInputFeatures } from '@/app/store/selectors';
 import { Section, StepNum } from '../../../shared';
 import { NormalizationPicker } from './NormalizationPicker';
 import { TransformationPicker } from './TransformationPicker';
 
 export function TransformSection() {
+
+    const numFeatures = useNumTrainInputFeatures();
+
     return (
         <Section step={3} total={7}>
             <Section.Header>
@@ -17,7 +21,7 @@ export function TransformSection() {
                     <NormalizationPicker />
                 </p>
                 <p>
-                    <TransformationPicker />
+                    <TransformationPicker numFeatures={numFeatures} />
                 </p>
             </Section.Body>
         </Section>

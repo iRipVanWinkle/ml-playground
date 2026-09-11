@@ -17,6 +17,8 @@ export function DesignProvider({ children }: { children: ReactNode }) {
     useEffect(() => {
         if (typeof window !== 'undefined') {
             window.localStorage.setItem(DESIGN_STORAGE_KEY, design);
+
+            window.document.documentElement.classList.add(`design-${design}`);
         }
     }, [design]);
 

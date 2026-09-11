@@ -27,7 +27,7 @@ function BlockRoot({ className, asChild = false, ...props }: BlockProps) {
         <Comp
             data-slot="block"
             className={cn(
-                'my-1.5 grid grid-cols-[auto_1fr] gap-x-4.5 rounded-r-lg border-l-2 border-foreground bg-muted px-3.5 py-3',
+                'my-2 grid grid-cols-[auto_1fr] gap-x-4.5 rounded-r-lg border-l-2 border-foreground bg-muted px-3.5 py-3',
                 className,
             )}
             {...props}

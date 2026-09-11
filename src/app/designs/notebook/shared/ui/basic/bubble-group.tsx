@@ -7,8 +7,10 @@ import { BubbleGroupContext } from './bubble-group-context';
 
 /**
  * A row of pill-shaped `Bubble`s that share one selection: `type="single"`
- * (the default) keeps at most one bubble on and lets clicking the active one
- * clear it back to `null`; `type="multiple"` lets any number be on at once.
+ * (the default) keeps at most one bubble on and, by default, lets clicking
+ * the active one clear it back to `null`; pass `allowDeselect={false}` for
+ * strict radio-button behavior, where the selected bubble can't be cleared
+ * by clicking it again. `type="multiple"` lets any number be on at once.
  *
  * ```tsx
  * <BubbleGroup value={normalize} onValueChange={setNormalize}>
@@ -33,12 +35,15 @@ type BubbleGroupSingleProps = {
     type?: 'single';
     value: string | null;
     onValueChange: (value: string | null) => void;
+    /** Whether clicking the selected bubble clears it back to `null`. Defaults to `true`; set `false` for radio-button behavior. */
+    allowDeselect?: boolean;
 };
 
 type BubbleGroupMultipleProps = {
     type: 'multiple';
     value: string[];
     onValueChange: (value: string[]) => void;
+    allowDeselect?: boolean;
 };
 
 type BubbleGroupProps = Omit<React.ComponentProps<'div'>, 'onChange'> & {
@@ -51,6 +56,7 @@ function BubbleGroupRoot({
     type = 'single',
     value,
     onValueChange,
+    allowDeselect = true,
     ...props
 }: BubbleGroupProps) {
     const Comp = asChild ? Slot : 'div';
@@ -69,10 +75,11 @@ function BubbleGroupRoot({
                     items.includes(item) ? items.filter((v) => v !== item) : [...items, item],
                 );
             } else {
-                (onValueChange as (value: string | null) => void)(value === item ? null : item);
+                const shouldClear = value === item && allowDeselect;
+                (onValueChange as (value: string | null) => void)(shouldClear ? null : item);
             }
         },
-        [isMultiple, value, onValueChange],
+        [isMultiple, value, onValueChange, allowDeselect],
     );
 
     const context = React.useMemo(() => ({ isSelected, toggle }), [isSelected, toggle]);
@@ -97,7 +104,7 @@ function BubbleGroupLabel({ className, asChild = false, ...props }: BubbleGroupL
     return (
         <Comp
             data-slot="bubble-group-label"
-            className={cn('text-xs font-semibold tracking-wide text-muted-foreground uppercase', className)}
+            className={cn('text-2xs font-semibold tracking-wide text-muted-foreground uppercase', className)}
             {...props}
         />
     );
