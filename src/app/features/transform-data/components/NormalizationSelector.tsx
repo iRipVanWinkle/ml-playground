@@ -1,6 +1,7 @@
 import { Field, Select } from '@/app/shared/ui';
 import { NORMALIZATION_METHODS } from '../constants';
 import { setNormalization, useNormalization } from '@/app/store';
+import type { NormalizationMethod } from '@/app/shared/types';
 
 const NORMALIZATION_INFO =
     'Scales features to a standard range. Applied before and after transformation (if present) for numerical stability.';
@@ -14,7 +15,11 @@ export function NormalizationSelector({ disabled }: NormalizationSelectorProps) 
 
     return (
         <Field label="Normalization" htmlFor="normalizationSelect" info={NORMALIZATION_INFO}>
-            <Select disabled={disabled} value={normalization ?? 'none'} onValueChange={setNormalization}>
+            <Select
+                disabled={disabled}
+                value={normalization ?? 'none'}
+                onValueChange={(value) => setNormalization(value as NormalizationMethod)}
+            >
                 <Select.Trigger
                     id="normalizationSelect"
                     className="w-50"

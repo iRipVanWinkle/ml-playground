@@ -28,7 +28,7 @@ const TRANSFORMATIONS: Record<
 > = {
     polynomial: {
         name: 'Polynomial',
-        formula: (d) => `[x, x², x³, …, x^${d}]`,
+        formula: (d) => d === 1 ? `[x]` : d === 2 ? `[x, x²]` : d === 3 ? `[x, x², x³]` : d === 4 ? `[x, x², x³, x⁴]` : `[x, x², x³, …, x^${d}]`,
         desc: (d) => (
             <>
                 Adds powers of each feature up to degree <em>{d}</em>. Lets a linear model fit curves — but
@@ -48,7 +48,7 @@ const TRANSFORMATIONS: Record<
     },
     sinusoid: {
         name: 'Sinusoid',
-        formula: (d) => `[sin(πx), sin(2πx), …, sin(${d}πx)]`,
+        formula: (d) => d === 1 ? `[sin(πx)]` : d === 2 ? `[sin(πx), sin(2πx)]` : d === 3 ? `[sin(πx), sin(2πx), sin(3πx)]` : `[sin(πx), sin(2πx), …, sin(${d}πx)]`,
         desc: (d) => (
             <>
                 Adds <em>{d}</em> sine basis functions per feature. Lighter than full Fourier when you only
@@ -58,7 +58,7 @@ const TRANSFORMATIONS: Record<
     },
     cosinusoid: {
         name: 'Cosinusoid',
-        formula: (d) => `[cos(πx), cos(2πx), …, cos(${d}πx)]`,
+        formula: (d) => d === 1 ? `[cos(πx)]` : d === 2 ? `[cos(πx), cos(2πx)]` : d === 3 ? `[cos(πx), cos(2πx), cos(3πx)]` : `[cos(πx), cos(2πx), …, cos(${d}πx)]`,
         desc: (d) => (
             <>
                 Adds <em>{d}</em> cosine basis functions per feature. Useful for even-symmetric patterns and
@@ -119,7 +119,7 @@ export function TransformationPicker({ numFeatures }: TransformationPickerProps)
                     <Block key={t.type}>
                         <Block.Title>
                             <div className="text-sm font-bold tracking-tight text-foreground">{tx.name}</div>
-                            <div className="mt-0.5 inline-block font-mono text-xs font-bold tracking-wide text-muted-foreground uppercase">
+                            <div className="mt-0.5 inline-block font-mono text-2xs font-bold tracking-wide text-muted-foreground uppercase">
                                 degree {t.degree}
                             </div>
                         </Block.Title>

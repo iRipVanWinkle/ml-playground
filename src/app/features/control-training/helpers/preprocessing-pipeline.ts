@@ -11,9 +11,9 @@ export function createPreprocessingPipeline<T extends ModelRepresentation>(
 ): PipelineModel<T> {
     const preperedTransformations = dataSettings.transformations.filter((t) => t.type !== '');
     const transformations = transformationsFactory(preperedTransformations);
-    const preScaler = normalizeFunctionFactory(dataSettings.normalization);
+    const preScaler = normalizeFunctionFactory(dataSettings.normalization ?? 'none');
     const postScaler = transformations.length
-        ? normalizeFunctionFactory(dataSettings.normalization)
+        ? normalizeFunctionFactory(dataSettings.normalization ?? 'none')
         : undefined;
 
     const featureTransform = {
