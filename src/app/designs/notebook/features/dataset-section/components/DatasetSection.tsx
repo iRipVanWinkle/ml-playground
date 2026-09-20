@@ -170,7 +170,7 @@ export function DatasetSection() {
                                     {trainTestSplit}/{100 - trainTestSplit}
                                 </b>
                             </InlineSelectInput.Label>
-                            <InlineSelectInput.Range min={50} max={95} />
+                            <InlineSelectInput.Range min={1} max={100} step={1} />
                             <InlineSelectInput.Hint>
                                 Percent used for training; the rest is held out
                             </InlineSelectInput.Hint>
