@@ -9,7 +9,9 @@ export function TrainingSection() {
             </Section.Header>
             <Section.Body>
                 <p>
-                    Hit play to watch 140 iterations of batch gradient descent on your GPU. The loss curve shows train versus held-out validation — divergence means you're memorizing, not learning.
+                    Hit play to watch 140 iterations of batch gradient descent on your GPU. The loss
+                    curve shows train versus held-out validation — divergence means you're
+                    memorizing, not learning.
                 </p>
             </Section.Body>
         </Section>

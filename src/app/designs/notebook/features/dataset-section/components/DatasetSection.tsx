@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { InlineSelect, InlineSelectInput, Section, StepNum } from '../../../shared';
+import { InlineSelect, InlineSelectInput, Section, StepNum, Table } from '../../../shared';
 import {
     setDataset,
     setRandomSeed,
@@ -23,6 +23,13 @@ export function DatasetSection() {
 
     const availableDatasets = getDatasetsForTask(taskType);
     const selectedDataset = availableDatasets.find((d) => d.value === dataset.id);
+
+    const hasData = dataset.trainInputFeatures.length > 0 && dataset.headers.length > 0;
+    const previewCount = Math.min(4, dataset.trainInputFeatures.length);
+    const totalRows = dataset.trainInputFeatures.length + dataset.testInputFeatures.length;
+    const remainingRows = totalRows - previewCount;
+    const headers = dataset.headers;
+    const targetName = headers[0];
 
     const loadDataset = async (
         datasetValue: string,
@@ -113,6 +120,64 @@ export function DatasetSection() {
                     Every model learns from examples. Here we look at the raw rows and columns
                     before any transformation happens.
                 </p>
+                {hasData && !dataset.isImage && (
+                    <Table.Wrap>
+                        <Table.Meta>
+                            <span>
+                                · Preview · first {previewCount} of{' '}
+                                <b>{totalRows.toLocaleString()}</b>
+                            </span>
+                            {targetName && (
+                                <span>
+                                    target column · <b>{targetName}</b>
+                                </span>
+                            )}
+                        </Table.Meta>
+                        <Table>
+                            <Table.Header>
+                                <Table.Row>
+                                    {headers.map((header, colIndex) => (
+                                        <Table.Head key={colIndex}>{header}</Table.Head>
+                                    ))}
+                                </Table.Row>
+                            </Table.Header>
+                            <Table.Body>
+                                {Array.from({ length: previewCount }, (_, rowIndex) => {
+                                    const targetVal =
+                                        dataset.categories &&
+                                        dataset.trainTargetLabels[rowIndex]?.[0] !== undefined
+                                            ? (dataset.categories[
+                                                  dataset.trainTargetLabels[rowIndex][0]
+                                              ] ?? dataset.trainTargetLabels[rowIndex][0])
+                                            : dataset.trainTargetLabels[rowIndex]?.[0];
+                                    const featureVals = dataset.trainInputFeatures[rowIndex] ?? [];
+                                    const row = [targetVal, ...featureVals];
+
+                                    return (
+                                        <Table.Row key={rowIndex}>
+                                            {row.map((cell, colIndex) => (
+                                                <Table.Cell key={colIndex} isLabel={colIndex === 0}>
+                                                    {typeof cell === 'number'
+                                                        ? Number(cell.toFixed(3))
+                                                        : cell}
+                                                </Table.Cell>
+                                            ))}
+                                        </Table.Row>
+                                    );
+                                })}
+                            </Table.Body>
+                            {remainingRows > 0 && (
+                                <Table.Footer>
+                                    <Table.Row>
+                                        <Table.Cell colSpan={headers.length} muted>
+                                            … {remainingRows.toLocaleString()} more
+                                        </Table.Cell>
+                                    </Table.Row>
+                                </Table.Footer>
+                            )}
+                        </Table>
+                    </Table.Wrap>
+                )}
                 <p>
                     Data is{' '}
                     <InlineSelectInput
